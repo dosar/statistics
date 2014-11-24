@@ -12,21 +12,23 @@ object LotoImporter
 {
     def fillDb =
     {
-        val source = Source.fromURL(classOf[System].getResource("5_36.txt"))
-        val lines = source.getLines()
-        val lines1 = lines.zipWithIndex.filter(_._2 % 3 == 0).map(_._1)
-        val lines2 = lines.zipWithIndex.filter(_._2 % 3 == 1).map(_._1)
-
-        val db: ODatabaseDocumentTx  = new ODatabaseDocumentTx("remote:localhost/petshop").open("admin", "admin")
+        val source = Source.fromFile("/home/alespuh/work/loto/src/main/resources/5_36.txt")
+        val lines = source.getLines().toList
+//        println("Количество линий " + lines.size)
+        val lines1 = lines.zipWithIndex.filter(_._2 % 3 == 0).map(_._1).toList
+        val lines2 = lines.zipWithIndex.filter(_._2 % 3 == 1).map(_._1).toList
+        val db: ODatabaseDocumentTx  = new ODatabaseDocumentTx("remote:/loto").open("admin", "admin")
         try
         {
             for((line1, line2) <- lines1.zip(lines2))
             {
-                val doc = new ODocument("Person")
+//                println(line1)
+//                println(line2)
+                val doc = new ODocument("loto_5_36")
                 val run :: date :: Nil = line1.split(" / ").toList
                 doc.field("run", run)
                 doc.field("date", date)
-                doc.field("result", line2.split(" ").map(_.toInt))
+                doc.field("result", line2.split(" ").filter(_.trim != "").map(_.toInt))
 
                 doc.save()
             }
