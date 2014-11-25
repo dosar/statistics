@@ -19,7 +19,9 @@ libraryDependencies ++= {
     "com.orientechnologies" % "orient-commons" % "1.7.10",
     "com.orientechnologies" % "orientdb-core" % "1.7.10",
     "com.orientechnologies" % "orientdb-client" % "1.7.10",
-    "com.orientechnologies" % "orientdb-enterprise" % "1.7.10"
+    "com.orientechnologies" % "orientdb-enterprise" % "1.7.10",
+    "com.google.guava" % "guava" % "18.0",
+    "io.spray" %%  "spray-json" % "1.3.1"
   )
 }
 

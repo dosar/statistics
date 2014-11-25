@@ -1,7 +1,8 @@
 package com.example
 
 import akka.actor.Actor
-import com.example.loto.LotoImporter
+import com.example.loto.{Metrics, LotoImporter}
+import spray.json.{BasicFormats, pimpAny}
 import spray.routing._
 import spray.http._
 import MediaTypes._
@@ -22,8 +23,8 @@ class MyServiceActor extends Actor with MyService {
 
 
 // this trait defines our service behavior independently from the service actor
-trait MyService extends HttpService {
-
+trait MyService extends HttpService with BasicFormats
+{
   val myRoute =
     path("") {
       get {
@@ -51,5 +52,17 @@ trait MyService extends HttpService {
           }
         }
       }
+    } ~
+    path("graphic/data") {
+      get {
+        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
+          complete {
+//            implicit val listJson = DoubleJsonFormat
+            val data = Metrics.graficData(Metrics.topFigures.take(10).toArray)
+            data.toList.map(_.toList).toJson.toString()
+          }
+        }
+      }
     }
+
 }
