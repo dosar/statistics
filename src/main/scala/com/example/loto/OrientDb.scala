@@ -7,12 +7,20 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
  */
 trait OrientDb
 {
-    def tx[A](f: ODatabaseDocumentTx => A):A =
+    def tx[A](f: ODatabaseDocumentTx => A): A =
     {
         val db: ODatabaseDocumentTx  = new ODatabaseDocumentTx("remote:/loto").open("admin", "admin")
         try
         {
             f(db)
+        }
+        catch
+        {
+            case e: Throwable =>
+            {
+                e.printStackTrace()
+                throw e
+            }
         }
         finally db.close()
     }

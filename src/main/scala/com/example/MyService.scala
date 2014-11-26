@@ -1,11 +1,10 @@
 package com.example
 
 import akka.actor.Actor
-import com.example.loto.{Metrics, LotoImporter}
-import spray.json.{BasicFormats, pimpAny}
+import com.example.loto.{LotoImporter, Metrics}
+import spray.http.MediaTypes._
+import spray.json.{DefaultJsonProtocol, pimpAny}
 import spray.routing._
-import spray.http._
-import MediaTypes._
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -23,18 +22,19 @@ class MyServiceActor extends Actor with MyService {
 
 
 // this trait defines our service behavior independently from the service actor
-trait MyService extends HttpService with BasicFormats
+trait MyService extends HttpService with DefaultJsonProtocol
 {
   val myRoute =
-    path("") {
+  {
+    pathPrefix("web") {
+      getFromDirectory("/home/alespuh/work/loto/src/main/resources/web/")
+    } ~
+    path("graphicdata") {
       get {
-        respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
+        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            <html>
-              <body>
-                <h1>Say hello to <i>spray-routing</i> on <i>spray-can</i>!</h1>
-              </body>
-            </html>
+            val data = Metrics.graficData(Metrics.topFigures.take(10).toArray)
+            data.toArray.toJson.toString
           }
         }
       }
@@ -52,17 +52,6 @@ trait MyService extends HttpService with BasicFormats
           }
         }
       }
-    } ~
-    path("graphic/data") {
-      get {
-        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
-          complete {
-//            implicit val listJson = DoubleJsonFormat
-            val data = Metrics.graficData(Metrics.topFigures.take(10).toArray)
-            data.toList.map(_.toList).toJson.toString()
-          }
-        }
-      }
     }
-
+  }
 }
