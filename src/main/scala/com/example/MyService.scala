@@ -27,7 +27,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
   val myRoute =
   {
     pathPrefix("web") {
-      getFromDirectory("/home/alespuh/work/loto/src/main/resources/web/")
+      getFromDirectory("/home/alex/work/statistics/src/main/resources/web/")
     } ~
     path("graphicdata") {
       get {
