@@ -4,13 +4,15 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/jquery.jqplot.css">
     <script src="javascript/jquery-2.1.1.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script src="javascript/angular.js"></script>
     <script src="http://code.highcharts.com/highcharts.src.js"></script>
     <script src="javascript/highcharts-ng.js"></script>
     <script src="javascript/app.js"></script>
-</head>
+    <script src="javascript/jquery.jqplot.min.js"></script>
+    <script src="javascript/jqplot.barRenderer.min.js"></script>
 <body ng-app = "lotoApp">
 <nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
@@ -41,7 +43,14 @@
 </nav>
 <div class="container">
     <div ng-controller="GraphicCtrl" class="row">
-        <highchart id="chart1" config="chartConfig" class="span10"></highchart>
+        <!--<highchart id="chart1" config="chartConfig" class="span10"></highchart>-->
+        <div id="chartdiv2" style="height:600px; width:2000px; "></div>
+        <div id="chartdiv3" style="height:600px; width:2000px; "></div>
+        <div id="chartdiv4" style="height:600px; width:2000px; "></div>
+        <div id="chartdiv5" style="height:600px; width:2000px; "></div>
+        <div id="figureOrderStatistics1"></div>
+        <div id="figureOrderStatistics2"></div>
+        <div id="figureDiapasonStatistics"></div>
     </div>
 </div>
 </body>
