@@ -13,19 +13,107 @@ import scala.collection.mutable.ListBuffer
  */
 object Metrics
 {
-    lazy val topFigures =
+    type Figure = Int
+
+    def topFigures(runResults: Seq[RunResult]): Seq[Figure] =
+        figuresOccurencies(runResults).toList.sortBy(_._2).map(_._1)
+
+    def figuresOccurencies(runResults: Seq[RunResult]) =
     {
         val results = (1 to 36).map(_ -> 0).toMap
         def update(map: Map[Int, Int], figure: Int) =
             map.updated(figure, results(figure) + 1)
 
         runResults.foldLeft(results)((map, rr) => rr.result.foldLeft(map)(update))
-            .toList.sortBy(_._2).map(_._1)
     }
 
-    lazy val runResults = RunResultService.list
 
-    def graficData(figures: Seq[Int]) = runResults.sortBy(_.run).map(rr => rr.result.filter(figures.contains(_)))
+    lazy val runResults = RunResultService.list.sortBy(_.run)
+
+    /*
+    * берем топ популярных чисел и смотрим когда они повторяются в тиражах
+    * */
+    def graficData1(figures: Seq[Figure]): Seq[Array[Figure]] =
+        runResults.map(rr => rr.result.filter(figures.contains(_)))
+
+    def graficData2(topIntervalSize: Int, testIntervalSize: Int): Seq[Int] = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
+    { runResults =>
+        figuresOccurencies(runResults).filter(_._2 > 0).toSeq.sortBy(_._2).map(_._1)
+    }
+
+    /*
+    * просто покажем облако результатов
+    * */
+    def graphicData3: Seq[Array[Figure]] = runResults.map(_.result)
+
+    /*
+    * берем топ невыпадающих чисел за несколько пред. тиражей и смотрим выпадают ли они в нескольких след. тиражах
+    * */
+    def graphicData4(topIntervalSize: Int, testIntervalSize: Int): Seq[Int] = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
+    { runResults =>
+        figuresOccurencies(runResults).filter(_._2 == 0).map(_._1).toSeq
+    }
+
+    /*
+    * берем топ наименее выпадающих чисел за несколько пред. тиражей и смотрим выпадают ли они в нескольких след. тиражах
+    * */
+    def graphicData5(topIntervalSize: Int, testIntervalSize: Int): Seq[Int] = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
+    { runResults =>
+        figuresOccurencies(runResults).filter(_._2 > 0).toSeq.sortBy(_._2).reverse.map(_._1)
+    }
+
+    /*
+     * сколько выпало чисел разных разрядов за все тиражи
+     */
+    def figureOrderStatistics1(): FigureOrderStatistics = figureOrderStatistics(runResults)
+
+    /*
+     * количество выпадений 2, 3, 4, 5 чисел одного разряда
+     */
+    def figureOrderStatistics2(): FigureOrderFrequencyOneRun =
+    {
+        val runFigures = runResults.map(rr => figureOrderStatistics(Seq(rr)))
+        val figure2 = runFigures.count(_.max > 1)
+        val figure3 = runFigures.count(_.max > 2)
+        val figure4 = runFigures.count(_.max > 3)
+        val figure5 = runFigures.count(_.max > 4)
+        FigureOrderFrequencyOneRun(figure2, figure3, figure4, figure5)
+    }
+
+    /*
+    * сколько выпало чисел одного разряда для каждого тиража
+    * */
+    def graphicData6 = runResults.map(rr => figureOrderStatistics(Seq(rr)).max)
+
+
+    private def figureOrderStatistics(runResults: Seq[RunResult]): FigureOrderStatistics =
+    {
+        val runFigures = runResults.flatMap(_.result)
+        val order0Figures = runFigures.filter(_ - 10 < 0)
+        val order1Figures = order0Figures.filter(_ - 20 < 0)
+        val order2Figures = order1Figures.filter(_ - 30 < 0)
+        val order3Figures = order2Figures.filter(_ - 40 < 0)
+        FigureOrderStatistics(order0Figures.size, order1Figures.size, order2Figures.size, order3Figures.size)
+    }
+
+    private def pastWindowToFutureWindow(pastIntervalSize: Int, futureIntervalSize: Int)(
+        figuresExtractor: Seq[RunResult] => Seq[Figure]) =
+    {
+        (for(pastWindow <- runResults.zipWithIndex.sliding(pastIntervalSize)) yield
+        {
+            val topIntervalFigures = figuresExtractor(pastWindow.map(_._1)).take(12).toArray
+            val last = pastWindow.last._2 + 1
+            val futureRuns = runResults.drop(last).take(futureIntervalSize)
+            futureRuns.map(fr => fr.result.intersect(topIntervalFigures)).map(_.size).max
+        }).toSeq
+    }
+
+    case class FigureOrderStatistics(order0Frequency: Int, order1Frequency: Int, order2Frequency: Int, order3Frequency: Int)
+    {
+        def max = Math.max(order0Frequency, Math.max(order1Frequency, Math.max(order2Frequency, order3Frequency)))
+    }
+
+    case class FigureOrderFrequencyOneRun(figure2: Int, figure3: Int, figure4: Int, figure5: Int)
 }
 
 case class RunResult(date: Date, run: Int, result : Array[Int])

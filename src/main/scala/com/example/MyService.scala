@@ -24,6 +24,7 @@ class MyServiceActor extends Actor with MyService {
 // this trait defines our service behavior independently from the service actor
 trait MyService extends HttpService with DefaultJsonProtocol
 {
+  import Metrics._
   val myRoute =
   {
     pathPrefix("web") {
@@ -33,7 +34,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = Metrics.graficData(Metrics.topFigures.take(10).toArray)
+            val data = graficData1(topFigures(runResults).take(10).toArray)
             data.toArray.toJson.toString
           }
         }
