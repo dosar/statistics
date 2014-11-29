@@ -10,29 +10,23 @@ import scala.io.Source
 /**
  * Created by alespuh on 25.11.14.
  */
-object LotoImporter
+object LotoImporter extends OrientDb
 {
-    def fillDb =
-    {
-        val source = Source.fromFile("/home/alespuh/work/loto/src/main/resources/5_36.txt")
+    def fillDb = tx
+    { db =>
+        val source = Source.fromFile("/home/alex/work/statistics/src/main/resources/5_36.txt")
         val lines = source.getLines().toList
         val lines1 = lines.zipWithIndex.filter(_._2 % 3 == 0).map(_._1).toList
         val lines2 = lines.zipWithIndex.filter(_._2 % 3 == 1).map(_._1).toList
-        val db: ODatabaseDocumentTx  = new ODatabaseDocumentTx("remote:/loto").open("admin", "admin")
         val format = new SimpleDateFormat("dd.MM.yyyy hh:mm")
-        try
+        for((line1, line2) <- lines1.zip(lines2))
         {
-            for((line1, line2) <- lines1.zip(lines2))
-            {
-                val doc = new ODocument("loto_5_36")
-                val run :: date :: Nil = line1.split(" / ").toList
-                doc.field("run", run.toInt)
-                doc.field("date", format.parse(date))
-                doc.field("result", line2.split(" ").filter(_.trim != "").map(_.toInt))
-
-                doc.save()
-            }
+            val doc = new ODocument("loto_5_36")
+            val run :: date :: Nil = line1.split(" / ").toList
+            doc.field("run", run.toInt)
+            doc.field("date", format.parse(date))
+            doc.field("result", line2.split(" ").filter(_.trim != "").map(_.toInt))
+            doc.save()
         }
-        finally db.close()
     }
 }

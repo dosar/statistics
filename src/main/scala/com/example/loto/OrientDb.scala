@@ -18,7 +18,7 @@ trait OrientDb
         {
             case e: Throwable =>
             {
-                e.printStackTrace()
+                println(e)
                 throw e
             }
         }
