@@ -9,7 +9,7 @@ trait OrientDb
 {
     def tx[A](f: ODatabaseDocumentTx => A): A =
     {
-        val db: ODatabaseDocumentTx  = new ODatabaseDocumentTx("remote:/loto").open("admin", "admin")
+        val db: ODatabaseDocumentTx  = new ODatabaseDocumentTx("remote:/loto").open("alex", "123")
         try
         {
             f(db)
