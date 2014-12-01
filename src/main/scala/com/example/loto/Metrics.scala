@@ -7,6 +7,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
+import RunResults._
 
 /**
  * Created by alespuh on 25.11.14.
@@ -28,19 +29,16 @@ object Metrics
         result.filter(_._1 > 16)
     }
 
-
-    lazy val runResults = RunResultService.list.sortBy(_.run)
-
     /*
     * берем топ популярных чисел и смотрим когда они повторяются в тиражах
     * */
-    def graficData1(figures: Seq[Figure]): Seq[Array[Figure]] =
-        runResults.map(rr => rr.result.filter(figures.contains(_)))
+    def graficData1(figures: Seq[Figure], rR: => ListBuffer[RunResult]): Seq[Array[Figure]] =
+        rR.map(rr => rr.result.filter(figures.contains(_)))
 
     /*
     * берем топ популярных чисел и смотрим когда они повторяются в тиражах по окнам
     * */
-    def graficData2(topIntervalSize: Int, testIntervalSize: Int): Seq[Int] = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
+    def graficData2(topIntervalSize: Int, testIntervalSize: Int, rR: => ListBuffer[RunResult]): Seq[Int] = pastWindowToFutureWindow(topIntervalSize, testIntervalSize, rR)
     { runResults =>
         figuresOccurencies(runResults).filter(_._2 > 0).toSeq.sortBy(_._2).map(_._1)
     }
@@ -48,12 +46,12 @@ object Metrics
     /*
     * просто покажем облако результатов
     * */
-    def graficData3: Seq[Array[Figure]] = runResults.map(_.result)
+    def graficData3(rr: => ListBuffer[RunResult]): Seq[Array[Figure]] = rr.map(_.result)
 
     /*
     * берем топ невыпадающих чисел за несколько пред. тиражей и смотрим выпадают ли они в нескольких след. тиражах
     * */
-    def graficData4(topIntervalSize: Int, testIntervalSize: Int): Seq[Int] = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
+    def graficData4(topIntervalSize: Int, testIntervalSize: Int, rR: => ListBuffer[RunResult]): Seq[Int] = pastWindowToFutureWindow(topIntervalSize, testIntervalSize, rR)
     { runResults =>
         figuresOccurencies(runResults).filter(_._2 == 0).map(_._1).toSeq
     }
@@ -61,7 +59,7 @@ object Metrics
     /*
     * берем топ наименее выпадающих чисел за несколько пред. тиражей и смотрим выпадают ли они в нескольких след. тиражах
     * */
-    def graficData5(topIntervalSize: Int, testIntervalSize: Int): Seq[Int] = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
+    def graficData5(topIntervalSize: Int, testIntervalSize: Int, rR: => ListBuffer[RunResult]): Seq[Int] = pastWindowToFutureWindow(topIntervalSize, testIntervalSize, rR)
     { runResults =>
         figuresOccurencies(runResults).filter(_._2 > 0).toSeq.sortBy(_._2).reverse.map(_._1)
     }
@@ -69,14 +67,14 @@ object Metrics
     /*
      * сколько выпало чисел разных разрядов за все тиражи
      */
-    def figureOrderStatistics1(): FigureOrderStatistics = figureOrderStatistics(runResults)
+    def figureOrderStatistics1(rr: => ListBuffer[RunResult]): FigureOrderStatistics = figureOrderStatistics(rr)
 
     /*
      * количество выпадений 2, 3, 4, 5 чисел одного разряда
      */
-    def figureOrderStatistics2(): FigureOrderFrequencyOneRun =
+    def figureOrderStatistics2(rR: => ListBuffer[RunResult]): FigureOrderFrequencyOneRun =
     {
-        val runFigures = runResults.map(rr => figureOrderStatistics(Seq(rr)))
+        val runFigures = rR.map(rr => figureOrderStatistics(Seq(rr)))
         val figure2 = runFigures.count(_.max > 1)
         val figure3 = runFigures.count(_.max > 2)
         val figure4 = runFigures.count(_.max > 3)
@@ -84,9 +82,9 @@ object Metrics
         FigureOrderFrequencyOneRun(figure2, figure3, figure4, figure5)
     }
 
-    def figureDiapasonStatistics1(): FigureDiapasonStatistics =
+    def figureDiapasonStatistics1(rR: => ListBuffer[RunResult]): FigureDiapasonStatistics =
     {
-        val runFigures = runResults.flatMap(_.result)
+        val runFigures = rR.flatMap(_.result)
         val diapson1 = runFigures.count(_ < 7)
         val diapson2 = runFigures.count(f => f > 6 && f < 17)
         val diapson3 = runFigures.count(f => f > 16 && f < 27)
@@ -97,7 +95,7 @@ object Metrics
     /*
     * сколько выпало чисел одного разряда для каждого тиража
     * */
-    def graficData6 = runResults.map(rr => figureOrderStatistics(Seq(rr)).max)
+    def graficData6(rR: => ListBuffer[RunResult]) = rR.map(rr => figureOrderStatistics(Seq(rr)).max)
 
 
     private def figureOrderStatistics(runResults: Seq[RunResult]): FigureOrderStatistics =
@@ -110,14 +108,14 @@ object Metrics
         FigureOrderStatistics(order0Figures, order1Figures, order2Figures, order3Figures)
     }
 
-    private def pastWindowToFutureWindow(pastIntervalSize: Int, futureIntervalSize: Int)(
+    private def pastWindowToFutureWindow(pastIntervalSize: Int, futureIntervalSize: Int, rR: => ListBuffer[RunResult])(
         figuresExtractor: Seq[RunResult] => Seq[Figure]) =
     {
-        (for(pastWindow <- runResults.zipWithIndex.sliding(pastIntervalSize)) yield
+        (for(pastWindow <- rR.zipWithIndex.sliding(pastIntervalSize)) yield
         {
             val topIntervalFigures = figuresExtractor(pastWindow.map(_._1)).take(9).toArray
             val last = pastWindow.last._2 + 1
-            val futureRuns = runResults.drop(last).take(futureIntervalSize)
+            val futureRuns = rR.drop(last).take(futureIntervalSize)
             val intersections = futureRuns.map(fr => fr.result.intersect(topIntervalFigures)).map(_.size)
             if(intersections.isEmpty) 0 else intersections.max
         }).toSeq
@@ -150,4 +148,9 @@ object RunResultService extends OrientDb
         while(table.hasNext) result += from(table.next())
         result
     }
+}
+
+object RunResults
+{
+  lazy val runResults = RunResultService.list.sortBy(_.run)
 }

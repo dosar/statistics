@@ -21,6 +21,7 @@ libraryDependencies ++= {
     "com.orientechnologies" % "orientdb-client" % "1.7.10",
     "com.orientechnologies" % "orientdb-enterprise" % "1.7.10",
     "com.google.guava" % "guava" % "18.0",
+    "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test",
     "io.spray" %%  "spray-json" % "1.3.1"
   )
 }
