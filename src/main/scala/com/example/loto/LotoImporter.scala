@@ -1,7 +1,5 @@
 package com.example.loto
 
-import java.text.SimpleDateFormat
-
 import com.example.loto.CommonImplicits.InImplicits
 import com.orientechnologies.orient.core.command.OCommandRequest
 import com.orientechnologies.orient.core.record.impl.ODocument
@@ -22,16 +20,16 @@ object LotoImporter extends OrientDb
         val lines = source.getLines().toList.filter(_ notIn (months ++ otherGarbage))
         val lines1 = lines.zipWithIndex.filter(_._2 % 3 == 0).map(_._1).toList
         val lines2 = lines.zipWithIndex.filter(_._2 % 3 == 1).map(_._1).toList
-        val format = new SimpleDateFormat("dd.MM.yyyy hh:mm")
         for((line1, line2) <- lines1.zip(lines2))
         {
             val doc = new ODocument(tableName)
             val run :: date :: Nil = line1.split(" / ").toList
-            withoutDoubles(run.toInt)
+            val runResult = RunResult(run, date, line2)
+            withoutDoubles(runResult.run)
             {
-                doc.field("run", run.toInt)
-                doc.field("date", format.parse(date))
-                doc.field("result", line2.split(" ").filter(_.trim != "").take(5).map(_.toInt))
+                doc.field("run", runResult.run)
+                doc.field("date", runResult.date)
+                doc.field("result", runResult.result)
                 doc.save()
             }
         }
