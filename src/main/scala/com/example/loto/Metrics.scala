@@ -25,7 +25,8 @@ object Metrics
             map.updated(figure, results(figure) + 1)
 
         val result = runResults.foldLeft(results)((map, rr) => rr.result.foldLeft(map)(update))
-        result.filter(_._1 > 16)
+        result
+//            .filter(_._1 > 16)
     }
 
 
@@ -113,7 +114,7 @@ object Metrics
     private def pastWindowToFutureWindow(pastIntervalSize: Int, futureIntervalSize: Int)(
         figuresExtractor: Seq[RunResult] => Seq[Figure]) =
     {
-        (for(pastWindow <- runResults.zipWithIndex.sliding(pastIntervalSize)) yield
+        (for(pastWindow <- runResults.take(runResults.length - futureIntervalSize).zipWithIndex.sliding(pastIntervalSize)) yield
         {
             val topIntervalFigures = figuresExtractor(pastWindow.map(_._1)).take(9).toArray
             val last = pastWindow.last._2 + 1

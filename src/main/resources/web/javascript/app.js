@@ -26,13 +26,13 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
         });
     });
 
-    $http.get("/graphicdata4").success(function(result){
-        jQuery.jqplot('chartdiv5', [result], {
-            title: "сколько выпало чисел одного разряда для каждого тиража"
-            //,series: [{renderer:jQuery.jqplot.BarRenderer}]
-        });
-    });
-
+    //$http.get("/graphicdata4").success(function(result){
+    //    jQuery.jqplot('chartdiv5', [result], {
+    //        title: "сколько выпало чисел одного разряда для каждого тиража"
+    //        //,series: [{renderer:jQuery.jqplot.BarRenderer}]
+    //    });
+    //});
+    //
     $http.get("/figureOrderStatistics1").success(function(result){
         jQuery('#figureOrderStatistics1').html(
             "<h3>Выпало разрядов</h3>" +

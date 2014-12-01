@@ -26,7 +26,7 @@ class MyServiceActor extends Actor with MyService {
 trait MyService extends HttpService with DefaultJsonProtocol
 {
   val pastWindow = 10
-  val futureWindow = 100
+  val futureWindow = 200
   implicit val figureOrderStatistics = jsonFormat4(FigureOrderStatistics)
   implicit val figureOrderFrequencyOneRun = jsonFormat4(FigureOrderFrequencyOneRun)
   implicit val figureDiapasonStatistics = jsonFormat4(FigureDiapasonStatistics)
