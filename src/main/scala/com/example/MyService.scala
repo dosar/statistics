@@ -1,7 +1,7 @@
 package com.example
 
 import akka.actor.Actor
-import com.example.loto.LotoImporter
+import com.example.loto.{RunResults, LotoImporter}
 import com.example.loto.Metrics.{FigureDiapasonStatistics, FigureOrderFrequencyOneRun, FigureOrderStatistics}
 import spray.http.MediaTypes._
 import spray.json.{DefaultJsonProtocol, pimpAny}
@@ -35,13 +35,13 @@ trait MyService extends HttpService with DefaultJsonProtocol
   val myRoute =
   {
     pathPrefix("web") {
-      getFromDirectory("/home/alespuh/work/loto/src/main/resources/web/")
+      getFromDirectory("/home/alex/work/statistics/src/main/resources/web/")
     } ~
     path("graphicdata") {
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData1(topFigures(runResults).take(10).toArray)
+            val data = graficData1(topFigures(RunResults.runResults).take(10).toArray,  RunResults.runResults)
             data.toArray.toJson.toString
           }
         }
@@ -51,7 +51,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData2(pastWindow, futureWindow).toArray
+            val data = graficData2(pastWindow, futureWindow, RunResults.runResults).toArray
             data.toArray.toJson.toString
           }
         }
@@ -61,7 +61,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData4(pastWindow, futureWindow).toArray
+            val data = graficData4(pastWindow, futureWindow, RunResults.runResults).toArray
             data.toArray.toJson.toString
           }
         }
@@ -71,7 +71,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData4(pastWindow, futureWindow).toArray
+            val data = graficData4(pastWindow, futureWindow, RunResults.runResults).toArray
             data.toArray.toJson.toString
           }
         }
@@ -81,7 +81,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData6.toArray
+            val data = graficData6(RunResults.runResults).toArray
             data.toJson.toString
           }
         }
@@ -91,7 +91,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = figureOrderStatistics1
+            val data = figureOrderStatistics1(RunResults.runResults)
             data.toJson.toString
           }
         }
@@ -101,7 +101,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = figureOrderStatistics2
+            val data = figureOrderStatistics2(RunResults.runResults)
             data.toJson.toString
           }
         }
@@ -111,7 +111,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = figureDiapasonStatistics1
+            val data = figureDiapasonStatistics1(RunResults.runResults)
             data.toJson.toString
           }
         }
