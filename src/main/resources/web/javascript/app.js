@@ -5,13 +5,13 @@ var lotoApp = angular.module('lotoApp', ['highcharts-ng', 'ui.chart']);
 
 lotoApp.controller('GraphicCtrl', function ($scope, $http){
 
-    $scope.pastWindow = 10;
-    $scope.futureWindow = 50;
+    $scope.pastWindow = 50;
+    $scope.futureWindow = 100;
 
 //    $scope.chartDiv2Result = new Array();
 
     $http.get("/graphicdata1?pW="+$scope.pastWindow+"&&pF="+$scope.futureWindow).success(function(result){
-        $scope.chartDiv2Result = result;
+        $scope.chartDiv2DefaultResult = result;
         jQuery.jqplot('chartdiv2', [$scope.chartDiv2Result], {
             title: "Топ / повторения по окнам"
             //,series: [{renderer:jQuery.jqplot.BarRenderer}]
@@ -125,7 +125,7 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
             ,
             yAxis : { categories: []}
             ,
-            series: [{data: []}]
+            series: [{data:  $scope.chartDiv2DefaultResult}]
             ,
             title: {
                 text: 'Hello'

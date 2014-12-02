@@ -15,7 +15,7 @@
     <script src="javascript/jqplot.barRenderer.min.js"></script>
     <script src="javascript/chart.js"></script>
 <body ng-app = "lotoApp">
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -42,7 +42,7 @@
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
-<div class="container">
+<div class="container" style="margin-top: 60px">
     <div ng-controller="GraphicCtrl" class="row">
         <div class="row" style="overflow-x: auto">
             <highchart id="chart1" config="chartConfig"></highchart>
