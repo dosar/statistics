@@ -1,16 +1,40 @@
 /**
  * Created by alespuh on 26.11.14.
  */
-var lotoApp = angular.module('lotoApp', ["highcharts-ng"]);
+var lotoApp = angular.module('lotoApp', ['highcharts-ng', 'ui.chart']);
 
 lotoApp.controller('GraphicCtrl', function ($scope, $http){
 
-    $http.get("/graphicdata1").success(function(result){
-        jQuery.jqplot('chartdiv2', [result], {
+    $scope.pastWindow = 10;
+    $scope.futureWindow = 50;
+
+//    $scope.chartDiv2Result = new Array();
+
+    $http.get("/graphicdata1?pW="+$scope.pastWindow+"&&pF="+$scope.futureWindow).success(function(result){
+        $scope.chartDiv2Result = result;
+        jQuery.jqplot('chartdiv2', [$scope.chartDiv2Result], {
             title: "Топ / повторения по окнам"
             //,series: [{renderer:jQuery.jqplot.BarRenderer}]
         });
     });
+
+    $scope.chartDiv2 = function(){
+        $http.get("/graphicdata1?pW="+$scope.pastWindow+"&&pF="+$scope.futureWindow).success(function(result){
+            $scope.chartDiv2Result = result;
+//            $scope.chartConfig.series.pop();
+            $scope.chartConfig.series.push({
+                data: result
+            });
+        });
+    };
+
+
+//    $http.get("/graphicdata1").success(function(result){
+//        jQuery.jqplot('chartdiv2', [result], {
+//            title: "Топ / повторения по окнам"
+//            //,series: [{renderer:jQuery.jqplot.BarRenderer}]
+//        });
+//    });
 
     $http.get("/graphicdata2").success(function(result){
         jQuery.jqplot('chartdiv3', [result], {
@@ -63,6 +87,21 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
         )
     });
 
+
+    $scope.chartOptions = {
+        seriesDefaults: {
+            // Make this a pie chart.
+            renderer: jQuery.jqplot.PieRenderer,
+            rendererOptions: {
+                // Put data labels on the pie slices.
+                // By default, labels show the percentage of the slice.
+                showDataLabels: true
+            }
+        },
+        legend: { show:true, location: 'e' }
+    };
+
+
     /*
         $http.get("/graphicdata").success(function(result){
             $scope.graphicData = result;
@@ -73,18 +112,20 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
             });
         });
 
-
+ */
         $scope.chartConfig = {
             options: {
                 chart: {
-                    type: 'scatter'
+                    type: 'line',
+                    width: 2000,
+                    height: 500
                 }
             },
             xAxis : { categories: []}
             ,
             yAxis : { categories: []}
             ,
-            series: []
+            series: [{data: []}]
             ,
             title: {
                 text: 'Hello'
@@ -93,5 +134,5 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
             loading: false
         }
 
-        */
+
 });

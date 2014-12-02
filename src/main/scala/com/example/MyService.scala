@@ -47,11 +47,11 @@ trait MyService extends HttpService with DefaultJsonProtocol
         }
       }
     } ~
-    path("graphicdata1") {
+      (path("graphicdata1") & parameters('pW.as[Int], 'pF.as[Int])) { (pWindow, fWindow) =>
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData2(pastWindow, futureWindow, RunResults.runResults).toArray
+            val data = graficData2(pWindow, fWindow, RunResults.runResults).toArray
             data.toArray.toJson.toString
           }
         }

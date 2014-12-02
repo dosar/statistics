@@ -13,6 +13,7 @@
     <script src="javascript/app.js"></script>
     <script src="javascript/jquery.jqplot.min.js"></script>
     <script src="javascript/jqplot.barRenderer.min.js"></script>
+    <script src="javascript/chart.js"></script>
 <body ng-app = "lotoApp">
 <nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
@@ -43,9 +44,28 @@
 </nav>
 <div class="container">
     <div ng-controller="GraphicCtrl" class="row">
-        <!--<highchart id="chart1" config="chartConfig" class="span10"></highchart>-->
-        <div id="chartdiv2" style="height:600px; width:2000px; "></div>
-        <div id="chartdiv3" style="height:600px; width:2000px; "></div>
+        <div class="row" style="overflow-x: auto">
+            <highchart id="chart1" config="chartConfig"></highchart>
+        </div>
+
+        <div class="row" style="margin-top: 20px">
+            <div class=" form group col-xs-6">
+                <label for="pastWindow">Past window</label>
+                <input ng-model="pastWindow" type="range" min="1" max="300" id="pastWindow" ng-change="chartDiv2()"/>
+                <p>{{pastWindow}}</p>
+            </div>
+            <div class=" form group col-xs-6">
+                <label for="futureWindow" class="">Future window</label>
+                <input ng-model="futureWindow" type="range" min="1" max="300" id="futureWindow" ng-change="chartDiv2()"/>
+                <p>{{futureWindow}}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12" style="overflow-x: auto">
+                <div id="chartdiv2" style="height:400px; width:2000px; "></div>
+            </div>
+        </div>
+        <div id="chartdiv3" style="height:600px; width:2000px; margin-top: 50px "></div>
         <div id="chartdiv4" style="height:600px; width:2000px; "></div>
         <div id="chartdiv5" style="height:600px; width:2000px; "></div>
         <div id="figureOrderStatistics1"></div>
