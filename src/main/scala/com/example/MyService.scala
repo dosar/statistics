@@ -73,11 +73,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-<<<<<<< HEAD
-            val data = graficData4(pWindow, fWindow, RunResults.runResults).toArray
-=======
             val data = graficData4(pWindow, fWindow).toArray
->>>>>>> f_qtplot
             data.toArray.toJson.toString
           }
         }

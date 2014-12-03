@@ -51,23 +51,6 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
     };
 
 
-<<<<<<< HEAD
-    $http.get("/graphicdata4").success(function(result){
-        $scope.chartConfig4.series.push({
-            data: result
-        });
-    });
-
-
-=======
-    //$http.get("/graphicdata4").success(function(result){
-    //    jQuery.jqplot('chartdiv5', [result], {
-    //        title: "сколько выпало чисел одного разряда для каждого тиража"
-    //        //,series: [{renderer:jQuery.jqplot.BarRenderer}]
-    //    });
-    //});
-    //
->>>>>>> f_qtplot
     $http.get("/figureOrderStatistics1").success(function(result){
         jQuery('#figureOrderStatistics1').html(
             "<h3>Выпало разрядов</h3>" +
