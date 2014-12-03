@@ -26,7 +26,7 @@ class MyServiceActor extends Actor with MyService {
 trait MyService extends HttpService with DefaultJsonProtocol
 {
   val pastWindow = 10
-  val futureWindow = 200
+  val futureWindow = 20
   implicit val figureOrderStatistics = jsonFormat4(FigureOrderStatistics)
   implicit val figureOrderFrequencyOneRun = jsonFormat4(FigureOrderFrequencyOneRun)
   implicit val figureDiapasonStatistics = jsonFormat4(FigureDiapasonStatistics)
@@ -37,7 +37,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
   val myRoute =
   {
     pathPrefix("web") {
-      getFromDirectory("/home/alex/work/statistics/src/main/resources/web/")
+      getFromDirectory("/home/alespuh/work/loto/src/main/resources/web/")
     } ~
     path("graphicdata") {
       get {
@@ -54,7 +54,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
             val data = graficData2(pastWindow, futureWindow).toArray
-            data.toArray.toJson.toString
+            data.map(_._2).toJson.toString
           }
         }
       }
@@ -64,7 +64,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
             val data = graficData4(pastWindow, futureWindow).toArray
-            data.toArray.toJson.toString
+            data.map(_._2).toJson.toString
           }
         }
       }

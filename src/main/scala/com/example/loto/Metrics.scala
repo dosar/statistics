@@ -21,7 +21,11 @@ object Metrics
     case class FigureDiapasonStatistics(diapason1: Int, diapason2: Int, diapason3: Int, diapason4: Int)
 }
 
-class Metrics(runResults: Seq[RunResult])
+/*
+* runResults - выборка на которой считаем все метрики
+* topFiguresCount - сколько чисел брать из набора чисел
+* */
+class Metrics(runResults: Seq[RunResult], topFiguresCount: Int = 9)
 {
     import Metrics._
 
@@ -35,8 +39,9 @@ class Metrics(runResults: Seq[RunResult])
     def figuresOccurencies(rrs: Seq[RunResult]): Map[Int, Int] =
     {
         val results = (1 to 36).map(_ -> 0).toMap
+
         def update(map: Map[Int, Int], figure: Int) =
-            map.updated(figure, results(figure) + 1)
+            map.updated(figure, map(figure) + 1)
 
         val result = rrs.foldLeft(results)((map, rr) => rr.result.foldLeft(map)(update))
         result
@@ -50,11 +55,11 @@ class Metrics(runResults: Seq[RunResult])
         runResults.map(rr => rr.result.filter(figures.contains(_)))
 
     /*
-    * берем топ популярных чисел и смотрим когда они повторяются в тиражах по окнам
+    * берем топ популярных чисел и смотрим сколько из них повторяется в тиражах по окнам
     * */
     def graficData2(topIntervalSize: Int, testIntervalSize: Int) = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
     { rrs =>
-        val sorted: Seq[(Int, Int)] = figuresOccurencies(rrs).filter(_._2 > 0).toSeq.sortBy(_._2)
+        val sorted = figuresOccurencies(rrs).filter(_._2 > 0).toSeq.sortBy(- _._2)
         sorted.map(_._1)
     }
 
@@ -76,13 +81,15 @@ class Metrics(runResults: Seq[RunResult])
     * */
     def graficData5(topIntervalSize: Int, testIntervalSize: Int) = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
     { rrs =>
-        figuresOccurencies(rrs).filter(_._2 > 0).toSeq.sortBy(_._2).reverse.map(_._1)
+        figuresOccurencies(rrs).filter(_._2 > 0).toSeq.sortBy(_._2).map(_._1)
     }
 
     /*
     * степень пересечения тиражей внутри окна
     * */
     def graphicData6(intervalSize: Int) = ???
+
+    def strategy1(pastWindow: Int, skipWindow: Int, betWindow: Int) = ???
 
     /*
      * сколько выпало чисел разных разрядов за все тиражи
@@ -105,11 +112,11 @@ class Metrics(runResults: Seq[RunResult])
     def figureDiapasonStatistics1: FigureDiapasonStatistics =
     {
         val runFigures = runResults.flatMap(_.result)
-        val diapson1 = runFigures.count(_ < 7)
-        val diapson2 = runFigures.count(f => f > 6 && f < 17)
-        val diapson3 = runFigures.count(f => f > 16 && f < 27)
-        val diapson4 = runFigures.count(f => f > 26 && f < 37)
-        FigureDiapasonStatistics(diapson1, diapson2, diapson3, diapson4)
+        val diapason1 = runFigures.count(_ < 7)
+        val diapason2 = runFigures.count(f => f > 6 && f < 17)
+        val diapason3 = runFigures.count(f => f > 16 && f < 27)
+        val diapason4 = runFigures.count(f => f > 26 && f < 37)
+        FigureDiapasonStatistics(diapason1, diapason2, diapason3, diapason4)
     }
 
     private def figureOrderStatistics(runResults: Seq[RunResult]): FigureOrderStatistics =
@@ -127,7 +134,7 @@ class Metrics(runResults: Seq[RunResult])
     {
         (for(pastWindow <- runResults.take(runResults.length - futureIntervalSize).zipWithIndex.sliding(pastIntervalSize)) yield
         {
-            val topIntervalFigures = figuresExtractor(pastWindow.map(_._1)).take(9)
+            val topIntervalFigures = figuresExtractor(pastWindow.map(_._1)).take(topFiguresCount)
             val last = pastWindow.last._2 + 1
             val futureRuns = runResults.drop(last).take(futureIntervalSize)
             val intersections = futureRuns.map(fr => fr.result.intersect(topIntervalFigures)).map(_.size)
