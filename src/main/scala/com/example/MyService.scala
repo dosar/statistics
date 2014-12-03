@@ -1,7 +1,7 @@
 package com.example
 
 import akka.actor.Actor
-import com.example.loto.{RunResults, LotoImporter}
+import com.example.loto.{Metrics, RunResults, LotoImporter}
 import com.example.loto.Metrics.{FigureDiapasonStatistics, FigureOrderFrequencyOneRun, FigureOrderStatistics}
 import spray.http.MediaTypes._
 import spray.json.{DefaultJsonProtocol, pimpAny}
@@ -25,44 +25,46 @@ class MyServiceActor extends Actor with MyService {
 // this trait defines our service behavior independently from the service actor
 trait MyService extends HttpService with DefaultJsonProtocol
 {
-  val pastWindow = 10
-  val futureWindow = 100
+  val pWindow = 10
+  val fWindow = 20
   implicit val figureOrderStatistics = jsonFormat4(FigureOrderStatistics)
   implicit val figureOrderFrequencyOneRun = jsonFormat4(FigureOrderFrequencyOneRun)
   implicit val figureDiapasonStatistics = jsonFormat4(FigureDiapasonStatistics)
 
-  import com.example.loto.Metrics._
+  val metrics = new Metrics(RunResults.runResults)
+  import metrics._
+
   val myRoute =
   {
     pathPrefix("web") {
-      getFromDirectory("/home/alex/work/statistics/src/main/resources/web/")
+      getFromDirectory("/home/alespuh/work/loto/src/main/resources/web/")
     } ~
     path("graphicdata") {
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData1(topFigures(RunResults.runResults).take(10).toArray,  RunResults.runResults)
+            val data = graficData1(topFigures.take(10).toArray)
             data.toArray.toJson.toString
           }
         }
       }
     } ~
-      (path("graphicdata1") & parameters('pW.as[Int], 'pF.as[Int])) { (pWindow, fWindow) =>
+    (path("graphicdata1") & parameters('pW.as[Int], 'pF.as[Int])) { (pWindow, fWindow) =>
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData2(pWindow, fWindow, RunResults.runResults).toArray
-            data.toArray.toJson.toString
+            val data = graficData2(pWindow, fWindow).toArray
+            data.map(_._2).toJson.toString
           }
         }
       }
     } ~
-      (path("graphicdata2") & parameters('pW.as[Int], 'pF.as[Int])) { (pWindow, fWindow) =>
+    (path("graphicdata2") & parameters('pW.as[Int], 'pF.as[Int])) { (pWindow, fWindow) =>
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData4(pWindow, fWindow, RunResults.runResults).toArray
-            data.toArray.toJson.toString
+            val data = graficData4(pWindow, fWindow).toArray
+            data.map(_._2).toJson.toString
           }
         }
       }
@@ -71,18 +73,12 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
+<<<<<<< HEAD
             val data = graficData4(pWindow, fWindow, RunResults.runResults).toArray
+=======
+            val data = graficData4(pWindow, fWindow).toArray
+>>>>>>> f_qtplot
             data.toArray.toJson.toString
-          }
-        }
-      }
-    } ~
-    path("graphicdata4") {
-      get {
-        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
-          complete {
-            val data = graficData6(RunResults.runResults).toArray
-            data.toJson.toString
           }
         }
       }
@@ -91,7 +87,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = figureOrderStatistics1(RunResults.runResults)
+            val data = figureOrderStatistics1
             data.toJson.toString
           }
         }
@@ -101,7 +97,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = figureOrderStatistics2(RunResults.runResults)
+            val data = figureOrderStatistics2
             data.toJson.toString
           }
         }
@@ -111,7 +107,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = figureDiapasonStatistics1(RunResults.runResults)
+            val data = figureDiapasonStatistics1
             data.toJson.toString
           }
         }
