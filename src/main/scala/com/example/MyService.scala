@@ -25,8 +25,8 @@ class MyServiceActor extends Actor with MyService {
 // this trait defines our service behavior independently from the service actor
 trait MyService extends HttpService with DefaultJsonProtocol
 {
-  val pastWindow = 10
-  val futureWindow = 20
+  val pWindow = 10
+  val fWindow = 20
   implicit val figureOrderStatistics = jsonFormat4(FigureOrderStatistics)
   implicit val figureOrderFrequencyOneRun = jsonFormat4(FigureOrderFrequencyOneRun)
   implicit val figureDiapasonStatistics = jsonFormat4(FigureDiapasonStatistics)
@@ -49,31 +49,31 @@ trait MyService extends HttpService with DefaultJsonProtocol
         }
       }
     } ~
-    path("graphicdata1") {
+    (path("graphicdata1") & parameters('pW.as[Int], 'pF.as[Int])) { (pWindow, fWindow) =>
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData2(pastWindow, futureWindow).toArray
+            val data = graficData2(pWindow, fWindow).toArray
             data.map(_._2).toJson.toString
           }
         }
       }
     } ~
-    path("graphicdata2") {
+    (path("graphicdata2") & parameters('pW.as[Int], 'pF.as[Int])) { (pWindow, fWindow) =>
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData4(pastWindow, futureWindow).toArray
+            val data = graficData4(pWindow, fWindow).toArray
             data.map(_._2).toJson.toString
           }
         }
       }
     } ~
-    path("graphicdata3") {
+    (path("graphicdata3") & parameters('pW.as[Int], 'pF.as[Int])) { (pWindow, fWindow) =>
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData4(pastWindow, futureWindow).toArray
+            val data = graficData4(pWindow, fWindow).toArray
             data.toArray.toJson.toString
           }
         }

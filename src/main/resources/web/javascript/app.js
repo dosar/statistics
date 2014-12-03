@@ -1,38 +1,56 @@
 /**
  * Created by alespuh on 26.11.14.
  */
-var lotoApp = angular.module('lotoApp', ["highcharts-ng"]);
+var lotoApp = angular.module('lotoApp', ['highcharts-ng', 'ui.chart']);
 
 lotoApp.controller('GraphicCtrl', function ($scope, $http){
 
-    $http.get("/graphicdata1").success(function(result){
-        jQuery.jqplot('chartdiv2', [result], {
-            title: "Топ / повторения по окнам"
-            //,series: [{renderer:jQuery.jqplot.BarRenderer}]
-        });
-    });
 
-    $http.get("/graphicdata2").success(function(result){
-        jQuery.jqplot('chartdiv3', [result], {
-            title: "топ невыпадающих чисел за несколько пред. тиражей и смотрим выпадают ли они в нескольких след. тиражах"
-            //,series: [{renderer:jQuery.jqplot.BarRenderer}]
-        });
-    });
+    $scope.windows =
+    {
+        graphic1: {pastWindow: 10, futureWindow: 10},
+        graphic2: {pastWindow: 10, futureWindow: 10},
+        graphic3: {pastWindow: 10, futureWindow: 10}
+    }
 
-    $http.get("/graphicdata3").success(function(result){
-        jQuery.jqplot('chartdiv4', [result], {
-            title: "топ наименее выпадающих чисел за несколько пред. тиражей и смотрим выпадают ли они в нескольких след. тиражах"
-            //,series: [{renderer:jQuery.jqplot.BarRenderer}]
-        });
-    });
 
-    //$http.get("/graphicdata4").success(function(result){
-    //    jQuery.jqplot('chartdiv5', [result], {
-    //        title: "сколько выпало чисел одного разряда для каждого тиража"
-    //        //,series: [{renderer:jQuery.jqplot.BarRenderer}]
-    //    });
-    //});
-    //
+    $scope.chart1 = function(){
+        $http.get("/graphicdata1?pW="+$scope.windows.graphic1.pastWindow+"&&pF="+$scope.windows.graphic1.futureWindow).success(function(result){
+            if(typeof $scope.chartConfig1.series !== 'undefined' && $scope.chartConfig1.series.length > 0)
+            {
+                $scope.chartConfig1.series = [];
+            }
+            $scope.chartConfig1.series.push({
+                data: result
+            });
+        });
+    };
+
+    $scope.chart2 = function(){
+        $http.get("/graphicdata2?pW="+$scope.windows.graphic2.pastWindow+"&&pF="+$scope.windows.graphic2.futureWindow).success(function(result){
+            if(typeof $scope.chartConfig2.series !== 'undefined' && $scope.chartConfig2.series.length > 0)
+            {
+                $scope.chartConfig2.series = [];
+            }
+            $scope.chartConfig2.series.push({
+                data: result
+            });
+        });
+    };
+
+    $scope.chart3 = function(){
+        $http.get("/graphicdata3?pW="+$scope.windows.graphic3.pastWindow+"&&pF="+$scope.windows.graphic3.futureWindow).success(function(result){
+            if(typeof $scope.chartConfig3.series !== 'undefined' && $scope.chartConfig3.series.length > 0)
+            {
+                $scope.chartConfig3.series = [];
+            }
+            $scope.chartConfig3.series.push({
+                data: result
+            });
+        });
+    };
+
+
     $http.get("/figureOrderStatistics1").success(function(result){
         jQuery('#figureOrderStatistics1').html(
             "<h3>Выпало разрядов</h3>" +
@@ -63,35 +81,90 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
         )
     });
 
-    /*
-        $http.get("/graphicdata").success(function(result){
-            $scope.graphicData = result;
-            result.forEach(function(elem, index){
-                $scope.chartConfig.series.push({name: "Run ".concat(index+1), data: elem})
-    //            $scope.chartConfig.series.push({name: "tirage2", data: elem})
-    //            $scope.chartConfig.series.push({name: "tirage3", data: elem})
-            });
-        });
+
+    $scope.chartConfig1 = {
+        options: {
+            chart: {
+                type: 'line',
+                width: 2000,
+                height: 500
+            }
+        },
+        xAxis : { categories: []}
+        ,
+        yAxis : { categories: []}
+        ,
+        series: [{data:  []}]
+        ,
+        title: {
+            text: 'Топ / повторения по окнам'
+        },
+
+        loading: false
+    }
+
+    $scope.chartConfig2 = {
+        options: {
+            chart: {
+                type: 'line',
+                width: 2000,
+                height: 500
+            }
+        },
+        xAxis : { categories: []}
+        ,
+        yAxis : { categories: []}
+        ,
+        series: [{data:  []}]
+        ,
+        title: {
+            text: 'Топ невыпадающих чисел за несколько пред. тиражей и смотрим выпадают ли они в нескольких след. тиражах'
+        },
+
+        loading: false
+    }
+
+    $scope.chartConfig3 = {
+        options: {
+            chart: {
+                type: 'line',
+                width: 2000,
+                height: 500
+            }
+        },
+        xAxis : { categories: []}
+        ,
+        yAxis : { categories: []}
+        ,
+        series: [{data:  []}]
+        ,
+        title: {
+            text: 'Топ наименее выпадающих чисел за несколько пред. тиражей и смотрим выпадают ли они в нескольких след. тиражах'
+        },
+
+        loading: false
+    }
+
+    $scope.chartConfig4 = {
+        options: {
+            chart: {
+                type: 'line',
+                width: 2000,
+                height: 500
+            }
+        },
+        xAxis : { categories: []}
+        ,
+        yAxis : { categories: []}
+        ,
+        series: [{data:  []}]
+        ,
+        title: {
+            text: 'Сколько выпало чисел одного разряда для каждого тиража'
+        },
+
+        loading: false
+    }
 
 
-        $scope.chartConfig = {
-            options: {
-                chart: {
-                    type: 'scatter'
-                }
-            },
-            xAxis : { categories: []}
-            ,
-            yAxis : { categories: []}
-            ,
-            series: []
-            ,
-            title: {
-                text: 'Hello'
-            },
-
-            loading: false
-        }
-
-        */
 });
