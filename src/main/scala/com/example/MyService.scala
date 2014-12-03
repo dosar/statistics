@@ -57,21 +57,21 @@ trait MyService extends HttpService with DefaultJsonProtocol
         }
       }
     } ~
-    path("graphicdata2") {
+      (path("graphicdata2") & parameters('pW.as[Int], 'pF.as[Int])) { (pWindow, fWindow) =>
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData4(pastWindow, futureWindow, RunResults.runResults).toArray
+            val data = graficData4(pWindow, fWindow, RunResults.runResults).toArray
             data.toArray.toJson.toString
           }
         }
       }
     } ~
-    path("graphicdata3") {
+    (path("graphicdata3") & parameters('pW.as[Int], 'pF.as[Int])) { (pWindow, fWindow) =>
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData4(pastWindow, futureWindow, RunResults.runResults).toArray
+            val data = graficData4(pWindow, fWindow, RunResults.runResults).toArray
             data.toArray.toJson.toString
           }
         }

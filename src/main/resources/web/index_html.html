@@ -44,30 +44,63 @@
 </nav>
 <div class="container" style="margin-top: 60px">
     <div ng-controller="GraphicCtrl" class="row">
+
+        <!--Топ повторения по окнам-->
         <div class="row" style="overflow-x: auto">
-            <highchart id="chart1" config="chartConfig"></highchart>
+            <highchart id="chart1" config="chartConfig1"></highchart>
         </div>
 
         <div class="row" style="margin-top: 20px">
             <div class=" form group col-xs-6">
                 <label for="pastWindow">Past window</label>
-                <input ng-model="pastWindow" type="range" min="1" max="300" id="pastWindow" ng-change="chartDiv2()"/>
-                <p>{{pastWindow}}</p>
+                <input ng-model="windows.graphic1.pastWindow" type="range" min="1" max="300" id="pastWindow" ng-change="setTimeout(chart1(), 2000)"/>
+                <p>{{windows.graphic1.pastWindow}}</p>
             </div>
             <div class=" form group col-xs-6">
                 <label for="futureWindow" class="">Future window</label>
-                <input ng-model="futureWindow" type="range" min="1" max="300" id="futureWindow" ng-change="chartDiv2()"/>
-                <p>{{futureWindow}}</p>
+                <input ng-model="windows.graphic1.futureWindow" type="range" min="1" max="300" id="futureWindow" ng-change="setTimeout(chart1(), 2000)"/>
+                <p>{{windows.graphic1.futureWindow}}</p>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12" style="overflow-x: auto">
-                <div id="chartdiv2" style="height:400px; width:2000px; "></div>
+        <!---->
+        <!--Топ невыпадающих чисел за несколько пред. тиражей и смотрим выпадают ли они в нескольких след. тиражах-->
+        <div class="row" style="overflow-x: auto">
+            <highchart id="chart2" config="chartConfig2"></highchart>
+        </div>
+        <div class="row" style="margin-top: 20px">
+            <div class=" form group col-xs-6">
+                <label for="pastWindow2">Past window</label>
+                <input ng-model="windows.graphic2.pastWindow" type="range" min="1" max="300" id="pastWindow2" ng-change="setTimeout(chart2(), 2000)"/>
+                <p>{{windows.graphic2.pastWindow}}</p>
+            </div>
+            <div class=" form group col-xs-6">
+                <label for="futureWindow2" class="">Future window</label>
+                <input ng-model="windows.graphic2.futureWindow" type="range" min="1" max="300" id="futureWindow2" ng-change="setTimeout(chart2(), 2000)"/>
+                <p>{{windows.graphic2.futureWindow}}</p>
             </div>
         </div>
-        <div id="chartdiv3" style="height:600px; width:2000px; margin-top: 50px "></div>
-        <div id="chartdiv4" style="height:600px; width:2000px; "></div>
-        <div id="chartdiv5" style="height:600px; width:2000px; "></div>
+        <!---->
+        <!--Топ наименее выпадающих чисел за несколько пред. тиражей и смотрим выпадают ли они в нескольких след. тиражах-->
+        <div class="row" style="overflow-x: auto">
+            <highchart id="chart3" config="chartConfig3"></highchart>
+        </div>
+        <div class="row" style="margin-top: 20px">
+            <div class=" form group col-xs-6">
+                <label for="pastWindow3">Past window</label>
+                <input ng-model="windows.graphic3.pastWindow" type="range" min="1" max="300" id="pastWindow3" ng-change="setTimeout(chart3(), 2000)"/>
+                <p>{{windows.graphic3.pastWindow}}</p>
+            </div>
+            <div class=" form group col-xs-6">
+                <label for="futureWindow3" class="">Future window</label>
+                <input ng-model="windows.graphic3.futureWindow" type="range" min="1" max="300" id="futureWindow3" ng-change="setTimeout(chart3(), 2000)"/>
+                <p>{{windows.graphic3.futureWindow}}</p>
+            </div>
+        </div>
+        <!--Сколько выпало чисел одного разряда для каждого тиража-->
+        <div class="row" style="overflow-x: auto">
+            <highchart id="chart4" config="chartConfig4"></highchart>
+        </div>
+        <!---->
         <div id="figureOrderStatistics1"></div>
         <div id="figureOrderStatistics2"></div>
         <div id="figureDiapasonStatistics"></div>
