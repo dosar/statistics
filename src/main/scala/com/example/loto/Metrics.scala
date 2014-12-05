@@ -7,7 +7,7 @@ import java.util.Date
 import com.orientechnologies.orient.core.record.impl.ODocument
 
 import scala.collection.JavaConversions._
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 object Metrics
 {
@@ -30,13 +30,14 @@ class Metrics(runResults: Seq[RunResult], topFiguresCount: Int = 9)
     import Metrics._
 
     type Figure = Int
+    type HitCount = Int
 
     def topFigures: Seq[Figure] =
         figuresOccurencies(runResults).toList.sortBy(_._2).map(_._1)
 
     def allFigureOccurencies = figuresOccurencies(runResults)
 
-    def figuresOccurencies(rrs: Seq[RunResult]): Map[Int, Int] =
+    def figuresOccurencies(rrs: Seq[RunResult]) =
     {
         val results = (1 to 36).map(_ -> 0).toMap
 
@@ -57,10 +58,30 @@ class Metrics(runResults: Seq[RunResult], topFiguresCount: Int = 9)
     /*
     * берем топ популярных чисел и смотрим сколько из них повторяется в тиражах по окнам
     * */
-    def graficData2(topIntervalSize: Int, testIntervalSize: Int) = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
-    { rrs =>
+    def graficData2(topIntervalSize: Int, testIntervalSize: Int) =
+        pastWindowToFutureWindow(topIntervalSize, testIntervalSize)(topNonZeroFigures)
+
+    def topNonZeroFigures(rrs: Seq[RunResult]) =
+    {
         val sorted = figuresOccurencies(rrs).filter(_._2 > 0).toSeq.sortBy(- _._2)
-        sorted.map(_._1)
+        sorted.map(_._1).take(topFiguresCount)
+    }
+
+    def topNonZeroFiguresWithoutPrevious(betCandidate: Map[Figure, HitCount], index: Int) =
+    {
+        val previous = runResults(index - 1).result
+        val buffer = ArrayBuffer[(Figure, HitCount)]()
+        var fi = 1
+        while(fi <= 36)
+        {
+            val hitCount = betCandidate(fi)
+            val previousContainsFi =
+                fi == previous(0) || fi == previous(1) || fi == previous(2) || fi == previous(3) || fi == previous(4)
+            if(!previousContainsFi && hitCount != 0)
+                buffer += ((fi, hitCount))
+            fi += 1
+        }
+        buffer.sortBy(- _._2).map(_._1).take(topFiguresCount)
     }
 
     /*
@@ -89,7 +110,67 @@ class Metrics(runResults: Seq[RunResult], topFiguresCount: Int = 9)
     * */
     def graphicData6(intervalSize: Int) = ???
 
-    def strategy1(pastWindow: Int, skipWindow: Int, betWindow: Int) = ???
+    def figureIntersectionStatistics =
+    {
+        val intersections = for((p, f) <- runResults.zip(runResults.drop(1))) yield
+            p.result.intersect(f.result).size
+        intersections.groupBy(x => x)
+            .map{ case (intersectionSize, intersections) => (intersectionSize, intersections.size) }
+            .toArray
+    }
+
+    type MaxIntersection = Int
+    type MaxIntersectionCount = Int
+    def strategy1(pastWindow: Int, skipWindow: Int, betWindow: Int)(f: Seq[RunResult] => Seq[Figure]) =
+    {
+        val startIndex = pastWindow
+        val sliceSize = skipWindow + betWindow
+        var index = startIndex
+        val buffer = ArrayBuffer[(Seq[Figure], (MaxIntersection, MaxIntersectionCount))]()
+        while (index <= runResults.length - sliceSize)
+        {
+            val pastRrs = runResults.slice(index - pastWindow, index)
+            val bet = f(pastRrs)
+            val futureRrs = runResults.slice(index + skipWindow, index + sliceSize)
+            val intersections = futureRrs.map(fr => fr.result.intersect(bet)).map(_.size)
+            buffer += ((
+                bet,
+                {
+                    val max = intersections.max
+                    if(max == 0) (0, 0) else (max, intersections.count(_ == max))
+                }))
+            index += sliceSize
+        }
+        buffer
+    }
+
+    type Index = Int
+    def strategy2(pastWindow: Int, skipWindow: Int, betWindow: Int)(extractor: Seq[RunResult] => Map[Figure, HitCount])(
+        betGenerator: (Map[Figure, HitCount], Index) => Seq[Figure]) =
+    {
+        val startIndex = pastWindow
+        val sliceSize = skipWindow + betWindow
+        var index = startIndex
+        val buffer = ArrayBuffer[(Seq[Figure], (MaxIntersection, MaxIntersectionCount))]()
+        val runResultsWithIndex: Seq[(RunResult, Int)] = runResults.zipWithIndex
+        while (index <= runResults.length - sliceSize)
+        {
+            val pastRrs = runResults.slice(index - pastWindow, index)
+            val betCandidate = extractor(pastRrs)
+            val futureRrs = runResultsWithIndex.slice(index + skipWindow, index + sliceSize)
+            val intersections = futureRrs
+                .map{case (fr, index) => fr.result.intersect(betGenerator(betCandidate, index))}
+                .map(_.size)
+            buffer += ((
+                betCandidate.map(_._1).toSeq,
+                {
+                    val max = intersections.max
+                    if(max == 0) (0, 0) else (max, intersections.count(_ == max))
+                }))
+            index += sliceSize
+        }
+        buffer
+    }
 
     /*
      * сколько выпало чисел разных разрядов за все тиражи

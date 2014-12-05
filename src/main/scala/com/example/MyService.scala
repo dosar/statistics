@@ -79,6 +79,16 @@ trait MyService extends HttpService with DefaultJsonProtocol
         }
       }
     } ~
+    (path("graphicdata4") & parameters('pW.as[Int], 'sF.as[Int], 'pF.as[Int])) { (pWindow, skipWindow, fWindow) =>
+      get {
+        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
+          complete {
+            val data = strategy1(pWindow, skipWindow, fWindow)(topNonZeroFigures).map(_._2)
+            data.toArray.toJson.toString
+          }
+        }
+      }
+    } ~
     path("figureOrderStatistics1") {
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
@@ -105,6 +115,15 @@ trait MyService extends HttpService with DefaultJsonProtocol
           complete {
             val data = figureDiapasonStatistics1
             data.toJson.toString
+          }
+        }
+      }
+    } ~
+    path("figureIntersectionStatistics") {
+      get {
+        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
+          complete {
+            figureIntersectionStatistics.toJson.toString
           }
         }
       }

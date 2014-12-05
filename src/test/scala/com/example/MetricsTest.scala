@@ -76,31 +76,54 @@ class MetricsTest extends FunSuite
 
     test("strategy1 3, 0, 2")
     {
-        check(new Metrics(Seq(
+        val metrics: Metrics = new Metrics(Seq(
             (1, 2, 3, 4, 5),
             (6, 7, 8, 9, 10),
             (6, 7, 8, 9, 10),
             (12, 11, 1, 5, 3),
             (12, 13, 14, 15, 16),
             (20, 13, 11, 9, 35)
-        ), 5).strategy1(3, 0, 2), Seq((Seq(6, 7, 8, 9, 10), 0)))
+        ), 5)
+        check(metrics.strategy1(3, 0, 2)(metrics.topNonZeroFigures), Seq((Seq(6, 7, 8, 9, 10), (0, 0))))
     }
 
-    test("strategy1 3, 0, 2")
+    test("strategy1 2, 0, 2")
     {
-        check(new Metrics(Seq(
+        val metrics: Metrics = new Metrics(Seq(
             (6, 7, 8, 9, 10),
             (6, 7, 8, 9, 10),
             (1, 2, 3, 4, 5),
             (6, 7, 1, 5, 3),
             (12, 13, 14, 15, 16),
             (20, 13, 11, 9, 35)
-        ), 5).strategy1(2, 0, 2), Seq((Seq(6, 7, 8, 9, 10), 2), (Seq(1, 3, 2, 4, 5), 0)))
+        ), 5)
+        check(metrics.strategy1(2, 0, 2)(metrics.topNonZeroFigures), Seq((Seq(6, 7, 8, 9, 10), (2, 1)), (Seq(5, 1, 6, 2, 3), (0, 0))))
     }
 
-    private def check(left: Seq[(Seq[Int], Int)], right: Seq[(Seq[Int], Int)]) =
+    test("strategy1 2, 1, 2")
     {
-        def toUnordered(seq: Seq[(Seq[Int], Int)]) = seq.map{case (innerSeq, count) => (innerSeq.toSet, count)}
+        val metrics: Metrics = new Metrics(Seq(
+            (6, 7, 8, 9, 10),
+            (6, 7, 8, 9, 10),
+            (1, 2, 3, 4, 5),
+            (6, 7, 1, 5, 3),
+            (6, 7, 1, 15, 16),
+            (20, 13, 1, 5, 3),
+            (12, 13, 14, 15, 16),
+            (1, 2, 3, 4, 5)
+        ), 5)
+        check(metrics.strategy1(2, 1, 2)(metrics.topNonZeroFigures), Seq((Seq(6, 7, 8, 9, 10), (2, 2)), (Seq(5, 1, 6, 7, 3), (3, 1))))
+    }
+
+    test("topNonZeroFiguresWithoutPrevious")
+    {
+        val metrics: Metrics = new Metrics(Seq((6, 7, 8, 9, 10)), 5)
+        assert(metrics.topNonZeroFiguresWithoutPrevious(Map(6 -> 2, 3 -> 1, 10 -> 1), 1) === List(3))
+    }
+
+    private def check[T](left: Seq[(Seq[Int], T)], right: Seq[(Seq[Int], T)]) =
+    {
+        def toUnordered(seq: Seq[(Seq[Int], T)]) = seq.map{case (innerSeq, count) => (innerSeq.toSet, count)}
         assert(toUnordered(left) === toUnordered(right))
     }
 

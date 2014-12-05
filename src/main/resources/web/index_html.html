@@ -96,14 +96,37 @@
                 <p>{{windows.graphic3.futureWindow}}</p>
             </div>
         </div>
-        <!--Сколько выпало чисел одного разряда для каждого тиража-->
+        <!--Стратегия 1-->
         <div class="row" style="overflow-x: auto">
             <highchart id="chart4" config="chartConfig4"></highchart>
         </div>
-        <!---->
+        <div class="row" style="margin-top: 20px">
+            <div class=" form group col-xs-4">
+                <label for="pastWindow4">Past window</label>
+                <input ng-model="windows.graphic4.pastWindow" type="range" min="1" max="300" id="pastWindow4" ng-change="setTimeout(chart4(), 2000)"/>
+                <p>{{windows.graphic4.pastWindow}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="skipWindow4" class="">Skip window</label>
+                <input ng-model="windows.graphic4.skipWindow" type="range" min="0" max="300" id="skipWindow4" ng-change="setTimeout(chart4(), 2000)"/>
+                <p>{{windows.graphic4.skipWindow}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="futureWindow4" class="">Future window</label>
+                <input ng-model="windows.graphic4.futureWindow" type="range" min="1" max="300" id="futureWindow4" ng-change="setTimeout(chart4(), 2000)"/>
+                <p>{{windows.graphic4.futureWindow}}</p>
+            </div>
+        </div>
+
+        <!--Стратегия 1-->
+        <div class="row" style="overflow-x: auto">
+            <highchart id="chart5" config="chartConfig5"></highchart>
+        </div>
+
         <div id="figureOrderStatistics1"></div>
         <div id="figureOrderStatistics2"></div>
         <div id="figureDiapasonStatistics"></div>
+        <div id="figureIntersectionStatistics"></div>
     </div>
 </div>
 </body>

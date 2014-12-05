@@ -10,7 +10,8 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
     {
         graphic1: {pastWindow: 10, futureWindow: 10},
         graphic2: {pastWindow: 10, futureWindow: 10},
-        graphic3: {pastWindow: 10, futureWindow: 10}
+        graphic3: {pastWindow: 10, futureWindow: 10},
+        graphic4: {pastWindow: 10, skipWindow: 0, futureWindow: 10}
     }
 
 
@@ -50,6 +51,31 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
         });
     };
 
+    $scope.chart4 = function(){
+        $http.get("/graphicdata4?pW="+$scope.windows.graphic4.pastWindow+"&&sF="+$scope.windows.graphic4.skipWindow+"&&pF="+$scope.windows.graphic4.futureWindow).success(function(result){
+            if(typeof $scope.chartConfig4.series !== 'undefined' && $scope.chartConfig4.series.length > 0){
+                $scope.chartConfig4.series = [];
+            }
+            $scope.chartConfig4.series.push({
+                data: jQuery.map(result, function(elem){
+                    return elem[0];
+                })
+            });
+            $scope.chartConfig4.series.push({
+                data: jQuery.map(result, function(elem){
+                    return elem[1];
+                })
+            });
+        });
+    };
+
+
+    //$http.get("/graphicdata5").success(function (result) {
+    //    $scope.chartConfig5.series.push({
+    //        data: result
+    //    });
+    //});
+
 
     $http.get("/figureOrderStatistics1").success(function(result){
         jQuery('#figureOrderStatistics1').html(
@@ -81,13 +107,23 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
         )
     });
 
+    $http.get("/figureIntersectionStatistics").success(function(result){
+        jQuery('#figureIntersectionStatistics').html(
+            "<h3>Пересечений соседних тиражей</h3>" +
+            "<div>" + result[0][0] + " - " + result[0][1] + "</div>" +
+            "<div>" + result[1][0] + " - " + result[1][1] + "</div>" +
+            "<div>" + result[2][0] + " - " + result[2][1] + "</div>" +
+            "<div>" + result[3][0] + " - " + result[3][1] + "</div>" +
+            "<div>" + result[4][0] + " - " + result[4][1] + "</div>"
+        )
+    });
 
     $scope.chartConfig1 = {
         options: {
             chart: {
-                type: 'line',
-                width: 2000,
-                height: 500
+                type: 'line'
+                //width: 2000,
+                //height: 500
             }
         },
         xAxis : { categories: []}
@@ -106,9 +142,9 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
     $scope.chartConfig2 = {
         options: {
             chart: {
-                type: 'line',
-                width: 2000,
-                height: 500
+                type: 'line'
+                //width: 2000,
+                //height: 500
             }
         },
         xAxis : { categories: []}
@@ -127,9 +163,9 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
     $scope.chartConfig3 = {
         options: {
             chart: {
-                type: 'line',
-                width: 2000,
-                height: 500
+                type: 'line'
+                //width: 2000,
+                //height: 500
             }
         },
         xAxis : { categories: []}
@@ -148,9 +184,9 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
     $scope.chartConfig4 = {
         options: {
             chart: {
-                type: 'line',
-                width: 2000,
-                height: 500
+                type: 'line'
+                //width: 2000,
+                //height: 500
             }
         },
         xAxis : { categories: []}
@@ -160,11 +196,31 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
         series: [{data:  []}]
         ,
         title: {
-            text: 'Сколько выпало чисел одного разряда для каждого тиража'
+            text: 'Стратегия 1'
         },
 
         loading: false
     }
 
+    $scope.chartConfig5 = {
+        options: {
+            chart: {
+                type: 'line'
+                //width: 2000,
+                //height: 500
+            }
+        },
+        xAxis : { categories: []}
+        ,
+        yAxis : { categories: []}
+        ,
+        series: [{data:  []}]
+        ,
+        title: {
+            text: 'Пересечение соседних тиражей'
+        },
 
+        loading: false
+    }
 });
+
