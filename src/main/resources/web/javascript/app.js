@@ -11,7 +11,8 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
         graphic1: {pastWindow: 10, futureWindow: 10},
         graphic2: {pastWindow: 10, futureWindow: 10},
         graphic3: {pastWindow: 10, futureWindow: 10},
-        graphic4: {pastWindow: 10, skipWindow: 0, futureWindow: 10}
+        graphic4: {pastWindow: 10, skipWindow: 0, futureWindow: 10},
+        graphic5: {pastWindow: 10, skipWindow: 0, futureWindow: 10}
     }
 
 
@@ -70,11 +71,23 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
     };
 
 
-    //$http.get("/graphicdata5").success(function (result) {
-    //    $scope.chartConfig5.series.push({
-    //        data: result
-    //    });
-    //});
+    $scope.chart5 = function(){
+        $http.get("/graphicdata5?pW="+$scope.windows.graphic5.pastWindow+"&&sF="+$scope.windows.graphic5.skipWindow+"&&pF="+$scope.windows.graphic5.futureWindow).success(function(result){
+            if(typeof $scope.chartConfig5.series !== 'undefined' && $scope.chartConfig5.series.length > 0){
+                $scope.chartConfig5.series = [];
+            }
+            $scope.chartConfig5.series.push({
+                data: jQuery.map(result, function(elem){
+                    return elem[0];
+                })
+            });
+            $scope.chartConfig5.series.push({
+                data: jQuery.map(result, function(elem){
+                    return elem[1];
+                })
+            });
+        });
+    };
 
 
     $http.get("/figureOrderStatistics1").success(function(result){
@@ -217,7 +230,7 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
         series: [{data:  []}]
         ,
         title: {
-            text: 'Пересечение соседних тиражей'
+            text: 'Стратегия 1 без непопулярных чисел'
         },
 
         loading: false

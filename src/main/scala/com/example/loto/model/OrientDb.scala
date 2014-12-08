@@ -1,4 +1,4 @@
-package com.example.loto
+package com.example.loto.model
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
 

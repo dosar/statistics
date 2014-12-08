@@ -1,13 +1,10 @@
 package com.example
 
-import java.util.Date
-
 import com.example.loto.{Metrics, RunResult}
-import org.scalatest._
 
-class MetricsTest extends FunSuite
+class MetricsTest extends TestBase
 {
-    val runResults = Seq(
+    val runResults = Vector(
         RunResult("2189", "30.11.2014 23:59", "15  25  12  26  3"),
         RunResult("2188", "30.11.2014 11:59", "7  13  1  27  14"),
         RunResult("2187", "30.11.2014 23:59", "15  25  12  26  3"),
@@ -30,41 +27,34 @@ class MetricsTest extends FunSuite
         RunResult("2170", "22.11.2014 11:59", "9  4  20  11  3")
     )
 
-    implicit def rr(result: (Int, Int, Int, Int, Int)) =
-        RunResult(0, new Date(), result.productIterator.map(_.asInstanceOf[Int]).toArray)
-
     test("figuresOccurences 1, 2 input elements")
     {
-        val firstTenFO = Map(5 -> 1, 10 -> 1, 24 -> 0, 25 -> 1, 14 -> 1,
-            20 -> 1, 29 -> 1, 1 -> 1, 6 -> 0, 28 -> 1, 21 -> 1, 33 -> 1, 9 -> 1, 13 -> 1, 2 -> 1, 32 -> 1, 34 -> 1,
-            17 -> 0, 22 -> 1, 27 -> 1, 12 -> 1, 7 -> 1, 3 -> 1, 35 -> 1, 18 -> 1, 16 -> 0, 31 -> 0, 11 -> 0, 26 -> 1,
-            23 -> 0, 8 -> 0, 36 -> 1, 30 -> 1, 19 -> 1, 4 -> 0, 15 -> 1)
-        val firstFO = (1 to 36).map((_, 0)).toMap.updated(15, 1).updated(25, 1).updated(12, 1).updated(26, 1).updated(3, 1)
+        val firstFO = (1 to 36).map(_ -> 0).toMap ++ Map(15 -> 1, 25 -> 1, 12 -> 1, 26 -> 1, 3 -> 1)
         assert(new Metrics(runResults.take(1)).allFigureOccurencies === firstFO)
         val secondFO = firstFO.updated(15, 2).updated(25, 2).updated(12, 2).updated(26, 2).updated(3, 2)
-        assert(new Metrics(Seq(runResults(0), runResults(2))).allFigureOccurencies === secondFO)
+        assert(new Metrics(Vector(runResults(0), runResults(2))).allFigureOccurencies === secondFO)
     }
 
     test("graficData2 past interval 3 future interval 2 takeCount 5")
     {
-        check(new Metrics(runResults.take(6), 5).graficData2(3, 2), Seq((Seq(15, 25, 12, 26, 3), 0), (Seq(14, 25, 29, 1, 28), 1)))
+        check(new Metrics(runResults.take(6), 5).graficData2(3, 2), Vector((Seq(15, 25, 12, 26, 3), 0), (Seq(14, 29, 28, 34, 27), 1)))
     }
 
     test("graficData4 3 2")
     {
-        check(new Metrics(Seq(
+        check(new Metrics(Vector(
             (1, 2, 3, 4, 5),
             (2, 6, 7, 8, 9),
             (1, 3, 5, 7, 9),
             (10, 11, 1, 2, 3),
             (12, 13, 14, 15, 16),
             (20, 13, 11, 9, 35)
-        ), 5).graficData4(3, 2), Seq((Seq(10, 24, 25, 14, 20), 1), (Seq(24, 25, 14, 20, 29), 1)))
+        ), 5).graficData4(3, 2), Seq((Seq(32, 17, 35, 26, 23),0), (Seq(32, 17, 35, 26, 23),1)))
     }
 
     test("graficData5 3 2")
     {
-        check(new Metrics(Seq(
+        check(new Metrics(Vector(
             (1, 2, 3, 4, 5),
             (6, 7, 8, 9, 10),
             (6, 7, 8, 9, 10),
@@ -74,57 +64,17 @@ class MetricsTest extends FunSuite
         ), 5).graficData5(3, 2), Seq((Seq(1, 2, 3, 4, 5), 3), (Seq(12, 11, 1, 5, 3), 1)))
     }
 
-    test("strategy1 3, 0, 2")
-    {
-        val metrics: Metrics = new Metrics(Seq(
-            (1, 2, 3, 4, 5),
-            (6, 7, 8, 9, 10),
-            (6, 7, 8, 9, 10),
-            (12, 11, 1, 5, 3),
-            (12, 13, 14, 15, 16),
-            (20, 13, 11, 9, 35)
-        ), 5)
-        check(metrics.strategy1(3, 0, 2)(metrics.topNonZeroFigures), Seq((Seq(6, 7, 8, 9, 10), (0, 0))))
-    }
-
-    test("strategy1 2, 0, 2")
-    {
-        val metrics: Metrics = new Metrics(Seq(
-            (6, 7, 8, 9, 10),
-            (6, 7, 8, 9, 10),
-            (1, 2, 3, 4, 5),
-            (6, 7, 1, 5, 3),
-            (12, 13, 14, 15, 16),
-            (20, 13, 11, 9, 35)
-        ), 5)
-        check(metrics.strategy1(2, 0, 2)(metrics.topNonZeroFigures), Seq((Seq(6, 7, 8, 9, 10), (2, 1)), (Seq(5, 1, 6, 2, 3), (0, 0))))
-    }
-
-    test("strategy1 2, 1, 2")
-    {
-        val metrics: Metrics = new Metrics(Seq(
-            (6, 7, 8, 9, 10),
-            (6, 7, 8, 9, 10),
-            (1, 2, 3, 4, 5),
-            (6, 7, 1, 5, 3),
-            (6, 7, 1, 15, 16),
-            (20, 13, 1, 5, 3),
-            (12, 13, 14, 15, 16),
-            (1, 2, 3, 4, 5)
-        ), 5)
-        check(metrics.strategy1(2, 1, 2)(metrics.topNonZeroFigures), Seq((Seq(6, 7, 8, 9, 10), (2, 2)), (Seq(5, 1, 6, 7, 3), (3, 1))))
-    }
-
     test("topNonZeroFiguresWithoutPrevious")
     {
-        val metrics: Metrics = new Metrics(Seq((6, 7, 8, 9, 10)), 5)
-        assert(metrics.topNonZeroFiguresWithoutPrevious(Map(6 -> 2, 3 -> 1, 10 -> 1), 1) === List(3))
+        val metrics: Metrics = new Metrics(Vector((6, 7, 8, 9, 10)), 5)
+        assert(metrics.topNonZeroFiguresWithoutPrevious(Array(6 -> 2, 3 -> 1, 2 -> 1, 10 -> 1), 1) === Array(3, 2, 0, 0, 0))
     }
 
-    private def check[T](left: Seq[(Seq[Int], T)], right: Seq[(Seq[Int], T)]) =
+    test("getIntersections")
     {
-        def toUnordered(seq: Seq[(Seq[Int], T)]) = seq.map{case (innerSeq, count) => (innerSeq.toSet, count)}
-        assert(toUnordered(left) === toUnordered(right))
+        val metrics: Metrics = new Metrics(Vector((6, 7, 8, 9, 10)), 5)
+        assert(metrics.getIntersections(Vector((rr(6, 3, 2, 10, 1), 1)),
+            Array(6 -> 2, 3 -> 1, 2 -> 1, 10 -> 1))(metrics.topNonZeroFiguresWithoutPrevious) === (2, 1))
     }
 
     val figures = Map(5 -> 1, 10 -> 1, 25 -> 1, 14 -> 1, 20 -> 1, 29 -> 1, 1 -> 1, 28 -> 1, 21 -> 1, 33 -> 1, 9 -> 1,

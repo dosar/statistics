@@ -118,9 +118,26 @@
             </div>
         </div>
 
-        <!--Стратегия 1-->
+        <!--Стратегия 1 без непопулярных чисел-->
         <div class="row" style="overflow-x: auto">
             <highchart id="chart5" config="chartConfig5"></highchart>
+        </div>
+        <div class="row" style="margin-top: 20px">
+            <div class=" form group col-xs-4">
+                <label for="pastWindow5">Past window</label>
+                <input ng-model="windows.graphic5.pastWindow" type="range" min="1" max="300" id="pastWindow5" ng-change="setTimeout(chart5(), 2000)"/>
+                <p>{{windows.graphic5.pastWindow}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="skipWindow5" class="">Skip window</label>
+                <input ng-model="windows.graphic5.skipWindow" type="range" min="0" max="300" id="skipWindow5" ng-change="setTimeout(chart5(), 2000)"/>
+                <p>{{windows.graphic5.skipWindow}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="futureWindow5" class="">Future window</label>
+                <input ng-model="windows.graphic5.futureWindow" type="range" min="1" max="300" id="futureWindow5" ng-change="setTimeout(chart5(), 2000)"/>
+                <p>{{windows.graphic5.futureWindow}}</p>
+            </div>
         </div>
 
         <div id="figureOrderStatistics1"></div>

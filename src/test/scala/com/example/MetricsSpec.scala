@@ -16,7 +16,7 @@ class MetricsSpec extends FlatSpec with Matchers with TestHelper
     val initialSeq = (1 to 15).toSeq
     val arrays = genSeqs(1, 5, initialSeq).map(_.toArray)
     val runResults = ListBuffer[RunResult]()
-    val metrics = new Metrics(runResults)
+    val metrics = new Metrics(runResults.toVector)
     arrays.zipWithIndex.map(el => RunResult(el._2, new Date(), el._1 )).foreach(runResults += _)
 
     "figuresOccurences" should "produce the correct result" in
