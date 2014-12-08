@@ -2,7 +2,7 @@ package com.example
 
 import java.util.Date
 
-import com.example.loto.RunResult
+import com.example.loto.model.RunResult
 import org.scalatest._
 
 trait TestBase extends FunSuite

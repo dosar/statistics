@@ -1,8 +1,8 @@
 package com.example
 
 import akka.actor.Actor
-import com.example.loto.{Metrics, RunResults, LotoImporter}
-import com.example.loto.Metrics.{FigureDiapasonStatistics, FigureOrderFrequencyOneRun, FigureOrderStatistics}
+import com.example.loto.model.RunResults
+import com.example.loto._
 import spray.http.MediaTypes._
 import spray.json.{DefaultJsonProtocol, pimpAny}
 import spray.routing._
@@ -31,8 +31,10 @@ trait MyService extends HttpService with DefaultJsonProtocol
   implicit val figureOrderFrequencyOneRun = jsonFormat4(FigureOrderFrequencyOneRun)
   implicit val figureDiapasonStatistics = jsonFormat4(FigureDiapasonStatistics)
 
-  val metrics = new Metrics(RunResults.runResults)
+  val metrics = new Metrics()
+  val simpleGraphics = new SimpleGraphics(RunResults.runResults)
   import metrics._
+  import simpleGraphics._
 
   val myRoute =
   {
@@ -83,7 +85,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = strategy1(pWindow, skipWindow, fWindow)(topNonZeroFigures).map(_._2)
+            val data = new Strategy1(RunResults.runResults).withTopNonZeroFigures(pWindow, skipWindow, fWindow).map(_._2)
             data.toArray.toJson.toString
           }
         }
@@ -93,7 +95,19 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = strategy1(pWindow, skipWindow, fWindow)(topNonZeroFiguresWithoutNotPopular).map(_._2)
+            val data = new Strategy1(RunResults.runResults)
+                .withTopNonZeroFiguresWithoutNotPopular(pWindow, skipWindow, fWindow).map(_._2)
+            data.toArray.toJson.toString
+          }
+        }
+      }
+    } ~
+    (path("graphicdata6") & parameters('pW.as[Int], 'sF.as[Int], 'pF.as[Int])) { (pWindow, skipWindow, fWindow) =>
+      get {
+        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
+          complete {
+            val data = new Strategy3(RunResults.runResults, 12)
+                .withTopNonZeroFiguresWithoutNotPopular(pWindow, skipWindow, fWindow).map(_._2)
             data.toArray.toJson.toString
           }
         }
@@ -103,7 +117,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = figureOrderStatistics1
+            val data = figureOrderStatistics1(RunResults.runResults)
             data.toJson.toString
           }
         }
@@ -113,7 +127,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = figureOrderStatistics2
+            val data = figureOrderStatistics2(RunResults.runResults)
             data.toJson.toString
           }
         }
@@ -123,7 +137,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = figureDiapasonStatistics1
+            val data = figureDiapasonStatistics1(RunResults.runResults)
             data.toJson.toString
           }
         }
@@ -133,7 +147,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            figureIntersectionStatistics.toJson.toString
+            figureIntersectionStatistics(RunResults.runResults).toJson.toString
           }
         }
       }

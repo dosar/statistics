@@ -1,6 +1,7 @@
 package com.example
 
-import com.example.loto.{Metrics, RunResult, RunResults, SimpleParallelSort}
+import com.example.loto.model.{RunResult, RunResults}
+import com.example.loto.{Strategy3, SimpleParallelSort, Strategy1, Strategy2}
 import org.scalatest.FunSuite
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -8,8 +9,13 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class MetricsOptimization extends FunSuite
+class StrategiesOptimization extends FunSuite
 {
+    test("optimize strategy3 without non popular figures")
+    {
+        testStrategy3((s, rrs) => s.topNonZeroFiguresWithoutNotPopular(rrs))
+    }
+
     test("optimize strategy2")
     {
         testStrategy2((m, rrs) => m.figuresOccurencies(rrs).toArray.sortBy(- _._2))
@@ -30,12 +36,18 @@ class MetricsOptimization extends FunSuite
         testStrategy1((m, rrs) => m.topNonZeroFiguresWithoutNotPopular(rrs))
     }
 
-    def testStrategy2(extractor: (Metrics, Seq[RunResult]) => Array[(Int, Int)]): Unit =
+    def testStrategy1(betGenerator: (Strategy1, Seq[RunResult]) => Array[Int]): Unit =
+        testStrategy(new Strategy1(RunResults.runResults), betGenerator)
+
+    def testStrategy3(betGenerator: (Strategy3, Seq[RunResult]) => Array[Int]): Unit =
+        testStrategy(new Strategy3(RunResults.runResults, 6), betGenerator)
+
+    def testStrategy2(extractor: (Strategy2, Seq[RunResult]) => Array[(Int, Int)]): Unit =
     {
-        val metrics = new Metrics(RunResults.runResults)
+        val strategy = new Strategy2(RunResults.runResults)
 
         def figuresOccurencies(rrs: Seq[RunResult]) =
-            metrics.figuresOccurencies(rrs).toArray.sortBy(- _._2)
+            strategy.figuresOccurencies(rrs).toArray.sortBy(- _._2)
 
         val pRange = 1 to 300
         val sRange = 0 to 300
@@ -43,16 +55,21 @@ class MetricsOptimization extends FunSuite
         val results = for(pw <- pRange.par; sw <- sRange.par; fw <- fRange.par) yield
         {
             if(pw % 10 == 0 && sw == 0 && fw == 1) println("+")
-            val result = metrics.strategy2(pw, sw, fw)(rrs => extractor(metrics, rrs))(metrics.topNonZeroFiguresWithoutPrevious)
+            val result = strategy.strategy2(pw, sw, fw)(rrs => extractor(strategy, rrs))(strategy.topNonZeroFiguresWithoutPrevious)
             (pw, sw, fw, result.count(_._2._1 == 5))
         }
 
         results.toList.sortBy(- _._4).take(200) foreach println
     }
 
-    def testStrategy1(betGenerator: (Metrics, Seq[RunResult]) => Array[Int]): Unit =
+    type Strategy =
     {
-        val metrics = new Metrics(RunResults.runResults)
+        def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(
+            betGenerator: Seq[RunResult] => Array[Int]): Seq[(Array[Int], (Int, Int))]
+    }
+
+    def testStrategy[TStrategy <: Strategy](strategy: TStrategy, betGenerator: (TStrategy, Seq[RunResult]) => Array[Int]) =
+    {
         val pRangeSize = 75
         val pRange1 = 1 to pRangeSize
         val pRange2 = (pRangeSize + 1) to 2 * pRangeSize
@@ -69,7 +86,7 @@ class MetricsOptimization extends FunSuite
             {
                 if(pw % 10 == 0 && sw == 0 && fw == 1) println("+")
                 sorter.update(fragment,
-                    (pw, sw, fw, metrics.strategy1(pw, sw, fw)(rrs => betGenerator(metrics, rrs)).count(_._2._1 == 5)))
+                    (pw, sw, fw, strategy(pw, sw, fw)(rrs => betGenerator(strategy, rrs)).count(_._2._1 == 5)))
             }
         }
 
@@ -82,7 +99,6 @@ class MetricsOptimization extends FunSuite
             sorter.result foreach println
         }
         Await.result(result, 120 minutes)
-
     }
 
     test("sortBy on large vectors")

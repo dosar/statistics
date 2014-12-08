@@ -1,6 +1,7 @@
 package com.example
 
-import com.example.loto.{Metrics, RunResult}
+import com.example.loto.model.RunResult
+import com.example.loto.{MetricsTypes, SimpleGraphics, Strategy2}
 
 class MetricsTest extends TestBase
 {
@@ -30,19 +31,19 @@ class MetricsTest extends TestBase
     test("figuresOccurences 1, 2 input elements")
     {
         val firstFO = (1 to 36).map(_ -> 0).toMap ++ Map(15 -> 1, 25 -> 1, 12 -> 1, 26 -> 1, 3 -> 1)
-        assert(new Metrics(runResults.take(1)).allFigureOccurencies === firstFO)
+        assert(new SimpleGraphics(runResults.take(1)).allFigureOccurencies === firstFO)
         val secondFO = firstFO.updated(15, 2).updated(25, 2).updated(12, 2).updated(26, 2).updated(3, 2)
-        assert(new Metrics(Vector(runResults(0), runResults(2))).allFigureOccurencies === secondFO)
+        assert(new SimpleGraphics(Vector(runResults(0), runResults(2))).allFigureOccurencies === secondFO)
     }
 
     test("graficData2 past interval 3 future interval 2 takeCount 5")
     {
-        check(new Metrics(runResults.take(6), 5).graficData2(3, 2), Vector((Seq(15, 25, 12, 26, 3), 0), (Seq(14, 29, 28, 34, 27), 1)))
+        check(new SimpleGraphics(runResults.take(6), 5).graficData2(3, 2), Vector((Seq(15, 25, 12, 26, 3), 0), (Seq(14, 29, 28, 34, 27), 1)))
     }
 
     test("graficData4 3 2")
     {
-        check(new Metrics(Vector(
+        check(new SimpleGraphics(Vector(
             (1, 2, 3, 4, 5),
             (2, 6, 7, 8, 9),
             (1, 3, 5, 7, 9),
@@ -54,7 +55,7 @@ class MetricsTest extends TestBase
 
     test("graficData5 3 2")
     {
-        check(new Metrics(Vector(
+        check(new SimpleGraphics(Vector(
             (1, 2, 3, 4, 5),
             (6, 7, 8, 9, 10),
             (6, 7, 8, 9, 10),
@@ -66,15 +67,15 @@ class MetricsTest extends TestBase
 
     test("topNonZeroFiguresWithoutPrevious")
     {
-        val metrics: Metrics = new Metrics(Vector((6, 7, 8, 9, 10)), 5)
-        assert(metrics.topNonZeroFiguresWithoutPrevious(Array(6 -> 2, 3 -> 1, 2 -> 1, 10 -> 1), 1) === Array(3, 2, 0, 0, 0))
+        val metrics = new MetricsTypes{ val topFiguresCount = 5 }
+        assert(metrics.topNonZeroFiguresWithoutPrevious(Array(6 -> 2, 3 -> 1, 2 -> 1, 10 -> 1), (6, 7, 8, 9, 10)) === Array(3, 2, 0, 0, 0))
     }
 
     test("getIntersections")
     {
-        val metrics: Metrics = new Metrics(Vector((6, 7, 8, 9, 10)), 5)
-        assert(metrics.getIntersections(Vector((rr(6, 3, 2, 10, 1), 1)),
-            Array(6 -> 2, 3 -> 1, 2 -> 1, 10 -> 1))(metrics.topNonZeroFiguresWithoutPrevious) === (2, 1))
+        val strategy = new Strategy2(Vector((6, 7, 8, 9, 10)), 5)
+        assert(strategy.getIntersections(Vector((rr(6, 3, 2, 10, 1), 1)),
+            Array(6 -> 2, 3 -> 1, 2 -> 1, 10 -> 1))(strategy.topNonZeroFiguresWithoutPrevious) === (2, 1))
     }
 
     val figures = Map(5 -> 1, 10 -> 1, 25 -> 1, 14 -> 1, 20 -> 1, 29 -> 1, 1 -> 1, 28 -> 1, 21 -> 1, 33 -> 1, 9 -> 1,

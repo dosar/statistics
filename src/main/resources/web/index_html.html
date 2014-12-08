@@ -140,6 +140,29 @@
             </div>
         </div>
 
+        <!--Стратегия 3 без непопулярных чисел-->
+        <div class="row" style="overflow-x: auto">
+            <highchart id="chart6" config="chartConfig6"></highchart>
+        </div>
+        <div class="row" style="margin-top: 20px">
+            <div class=" form group col-xs-4">
+                <label for="pastWindow6">Past window</label>
+                <input ng-model="windows.graphic6.pastWindow" type="range" min="1" max="300" id="pastWindow6" ng-change="setTimeout(chart6(), 2000)"/>
+                <p>{{windows.graphic6.pastWindow}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="skipWindow6" class="">Skip window</label>
+                <input ng-model="windows.graphic6.skipWindow" type="range" min="0" max="300" id="skipWindow6" ng-change="setTimeout(chart6(), 2000)"/>
+                <p>{{windows.graphic6.skipWindow}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="futureWindow6" class="">Future window</label>
+                <input ng-model="windows.graphic6.futureWindow" type="range" min="1" max="300" id="futureWindow6" ng-change="setTimeout(chart6(), 2000)"/>
+                <p>{{windows.graphic6.futureWindow}}</p>
+            </div>
+        </div>
+
+
         <div id="figureOrderStatistics1"></div>
         <div id="figureOrderStatistics2"></div>
         <div id="figureDiapasonStatistics"></div>

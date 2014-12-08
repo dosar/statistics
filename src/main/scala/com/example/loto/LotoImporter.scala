@@ -1,7 +1,7 @@
 package com.example.loto
 
 import com.example.loto.CommonImplicits.InImplicits
-import com.example.loto.model.OrientDb
+import com.example.loto.model.{RunResult, OrientDb}
 import com.orientechnologies.orient.core.command.OCommandRequest
 import com.orientechnologies.orient.core.record.impl.ODocument
 import com.orientechnologies.orient.core.sql.OCommandSQL

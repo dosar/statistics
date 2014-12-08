@@ -1,11 +1,14 @@
 package com.example.loto
 
+import com.example.loto.model.RunResult
+
 import scala.collection.mutable.ArrayBuffer
 
-class Strategy2(runResults: Vector[RunResult], topFiguresCount: Int = 12) extends MetricsTypes
+class Strategy2(runResults: Vector[RunResult], override val topFiguresCount: Int = 12) extends MetricsTypes
 {
+    type PreviousRR = RunResult
     def strategy2(pastWindow: Int, skipWindow: Int, betWindow: Int)(extractor: Seq[RunResult] => Array[(Figure, HitCount)])(
-        betGenerator: (Array[(Figure, HitCount)], Index) => Array[Figure]) =
+        betGenerator: (Array[(Figure, HitCount)], PreviousRR) => Array[Figure]) =
     {
         val startIndex = pastWindow
         val sliceSize = skipWindow + betWindow
@@ -25,14 +28,14 @@ class Strategy2(runResults: Vector[RunResult], topFiguresCount: Int = 12) extend
     }
 
     def getIntersections(futureRrs: Vector[(RunResult, Int)], betCandidate: Array[(Figure, HitCount)])(
-        betGenerator: (Array[(Figure, HitCount)], Index) => Array[Figure]): (MaxIntersection, MaxIntersectionCount) =
+        betGenerator: (Array[(Figure, HitCount)], PreviousRR) => Array[Figure]): (MaxIntersection, MaxIntersectionCount) =
     {
         var ind = 0
         var (maxIntersection, maxIntersectionCount) = (0, 0)
         while(ind < futureRrs.length)
         {
             val (rr, globalIndex) = futureRrs(ind)
-            val bet = betGenerator(betCandidate, globalIndex)
+            val bet = betGenerator(betCandidate, futureRrs(ind - 1)._1)
             val intersection = intersectionSize(rr.result, bet)
             if(maxIntersection < intersection)
             {

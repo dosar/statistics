@@ -4,7 +4,10 @@ import com.example.loto.model.RunResult
 
 import scala.collection.mutable.ArrayBuffer
 
-class Strategy1(runResults: Vector[RunResult], override val topFiguresCount: Int = 12) extends MetricsTypes
+/*
+* перестаем ставить по старой ставке если получили хит на 5 чисел
+* */
+class Strategy3(runResults: Vector[RunResult], override val topFiguresCount: Int = 12) extends MetricsTypes
 {
     def withTopNonZeroFigures(pastWindow: Int, skipWindow: Int, betWindow: Int) =
     {
@@ -27,14 +30,15 @@ class Strategy1(runResults: Vector[RunResult], override val topFiguresCount: Int
             val pastRrs = runResults.slice(index - pastWindow, index)
             val bet = betGenerator(pastRrs)
             val futureRrs = runResults.slice(index + skipWindow, index + sliceSize)
-            val (maxIntersection, maxIntersectionCount) = getIntersections(futureRrs, bet)
+            val (maxIntersection, maxIntersectionCount, indexIncrement) = getIntersections(futureRrs, bet)
             buffer += ((bet, if(maxIntersection == 0) (0, 0) else (maxIntersection, maxIntersectionCount)))
-            index += sliceSize
+            index += indexIncrement
         }
         buffer
     }
 
-    def getIntersections(futureRrs: Vector[RunResult], bet: Array[Figure]): (MaxIntersection, MaxIntersectionCount) =
+    type SliceSize = Int
+    def getIntersections(futureRrs: Vector[RunResult], bet: Array[Figure]): (MaxIntersection, MaxIntersectionCount, SliceSize) =
     {
         var ind = 0
         var (maxIntersection, maxIntersectionCount) = (0, 0)
@@ -42,7 +46,8 @@ class Strategy1(runResults: Vector[RunResult], override val topFiguresCount: Int
         {
             val rr = futureRrs(ind)
             val intersection = intersectionSize(rr.result, bet)
-            if(maxIntersection < intersection)
+            if(intersection == 5) return (5, 1, ind + 1)
+            else if(maxIntersection < intersection)
             {
                 maxIntersection = intersection
                 maxIntersectionCount = 1
@@ -53,6 +58,6 @@ class Strategy1(runResults: Vector[RunResult], override val topFiguresCount: Int
             }
             ind += 1
         }
-        (maxIntersection, maxIntersectionCount)
+        (maxIntersection, maxIntersectionCount, ind)
     }
 }
