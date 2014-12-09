@@ -16,6 +16,8 @@ trait MetricsTypes
     type Index = Int
 
     def topFiguresCount: Int
+    def startFigure = 17
+    def endFigure = 36
 
     def intersectionSize(rrResult: Array[Figure], bet: Seq[Figure]): Int =
     {
@@ -58,7 +60,7 @@ trait MetricsTypes
 
     def topNonZeroFigures(rrs: Seq[RunResult]): Array[Figure] = topNonZeroFiguresGeneric(rrs, 1, 36)
 
-    def topNonZeroFiguresWithoutNotPopular(rrs: Seq[RunResult]): Array[Figure] = topNonZeroFiguresGeneric(rrs, 16, 36)
+    def topNonZeroFiguresWithoutNotPopular(rrs: Seq[RunResult]): Array[Figure] = topNonZeroFiguresGeneric(rrs, startFigure, endFigure)
 
     /*
     * betCandidate должен быть отсортирован в нужном порядке
@@ -84,10 +86,9 @@ trait MetricsTypes
         buffer
     }
 
-
     def topNonZeroFiguresGeneric(rrs: Seq[RunResult], startFigure: Figure, endFigure: Figure): Array[Figure] =
     {
-        val occs = figuresOccurencies(rrs)
+        val occs = figuresOccurencies(rrs, startFigure)
         var list = List[(Figure, HitCount)]()
         var figure = startFigure
         while(figure <= endFigure)

@@ -106,7 +106,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = new Strategy3(RunResults.runResults, 12)
+            val data = new Strategy3(RunResults.runResults)
                 .withTopNonZeroFiguresWithoutNotPopular(pWindow, skipWindow, fWindow).map(_._2)
             data.toArray.toJson.toString
           }

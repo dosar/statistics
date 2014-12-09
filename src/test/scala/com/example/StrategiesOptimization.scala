@@ -13,7 +13,11 @@ class StrategiesOptimization extends FunSuite
 {
     test("optimize strategy3 without non popular figures")
     {
-        testStrategy3((s, rrs) => s.topNonZeroFiguresWithoutNotPopular(rrs))
+        for(startFigure <- 1 to 17; endFigure <- 17 to 36 if endFigure - startFigure > 7)
+        {
+            println((startFigure, endFigure))
+            testStrategy3(7, startFigure, endFigure)((s, rrs) => s.topNonZeroFiguresWithoutNotPopular(rrs))
+        }
     }
 
     test("optimize strategy2")
@@ -39,8 +43,8 @@ class StrategiesOptimization extends FunSuite
     def testStrategy1(betGenerator: (Strategy1, Seq[RunResult]) => Array[Int]): Unit =
         testStrategy(new Strategy1(RunResults.runResults), betGenerator)
 
-    def testStrategy3(betGenerator: (Strategy3, Seq[RunResult]) => Array[Int]): Unit =
-        testStrategy(new Strategy3(RunResults.runResults, 6), betGenerator)
+    def testStrategy3(topFiguresCount: Int, startFigure: Int, endFigure: Int)(betGenerator: (Strategy3, Seq[RunResult]) => Array[Int]): Unit =
+        testStrategy(new Strategy3(RunResults.runResults, topFiguresCount, startFigure, endFigure), betGenerator)
 
     def testStrategy2(extractor: (Strategy2, Seq[RunResult]) => Array[(Int, Int)]): Unit =
     {
@@ -70,13 +74,13 @@ class StrategiesOptimization extends FunSuite
 
     def testStrategy[TStrategy <: Strategy](strategy: TStrategy, betGenerator: (TStrategy, Seq[RunResult]) => Array[Int]) =
     {
-        val pRangeSize = 75
+        val pRangeSize = 25
         val pRange1 = 1 to pRangeSize
         val pRange2 = (pRangeSize + 1) to 2 * pRangeSize
         val pRange3 = (2 * pRangeSize + 1) to 3 * pRangeSize
         val pRange4 = (3 * pRangeSize + 1) to 4 * pRangeSize
-        val sRange = 0 to 300
-        val fRange = 1 to 300
+        val sRange = 0 to 100
+        val fRange = 1 to 100
 
         val sorter = new SimpleParallelSort[(Int, Int, Int, Int)](4, 50, (0, 0, 0, 0))(_._4)
 
