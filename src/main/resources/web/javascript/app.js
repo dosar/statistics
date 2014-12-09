@@ -13,7 +13,7 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
         graphic3: {pastWindow: 10, futureWindow: 10},
         graphic4: {pastWindow: 10, skipWindow: 0, futureWindow: 10},
         graphic5: {pastWindow: 10, skipWindow: 0, futureWindow: 10},
-        graphic6: {pastWindow: 10, skipWindow: 0, futureWindow: 10}
+        graphic6: {pastWindow: 10, skipWindow: 0, futureWindow: 10, topFiguresCount: 7, startFigure: 16, endFigure: 36}
     }
 
 
@@ -91,7 +91,10 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
     };
 
     $scope.chart6 = function(){
-        $http.get("/graphicdata6?pW="+$scope.windows.graphic6.pastWindow+"&&sF="+$scope.windows.graphic6.skipWindow+"&&pF="+$scope.windows.graphic6.futureWindow).success(function(result){
+        $http.get("/graphicdata6?pW=" + $scope.windows.graphic6.pastWindow + "&&sW=" +
+            $scope.windows.graphic6.skipWindow + "&&fW="+$scope.windows.graphic6.futureWindow +
+            "&&tFC=" + $scope.windows.graphic6.topFiguresCount + "&&sF=" + $scope.windows.graphic6.startFigure +
+            "&&eF=" + $scope.windows.graphic6.endFigure).success(function(result){
             if(typeof $scope.chartConfig6.series !== 'undefined' && $scope.chartConfig6.series.length > 0){
                 $scope.chartConfig6.series = [];
             }
