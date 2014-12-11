@@ -39,7 +39,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
   val myRoute =
   {
     pathPrefix("web") {
-      getFromDirectory("/home/alespuh/work/loto/src/main/resources/web/")
+      getFromDirectory("/home/alex/work/statistics/src/main/resources/web/")
     } ~
     path("graphicdata0") {
       get {
@@ -102,11 +102,12 @@ trait MyService extends HttpService with DefaultJsonProtocol
         }
       }
     } ~
-    (path("graphicdata6") & parameters('pW.as[Int], 'sF.as[Int], 'pF.as[Int])) { (pWindow, skipWindow, fWindow) =>
+    (path("graphicdata6") & parameters('pW.as[Int], 'sW.as[Int], 'fW.as[Int], 'tFC.as[Int], 'sF.as[Int], 'eF.as[Int]))
+    { (pWindow, skipWindow, fWindow, tfCount, sFigure, eFigure) =>
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = new Strategy3(RunResults.runResults)
+            val data = new Strategy3(RunResults.runResults, topFiguresCount = tfCount, startFigure = sFigure, endFigure = eFigure)
                 .withTopNonZeroFiguresWithoutNotPopular(pWindow, skipWindow, fWindow).map(_._2)
             data.toArray.toJson.toString
           }

@@ -161,6 +161,23 @@
                 <p>{{windows.graphic6.futureWindow}}</p>
             </div>
         </div>
+        <div class="row" style="margin-top: 20px">
+            <div class=" form group col-xs-4">
+                <label for="topFiguresCount6">Top figures count</label>
+                <input ng-model="windows.graphic6.topFiguresCount" type="range" min="1" max="300" id="topFiguresCount6" ng-change="setTimeout(chart6(), 2000)"/>
+                <p>{{windows.graphic6.topFiguresCount}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="startFigure6" class="">Start figure</label>
+                <input ng-model="windows.graphic6.startFigure" type="range" min="0" max="36" id="startFigure6" ng-change="setTimeout(chart6(), 2000)"/>
+                <p>{{windows.graphic6.startFigure}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="endFigure6" class="">End figure</label>
+                <input ng-model="windows.graphic6.endFigure" type="range" min="1" max="36" id="endFigure6" ng-change="setTimeout(chart6(), 2000)"/>
+                <p>{{windows.graphic6.endFigure}}</p>
+            </div>
+        </div>
 
         <div class="row" style="overflow-x: auto">
             <highchart id="chart7" config="chartConfig7"></highchart>
