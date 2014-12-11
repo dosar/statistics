@@ -5,7 +5,8 @@ import scala.reflect.ClassTag
 /*
 * chunks - сколько сегментов для хранения и сортировки результатов
 * */
-class SimpleParallelSort[TElem: ClassTag](chunks: Int = 4, chunkSize: Int = 50, default: TElem)(valueGetter: TElem => Int)
+class SimpleParallelSort[TElem: ClassTag](chunks: Int = 4, chunkSize: Int = 50, default: TElem)(
+    valueGetter: TElem => Int, compare: (Int, Int) => Int = _.compareTo(_))
 {
     val chunkArrays = (1 to chunks).map(x => Array.fill(chunkSize)(default))
     val chunkIndexes = new Array[Int](chunks)
@@ -15,12 +16,12 @@ class SimpleParallelSort[TElem: ClassTag](chunks: Int = 4, chunkSize: Int = 50, 
         val chunkArray = chunkArrays(chunk)
         val existed = valueGetter(chunkArray(0))
         val candidate = valueGetter(elem)
-        if(existed < candidate)
+        if(existed.compareTo(candidate) < 0)
         {
             chunkArray(0) = elem
             chunkIndexes(chunk) = 1
         }
-        else if(candidate == existed && chunkIndexes(chunk) < chunkSize)
+        else if(existed.compareTo(candidate) == 0 && chunkIndexes(chunk) < chunkSize)
         {
             chunkArray(chunkIndexes(chunk)) = elem
             chunkIndexes(chunk) += 1

@@ -41,11 +41,11 @@ trait MyService extends HttpService with DefaultJsonProtocol
     pathPrefix("web") {
       getFromDirectory("/home/alespuh/work/loto/src/main/resources/web/")
     } ~
-    path("graphicdata") {
+    path("graphicdata0") {
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = graficData1(topFigures.take(10).toArray)
+            val data = RunResults.runResults.map(_.result)
             data.toArray.toJson.toString
           }
         }

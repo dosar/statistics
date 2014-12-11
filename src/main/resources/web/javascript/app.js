@@ -16,7 +16,6 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
         graphic6: {pastWindow: 10, skipWindow: 0, futureWindow: 10}
     }
 
-
     $scope.chart1 = function(){
         $http.get("/graphicdata1?pW="+$scope.windows.graphic1.pastWindow+"&&pF="+$scope.windows.graphic1.futureWindow).success(function(result){
             if(typeof $scope.chartConfig1.series !== 'undefined' && $scope.chartConfig1.series.length > 0)
@@ -107,6 +106,35 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
             });
         });
     };
+
+    $http.get("/graphicdata0").success(function(result){
+        $scope.chartConfig7.series = [];
+        $scope.chartConfig7.series.push({
+            data: jQuery.map(result, function(elem){
+                return elem[0];
+            })
+        });
+        $scope.chartConfig7.series.push({
+            data: jQuery.map(result, function(elem){
+                return elem[1];
+            })
+        });
+        $scope.chartConfig7.series.push({
+            data: jQuery.map(result, function(elem){
+                return elem[2];
+            })
+        });
+        $scope.chartConfig7.series.push({
+            data: jQuery.map(result, function(elem){
+                return elem[3];
+            })
+        });
+        $scope.chartConfig7.series.push({
+            data: jQuery.map(result, function(elem){
+                return elem[4];
+            })
+        });
+    });
 
     $http.get("/figureOrderStatistics1").success(function(result){
         jQuery('#figureOrderStatistics1').html(
@@ -270,6 +298,27 @@ lotoApp.controller('GraphicCtrl', function ($scope, $http){
         ,
         title: {
             text: 'Стратегия 3 без непопулярных чисел'
+        },
+
+        loading: false
+    }
+
+    $scope.chartConfig7 = {
+        options: {
+            chart: {
+                type: 'line'
+                ,width: 8000
+                ,height: 500
+            }
+        },
+        xAxis : { categories: []}
+        ,
+        yAxis : { categories: []}
+        ,
+        series: [{data:  []}]
+        ,
+        title: {
+            text: 'Просто результаты тиражей'
         },
 
         loading: false
