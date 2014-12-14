@@ -1,0 +1,60 @@
+<div class="container" style="margin-top: 60px">
+    <div ng-controller="DetailedResultsCtrl" class="row">
+        <!--<div id="rrs" class="row" />-->
+        <div class="row" style="margin-top: 20px">
+            <div class=" form group col-xs-4">
+                <label for="pastWindow">Past window</label>
+                <input ng-model="pastWindow" type="range" min="1" max="300" id="pastWindow" ng-change="setTimeout(getData(), 2000)"/>
+                <p>{{pastWindow}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="skipWindow" class="">Skip window</label>
+                <input ng-model="windows.graphic6.skipWindow" type="range" min="0" max="300" id="skipWindow" ng-change="setTimeout(getData(), 2000)"/>
+                <p>{{skipWindow}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="futureWindow" class="">Future window</label>
+                <input ng-model="windows.graphic6.futureWindow" type="range" min="1" max="300" id="futureWindow" ng-change="setTimeout(getData(), 2000)"/>
+                <p>{{futureWindow}}</p>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 20px">
+            <div class=" form group col-xs-4">
+                <label for="topFiguresCount">Top figures count</label>
+                <input ng-model="windows.graphic6.topFiguresCount" type="range" min="1" max="300" id="topFiguresCount" ng-change="setTimeout(getData(), 2000)"/>
+                    <p>{{topFiguresCount}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="startFigure" class="">Start figure</label>
+                <input ng-model="windows.graphic6.startFigure" type="range" min="0" max="36" id="startFigure" ng-change="setTimeout(getData(), 2000)"/>
+                <p>{{startFigure}}</p>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="endFigure" class="">End figure</label>
+                <input ng-model="endFigure" type="range" min="1" max="36" id="endFigure" ng-change="setTimeout(getData(), 2000)"/>
+                <p>{{endFigure}}</p>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row" ng-repeat="item in items">
+                <div class="col-xs-6">
+                    <table class="table">
+                        <tr ng-repeat="row in item.runResults">
+                            <td ng-repeat="el in row.items"  style="background-color: {{row.color}}">
+                                <div class="col-xs-6 badge" ng-hide="el.flag">{{el.figure}}</div>
+                                <div class="col-xs-6" ng-show="el.flag">{{el.figure}}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-xs-6">
+                   <p>Bet: </p>
+                   <p><span ng-repeat="figure in item.bet">{{figure}} </span></p>
+                   <p>Bet Candidate: </p>
+                   <p><span ng-repeat="el in item.betCandidate">{{el.figure}} - {{el.hit}} </span></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
