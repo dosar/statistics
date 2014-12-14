@@ -3,6 +3,7 @@ package com.example.loto
 import com.example.loto.model.RunResult
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 /**
  * Created by alespuh on 08.12.14.
@@ -33,7 +34,7 @@ trait MetricsTypes
         result
     }
 
-    def figuresOccurencies(rrs: Seq[RunResult], startFigure: Figure = 1): mutable.Map[Figure, HitCount] =
+    def figuresOccurencies(rrs: Seq[RunResult]): mutable.Map[Figure, HitCount] =
     {
         var ind = 0
         val figuresMap = new Array[Int](36)
@@ -49,13 +50,74 @@ trait MetricsTypes
             ind += 1
         }
         ind = startFigure - 1
-        val result = mutable.Map[Int, Int]()
+        val result = mutable.Map[Int, Int]() withDefaultValue 0
         while(ind < figuresMap.length)
         {
             result += (ind + 1) -> figuresMap(ind)
             ind += 1
         }
         result
+    }
+
+    type Min = Int; type Max = Int
+    def figureIntervals(rrs: Seq[RunResult]): (Array[Min], Array[Max]) =
+    {
+        var ind = 0
+        val (figureMins, figureMaxs) = (Array.fill[Min](5)(40), new Array[Max](5))
+
+        def updateMinMax(ind: Int, figure: Figure) =
+        {
+            if(figure < figureMins(ind))
+                figureMins(ind) = figure
+            if(figure > figureMaxs(ind))
+                figureMaxs(ind) = figure
+        }
+
+        while(ind < rrs.length)
+        {
+            val rrResult = rrs(ind).result
+            updateMinMax(0, rrResult(0))
+            updateMinMax(1, rrResult(1))
+            updateMinMax(2, rrResult(2))
+            updateMinMax(3, rrResult(3))
+            updateMinMax(4, rrResult(4))
+            ind += 1
+        }
+        (figureMins, figureMaxs)
+    }
+
+    /*
+    * в том числе с нулями
+    * */
+    def middleOccurencyFigures(rrs: Seq[RunResult]) =
+    {
+        val occs = figuresOccurencies(rrs)
+        val arr = new Array[(Figure, HitCount)](endFigure - startFigure + 1)
+        var figure = startFigure
+        while(figure <= endFigure)
+        {
+            val hits = occs(figure)
+            arr(figure - startFigure) = (figure, hits)
+            figure += 1
+        }
+        val sorted = arr.sortBy(- _._2)
+        val drop = (arr.length - topFiguresCount) / 2
+        sorted.map(_._1).drop(drop).take(topFiguresCount).toArray
+    }
+
+    def zeroOccurencyFigures(rrs: Seq[RunResult]) =
+    {
+        val occs = figuresOccurencies(rrs)
+        var array = ArrayBuffer[Figure]()
+        var figure = startFigure
+        while(figure <= endFigure && array.length < topFiguresCount)
+        {
+            val hits = occs(figure)
+            if(hits == 0)
+                array += figure
+            figure += 1
+        }
+        array.toArray
     }
 
     def topNonZeroFigures(rrs: Seq[RunResult]): Array[Figure] = topNonZeroFiguresGeneric(rrs, 1, 36)
@@ -88,7 +150,7 @@ trait MetricsTypes
 
     def topNonZeroFiguresGeneric(rrs: Seq[RunResult], startFigure: Figure, endFigure: Figure): Array[Figure] =
     {
-        val occs = figuresOccurencies(rrs, startFigure)
+        val occs = figuresOccurencies(rrs)
         var list = List[(Figure, HitCount)]()
         var figure = startFigure
         while(figure <= endFigure)

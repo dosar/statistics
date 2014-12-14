@@ -39,7 +39,29 @@ trait MyService extends HttpService with DefaultJsonProtocol
   val myRoute =
   {
     pathPrefix("web") {
-      getFromDirectory("/home/alex/work/statistics/src/main/resources/web/")
+      getFromDirectory("/home/alespuh/work/loto/src/main/resources/web/")
+    } ~
+    path("runresults") {
+      get {
+        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
+          complete {
+            val data = RunResults.runResults.sortBy(- _.run).map(_.result.map(_ -> false))
+            for(i <- 1 until data.length)
+            {
+              val current = data(i)
+              val previous = data(i - 1)
+              val intersection = current.intersect(previous)
+              for(j <- 0 until intersection.length)
+              {
+                val (figure, _) = intersection(j)
+                current(current.indexWhere(_._1 == figure)) = figure -> true
+                previous(previous.indexWhere(_._1 == figure)) = figure -> true
+              }
+            }
+            data.toArray.toJson.toString
+          }
+        }
+      }
     } ~
     path("graphicdata0") {
       get {
@@ -109,6 +131,17 @@ trait MyService extends HttpService with DefaultJsonProtocol
           complete {
             val data = new Strategy3(RunResults.runResults, topFiguresCount = tfCount, startFigure = sFigure, endFigure = eFigure)
                 .withTopNonZeroFiguresWithoutNotPopular(pWindow, skipWindow, fWindow).map(_._2)
+            data.toArray.toJson.toString
+          }
+        }
+      }
+    } ~
+    (path("graphicdata7") & parameters('pW.as[Int]))
+    { pWindow =>
+      get {
+        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
+          complete {
+            val data = new Metrics().figureIntervals(RunResults.runResults, pWindow)
             data.toArray.toJson.toString
           }
         }

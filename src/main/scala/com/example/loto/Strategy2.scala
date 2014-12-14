@@ -4,7 +4,8 @@ import com.example.loto.model.RunResult
 
 import scala.collection.mutable.ArrayBuffer
 
-class Strategy2(runResults: Vector[RunResult], override val topFiguresCount: Int = 12) extends MetricsTypes
+class Strategy2(runResults: Vector[RunResult], override val topFiguresCount: Int = 12,
+    override val startFigure: Int = 1, override val endFigure: Int = 36) extends MetricsTypes
 {
     type PreviousRR = RunResult
     def strategy2(pastWindow: Int, skipWindow: Int, betWindow: Int)(extractor: Seq[RunResult] => Array[(Figure, HitCount)])(

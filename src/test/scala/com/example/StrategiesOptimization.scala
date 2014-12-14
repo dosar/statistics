@@ -12,13 +12,40 @@ import scala.util.Random
 
 class StrategiesOptimization extends FunSuite
 {
+    test("optimize strategy4 with middle popular figures")
+    {
+        var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
+        for(betSize <- 6 to 6; startFigure <- 1 to 1)
+        {
+            println((betSize, startFigure))
+            result = result ++ testStrategy4(betSize, startFigure, 36)(_.middleOccurencyFigures(_))
+                .map(x => ((betSize, startFigure), x))
+            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+        }
+        result foreach println
+    }
+
+    test("optimize strategy4 with zero popular figures")
+    {
+        var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
+        for(betSize <- 6 to 12; startFigure <- 17 to 17)
+        {
+            println((betSize, startFigure))
+            result = result ++ testStrategy4(betSize, startFigure, 36)(_.zeroOccurencyFigures(_))
+                .map(x => ((betSize, startFigure), x))
+            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+        }
+        result foreach println
+    }
+
     test("optimize strategy4 without non popular figures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        for(betSize <- 6 to 6; startFigure <- 1 to 17)
+        for(betSize <- 6 to 12; startFigure <- 1 to 17)
         {
             println((betSize, startFigure))
-            result = result ++ testStrategy4(betSize, startFigure, 36).map(x => ((betSize, startFigure), x))
+            result = result ++ testStrategy4(betSize, startFigure, 36)(_.topNonZeroFiguresWithoutNotPopular(_))
+                .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
         result foreach println
@@ -38,12 +65,12 @@ class StrategiesOptimization extends FunSuite
 
     test("optimize strategy2")
     {
-        testStrategy2((m, rrs) => m.figuresOccurencies(rrs).toArray.sortBy(- _._2))
+        testStrategy2()((m, rrs) => m.figuresOccurencies(rrs).toArray.sortBy(- _._2))
     }
 
     test("optimize strategy2 without non popular figures")
     {
-        testStrategy2((m, rrs) => m.figuresOccurencies(rrs, 17).toArray.sortBy(- _._2))
+        testStrategy2(17)((m, rrs) => m.figuresOccurencies(rrs).toArray.sortBy(- _._2))
     }
 
     test("optimize strategy1")
@@ -62,9 +89,9 @@ class StrategiesOptimization extends FunSuite
     def testStrategy3(topFiguresCount: Int, startFigure: Int, endFigure: Int)(betGenerator: (Strategy3, Seq[RunResult]) => Array[Int]) =
         testStrategy(new Strategy3(RunResults.runResults, topFiguresCount, startFigure, endFigure), betGenerator)
 
-    def testStrategy2(extractor: (Strategy2, Seq[RunResult]) => Array[(Int, Int)]): Unit =
+    def testStrategy2(startFigure: Int = 1)(extractor: (Strategy2, Seq[RunResult]) => Array[(Int, Int)]): Unit =
     {
-        val strategy = new Strategy2(RunResults.runResults)
+        val strategy = new Strategy2(RunResults.runResults, startFigure = startFigure)
 
         def figuresOccurencies(rrs: Seq[RunResult]) =
             strategy.figuresOccurencies(rrs).toArray.sortBy(- _._2)
@@ -134,7 +161,8 @@ class StrategiesOptimization extends FunSuite
         result.sortBy(- _._4).take(200) foreach println
     }
 
-    def testStrategy4(topFiguresCount: Int = 7, startFigure: Int = 16, endFigure: Int = 36) =
+    def testStrategy4(topFiguresCount: Int = 7, startFigure: Int = 16, endFigure: Int = 36)(
+        betGenerator: (Strategy4, Seq[RunResult]) => Array[Int]) =
     {
         val strategy = new Strategy4(RunResults.runResults, topFiguresCount, startFigure, endFigure)
         val pRangeSize = 25
@@ -151,15 +179,15 @@ class StrategiesOptimization extends FunSuite
 
         val sorter = new SimpleParallelSort[(PastWindow, SkipWindow, FutureWindow, Hit2, Hit3, Hit4, Hit5,
             MoneyPlus, MoneyMinus)](4, 50, (0, 0, 0, 0, 0, 0, 0, 0, 0))(x => x._8 - x._9,
-        { (left: Int, right: Int) => (left / 50000).compareTo(right / 50000) })
+        { (left: Int, right: Int) => (left / 100000).compareTo(right / 100000) })
 
         def calcFragment(pRange: Range, fragment: Int) =
         {
             for(pw <- pRange; sw <- sRange; fw <- fRange)
             {
                 if(pw % 10 == 0 && sw == 0 && fw == 1) println("+")
-                val strategyResult = strategy.withTopNonZeroFiguresWithoutNotPopular(pw, sw, fw)
-                if(strategyResult.forall(x => x._2._5 - x._2._6 > -(fw * 500) /*&& x._2._6 <= 10000*/))
+                val strategyResult = strategy.apply(pw, sw, fw)(rrs => betGenerator(strategy, rrs))
+                if(strategyResult.forall(x => x._2._5 - x._2._6 > -(fw * 1000) /*&& x._2._6 <= 10000*/))
                 {
                     val (hit2, hit3, hit4, hit5, mplus, mminus) = strategyResult.foldLeft(0, 0, 0, 0, 0, 0)
                     { case ((ah2, ah3, ah4, ah5, amp, amm), (_, (h2, h3, h4, h5, mp, mm))) =>

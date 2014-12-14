@@ -7,7 +7,7 @@ import org.scalatest._
 
 trait TestBase extends FunSuite
 {
-    implicit def rr(result: (Int, Int, Int, Int, Int)) =
+    implicit def rr(result: (Int, Int, Int, Int, Int)): RunResult =
         RunResult(0, new Date(), result.productIterator.map(_.asInstanceOf[Int]).toArray)
 
     protected def check[T](left: Seq[(Seq[Int], T)], right: Seq[(Seq[Int], T)]) =

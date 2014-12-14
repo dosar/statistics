@@ -8,8 +8,8 @@ import scala.collection.mutable.ArrayBuffer
 * перестаем ставить по старой ставке если получили хит на 5 чисел
 * */
 class Strategy4(runResults: Vector[RunResult], override val topFiguresCount: Int = 7, override val startFigure: Int = 16,
-                override val endFigure: Int = 36)
-    extends MetricsTypes
+    override val endFigure: Int = 36)
+extends MetricsTypes
 {
     def withTopNonZeroFigures(pastWindow: Int, skipWindow: Int, betWindow: Int) =
     {
@@ -52,7 +52,7 @@ class Strategy4(runResults: Vector[RunResult], override val topFiguresCount: Int
         {
             val rr = futureRrs(ind)
             val intersection = intersectionSize(rr.result, bet)
-            if(intersection == 5) return ((i2, i3, i4, 1, 300000 + mplus, mminus), ind + 1)
+            if(intersection == 5) return ((i2, i3, i4, 1, 1000000 + mplus, mminus), ind + 1)
             else if(intersection == 2) i2 += 1
             else if(intersection == 3) i3 += 1
             else if(intersection == 4) i4 += 1
@@ -65,7 +65,7 @@ class Strategy4(runResults: Vector[RunResult], override val topFiguresCount: Int
 
     def betCost(betSize: Int) =
     {
-        if(betSize <= 5) 30
+        if(betSize == 5) 30
         else if(betSize == 6) 180
         else if(betSize == 7) 630
         else if(betSize == 8) 1680
@@ -78,7 +78,7 @@ class Strategy4(runResults: Vector[RunResult], override val topFiguresCount: Int
 
     def betWon(betSize: Int, intersectionSize: Int) =
     {
-        if(betSize <= 5)
+        if(betSize == 5)
         {
             if(intersectionSize == 2) 30
             else if (intersectionSize == 3) 300

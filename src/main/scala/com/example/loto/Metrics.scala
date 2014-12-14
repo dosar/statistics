@@ -2,6 +2,8 @@ package com.example.loto
 
 import com.example.loto.model.RunResult
 
+import scala.collection.mutable.ArrayBuffer
+
 /*
 * topFiguresCount - сколько чисел брать из набора чисел
 * */
@@ -14,6 +16,18 @@ class Metrics(override val topFiguresCount: Int = 12) extends MetricsTypes
         intersections.groupBy(x => x)
             .map{ case (intersectionSize, intersections) => (intersectionSize, intersections.size) }
             .toArray
+    }
+
+    def figureIntervals(runResults: Vector[RunResult], window: Int): ArrayBuffer[(Array[Int], Array[Int])] =
+    {
+        var windowRrs = runResults
+        val result = new ArrayBuffer[(Array[Int], Array[Int])]()
+        while(windowRrs.length > 0)
+        {
+            result += figureIntervals(windowRrs.take(window))
+            windowRrs = windowRrs.drop(window)
+        }
+        result
     }
 
     /*
