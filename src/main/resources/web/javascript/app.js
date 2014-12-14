@@ -60,52 +60,52 @@ lotoApp.controller('DetailedResultsCtrl', function ($scope, $http) {
             ],
             bet: [1,2,3,4,5],
             runResults: [
-                { items: [
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true},
+                { result: [
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true},
                          ],
                   color: 'red'},
-                { items: [
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true}
+                { result: [
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true}
                          ],
                   color: 'red'},
-                { items: [
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true}
+                { result: [
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true}
                          ],
                   color: 'red'},
-                { items: [
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true}
+                { result: [
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true}
                          ],
                   color: 'red'},
-                { items: [
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true}
+                { result: [
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true}
                          ],
                   color: 'red'},
-                { items: [
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true},
-                            {figure: 0, flag: false},
-                            {figure: 0, flag: true}
+                { result: [
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true},
+                            {figure: 0, intersected: false},
+                            {figure: 0, intersected: true}
                          ],
                   color: 'red'}
             ]
@@ -117,52 +117,52 @@ lotoApp.controller('DetailedResultsCtrl', function ($scope, $http) {
             betCandidate: [],
             bet: [6,7,8,9,10],
             runResults: [
-                { items: [
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true},
+                { result: [
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true},
                 ],
                     color: 'yellow'},
-                { items: [
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true}
+                { result: [
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true}
                 ],
                     color: 'yellow'},
-                { items: [
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true}
+                { result: [
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true}
                 ],
                     color: 'yellow'},
-                { items: [
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true}
+                { result: [
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true}
                 ],
                     color: 'yellow'},
-                { items: [
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true}
+                { result: [
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true}
                 ],
                     color: 'yellow'},
-                { items: [
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true},
-                    {figure: 1, flag: false},
-                    {figure: 1, flag: true}
+                { result: [
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true},
+                    {figure: 1, intersected: false},
+                    {figure: 1, intersected: true}
                 ],
                     color: 'yellow'}
             ]
@@ -174,66 +174,71 @@ lotoApp.controller('DetailedResultsCtrl', function ($scope, $http) {
             betCandidate: [],
             bet: [11,12,13,14,15],
             runResults: [
-                { items: [
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true},
+                { result: [
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true},
                 ],
                     color: 'green'},
-                { items: [
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true}
+                { result: [
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true}
                 ],
                     color: 'green'},
-                { items: [
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true}
+                { result: [
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true}
                 ],
                     color: 'green'},
-                { items: [
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true}
+                { result: [
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true}
                 ],
                     color: 'green'},
-                { items: [
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true}
+                { result: [
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true}
                 ],
                     color: 'green'},
-                { items: [
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true},
-                    {figure: 2, flag: false},
-                    {figure: 2, flag: true}
+                { result: [
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true},
+                    {figure: 2, intersected: false},
+                    {figure: 2, intersected: true}
                 ],
                     color: 'green'}
             ]
         }
     ];
-    $scope.pastWindow = 0;
+    $scope.pastWindow = 10;
     $scope.skipWindow = 0;
-    $scope.futureWindow = 0;
+    $scope.futureWindow = 10;
     $scope.startFigure = 1;
     $scope.endFigure = 10;
     $scope.topFiguresCount = 10;
 
     $scope.getData = function(){
-
+        $http.get("/strategydebug?pW=" + $scope.pastWindow + "&&sW=" +
+        $scope.skipWindow + "&&fW="+$scope.futureWindow +
+        "&&tFC=" + $scope.topFiguresCount + "&&sF=" + $scope.startFigure +
+        "&&eF=" + $scope.endFigure).success(function(result){
+            $scope.items = result;
+        });
     }
 
     $scope.renderOneFigure = function (figure, intersected){

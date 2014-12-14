@@ -39,6 +39,41 @@ extends MetricsTypes
         buffer
     }
 
+    def debug(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Figure]): Array[StrategyIteration] =
+    {
+        val startIndex = pastWindow
+        val sliceSize = skipWindow + betWindow
+        var index = startIndex
+        val siBuffer = ArrayBuffer[StrategyIteration]()
+
+        def runResultItems(pastRrs: Vector[RunResult], skipRrs: Vector[RunResult], futureRrs: Vector[RunResult], bet: Array[Figure]) =
+        {
+            val refinedPastRrs = if (index == startIndex)
+                pastRrs.map(rr => RunResultItem(rr.result.map(figure => FigureIntersection(figure, false)), "white"))
+            else Nil
+            refinedPastRrs ++
+                skipRrs.map(rr => RunResultItem(rr.result.map(figure => FigureIntersection(figure, false)), "grey")) ++
+                futureRrs.map
+                { rr =>
+                    RunResultItem(rr.result.map(figure => FigureIntersection(figure, bet.contains(figure))), "orange")
+                }
+        }
+
+        while (index <= runResults.length - sliceSize)
+        {
+            val pastRrs = runResults.slice(index - pastWindow, index)
+            val betCandidate = figuresOccurencies(pastRrs)
+            val bet = betGenerator(pastRrs).sorted
+            val skipRrs = runResults.slice(index, index + skipWindow)
+            val futureRrs = runResults.slice(index + skipWindow, index + sliceSize)
+            val (_, indexIncrement) = getIntersectionStatistics(futureRrs, bet)
+            val runItems = runResultItems(pastRrs, skipRrs, futureRrs.take(indexIncrement), bet)
+            siBuffer += StrategyIteration(betCandidate.map(bc => FigureOccurency(bc._1, bc._2)).toArray, bet, runItems.toArray)
+            index += indexIncrement
+        }
+        siBuffer.toArray
+    }
+
     type SliceSize = Int
     type IntersectionCount2 =Int; type IntersectionCount3 = Int; type IntersectionCount4 = Int; type IntersectionCount5 = Int
     type MoneyPlus = Int; type MoneyMinus = Int
@@ -109,3 +144,8 @@ extends MetricsTypes
         else 0
     }
 }
+
+case class StrategyIteration(betCandidate: Array[FigureOccurency], bet: Array[Int], runResults: Array[RunResultItem])
+case class FigureOccurency(figure: Int, hit: Int)
+case class RunResultItem(result: Array[FigureIntersection], color: String)
+case class FigureIntersection(figure: Int, intersected: Boolean)

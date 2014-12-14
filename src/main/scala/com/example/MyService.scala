@@ -30,6 +30,10 @@ trait MyService extends HttpService with DefaultJsonProtocol
   implicit val figureOrderStatistics = jsonFormat4(FigureOrderStatistics)
   implicit val figureOrderFrequencyOneRun = jsonFormat4(FigureOrderFrequencyOneRun)
   implicit val figureDiapasonStatistics = jsonFormat4(FigureDiapasonStatistics)
+  implicit val figureOccurency = jsonFormat2(FigureOccurency)
+  implicit val figureIntersection = jsonFormat2(FigureIntersection)
+  implicit val runResultItem = jsonFormat2(RunResultItem)
+  implicit val strategyIteration = jsonFormat3(StrategyIteration)
 
   val metrics = new Metrics()
   val simpleGraphics = new SimpleGraphics(RunResults.runResults)
@@ -39,7 +43,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
   val myRoute =
   {
     pathPrefix("web") {
-      getFromDirectory("/home/alex/work/statistics/src/main/resources/web/")
+      getFromDirectory("/home/alespuh/work/loto/src/main/resources/web/")
     } ~
     path("runresults") {
       get {
@@ -59,6 +63,18 @@ trait MyService extends HttpService with DefaultJsonProtocol
               }
             }
             data.toArray.toJson.toString
+          }
+        }
+      }
+    } ~
+    (path("strategydebug") & parameters('pW.as[Int], 'sW.as[Int], 'fW.as[Int], 'tFC.as[Int], 'sF.as[Int], 'eF.as[Int]))
+    { (pw, sw, fw, takeCount, sf, ef) =>
+      get {
+        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
+          complete {
+            val strategy = new Strategy4(RunResults.runResults, takeCount, sf, ef)
+            val data: Array[StrategyIteration] = strategy.debug(pw, sw, fw)(strategy.topNonZeroFiguresWithoutNotPopular)
+            data.toJson.toString
           }
         }
       }
