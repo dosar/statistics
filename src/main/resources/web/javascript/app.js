@@ -1,7 +1,27 @@
 /**
  * Created by alespuh on 26.11.14.
  */
-var lotoApp = angular.module('lotoApp', ['highcharts-ng', 'ui.chart']);
+var lotoApp = angular.module('lotoApp', ['highcharts-ng', 'ui.chart', 'ngRoute']);
+
+lotoApp.config(function($routeProvider){
+   $routeProvider
+       .when('/', {
+           templateUrl: 'maingraphics.html',
+           controller: 'GraphicCtrl'
+       })
+       .when('/data', {
+           templateUrl: 'runresults.html',
+           controller: 'DataCtrl'
+       })
+       .when('/detailedata', {
+           templateUrl: 'detailed_runresults.html',
+           controller: 'DetailedResultsCtrl'
+       });
+});
+
+lotoApp.controller('MainCtrl', function($scope){
+   $scope.message;
+});
 
 lotoApp.controller('DataCtrl', function ($scope, $http) {
 
@@ -23,6 +43,219 @@ lotoApp.controller('DataCtrl', function ($scope, $http) {
         jQuery("#rrs").append(divs);
     });
 });
+
+
+lotoApp.controller('DetailedResultsCtrl', function ($scope, $http) {
+    $scope.items = [
+            {
+            pastWS: 0,
+            skipWS: 0,
+            fWS: 0,
+            betCandidate: [
+                {figure: 1, hit: 6},
+                {figure: 2, hit: 5},
+                {figure: 3, hit: 4},
+                {figure: 4, hit: 3},
+                {figure: 5, hit: 2}
+            ],
+            bet: [1,2,3,4,5],
+            runResults: [
+                { items: [
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true},
+                         ],
+                  color: 'red'},
+                { items: [
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true}
+                         ],
+                  color: 'red'},
+                { items: [
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true}
+                         ],
+                  color: 'red'},
+                { items: [
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true}
+                         ],
+                  color: 'red'},
+                { items: [
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true}
+                         ],
+                  color: 'red'},
+                { items: [
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true},
+                            {figure: 0, flag: false},
+                            {figure: 0, flag: true}
+                         ],
+                  color: 'red'}
+            ]
+        },
+        {
+            pastWS: 0,
+            skipWS: 0,
+            fWS: 0,
+            betCandidate: [],
+            bet: [6,7,8,9,10],
+            runResults: [
+                { items: [
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true},
+                ],
+                    color: 'yellow'},
+                { items: [
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true}
+                ],
+                    color: 'yellow'},
+                { items: [
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true}
+                ],
+                    color: 'yellow'},
+                { items: [
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true}
+                ],
+                    color: 'yellow'},
+                { items: [
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true}
+                ],
+                    color: 'yellow'},
+                { items: [
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true},
+                    {figure: 1, flag: false},
+                    {figure: 1, flag: true}
+                ],
+                    color: 'yellow'}
+            ]
+        },
+        {
+            pastWS: 0,
+            skipWS: 0,
+            fWS: 0,
+            betCandidate: [],
+            bet: [11,12,13,14,15],
+            runResults: [
+                { items: [
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true},
+                ],
+                    color: 'green'},
+                { items: [
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true}
+                ],
+                    color: 'green'},
+                { items: [
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true}
+                ],
+                    color: 'green'},
+                { items: [
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true}
+                ],
+                    color: 'green'},
+                { items: [
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true}
+                ],
+                    color: 'green'},
+                { items: [
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true},
+                    {figure: 2, flag: false},
+                    {figure: 2, flag: true}
+                ],
+                    color: 'green'}
+            ]
+        }
+    ];
+    $scope.pastWindow = 0;
+    $scope.skipWindow = 0;
+    $scope.futureWindow = 0;
+    $scope.startFigure = 1;
+    $scope.endFigure = 10;
+    $scope.topFiguresCount = 10;
+
+    $scope.getData = function(){
+
+    }
+
+    $scope.renderOneFigure = function (figure, intersected){
+        var additionalClass = intersected ? " badge" : "";
+        return '<div class="col-xs-6' + additionalClass + '">' + figure + '</div>';
+    };
+
+    $http.get("/runresults").success(function(result){
+        var divs = jQuery.map(result, function(elem){
+            return '<tr>' +
+                '<td>' + $scope.renderOneFigure(elem[0][0], elem[0][1]) + '</td>' +
+                '<td>' + $scope.renderOneFigure(elem[1][0], elem[1][1]) + '</td>' +
+                '<td>' + $scope.renderOneFigure(elem[2][0], elem[2][1]) + '</td>' +
+                '<td>' + $scope.renderOneFigure(elem[3][0], elem[3][1]) + '</td>' +
+                '<td>' + $scope.renderOneFigure(elem[4][0], elem[4][1]) + '</td>' +
+                '</tr>';
+        });
+        jQuery("#rrs").append(divs);
+    });
+});
+
+
 
 lotoApp.controller('GraphicCtrl', function ($scope, $http){
 
