@@ -21,7 +21,7 @@ extends MetricsTypes
         apply(pastWindow, skipWindow, betWindow)(topNonZeroFiguresWithoutNotPopular)
     }
 
-    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Seq[RunResult] => Array[Figure]) =
+    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Figure]) =
     {
         val startIndex = pastWindow
         val sliceSize = skipWindow + betWindow

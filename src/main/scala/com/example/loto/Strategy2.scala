@@ -8,7 +8,7 @@ class Strategy2(runResults: Vector[RunResult], override val topFiguresCount: Int
     override val startFigure: Int = 1, override val endFigure: Int = 36) extends MetricsTypes
 {
     type PreviousRR = RunResult
-    def strategy2(pastWindow: Int, skipWindow: Int, betWindow: Int)(extractor: Seq[RunResult] => Array[(Figure, HitCount)])(
+    def strategy2(pastWindow: Int, skipWindow: Int, betWindow: Int)(extractor: Vector[RunResult] => Array[(Figure, HitCount)])(
         betGenerator: (Array[(Figure, HitCount)], PreviousRR) => Array[Figure]) =
     {
         val startIndex = pastWindow

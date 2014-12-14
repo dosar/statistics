@@ -43,7 +43,7 @@ class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount
     def graphicData6(intervalSize: Int) = ???
 
     private def pastWindowToFutureWindow(pastIntervalSize: Int, futureIntervalSize: Int)(
-        figuresExtractor: Seq[RunResult] => Seq[Figure]) =
+        figuresExtractor: Vector[RunResult] => Seq[Figure]) =
     {
         (for(pastWindow <- runResults.take(runResults.length - futureIntervalSize).zipWithIndex.sliding(pastIntervalSize)) yield
         {

@@ -34,7 +34,7 @@ trait MetricsTypes
         result
     }
 
-    def figuresOccurencies(rrs: Seq[RunResult]): mutable.Map[Figure, HitCount] =
+    def figuresOccurencies(rrs: Vector[RunResult]): mutable.Map[Figure, HitCount] =
     {
         var ind = 0
         val figuresMap = new Array[Int](36)
@@ -51,7 +51,7 @@ trait MetricsTypes
         }
         ind = startFigure - 1
         val result = mutable.Map[Int, Int]() withDefaultValue 0
-        while(ind < figuresMap.length)
+        while(ind < endFigure)
         {
             result += (ind + 1) -> figuresMap(ind)
             ind += 1
@@ -89,7 +89,7 @@ trait MetricsTypes
     /*
     * в том числе с нулями
     * */
-    def middleOccurencyFigures(rrs: Seq[RunResult]) =
+    def middleOccurencyFigures(rrs: Vector[RunResult]) =
     {
         val occs = figuresOccurencies(rrs)
         val arr = new Array[(Figure, HitCount)](endFigure - startFigure + 1)
@@ -105,7 +105,7 @@ trait MetricsTypes
         sorted.map(_._1).drop(drop).take(topFiguresCount).toArray
     }
 
-    def zeroOccurencyFigures(rrs: Seq[RunResult]) =
+    def zeroOccurencyFigures(rrs: Vector[RunResult]) =
     {
         val occs = figuresOccurencies(rrs)
         var array = ArrayBuffer[Figure]()
@@ -120,9 +120,9 @@ trait MetricsTypes
         array.toArray
     }
 
-    def topNonZeroFigures(rrs: Seq[RunResult]): Array[Figure] = topNonZeroFiguresGeneric(rrs, 1, 36)
+    def topNonZeroFigures(rrs: Vector[RunResult]): Array[Figure] = topNonZeroFiguresGeneric(rrs, 1, 36)
 
-    def topNonZeroFiguresWithoutNotPopular(rrs: Seq[RunResult]): Array[Figure] = topNonZeroFiguresGeneric(rrs, startFigure, endFigure)
+    def topNonZeroFiguresWithoutNotPopular(rrs: Vector[RunResult]): Array[Figure] = topNonZeroFiguresGeneric(rrs, startFigure, endFigure)
 
     /*
     * betCandidate должен быть отсортирован в нужном порядке
@@ -148,7 +148,7 @@ trait MetricsTypes
         buffer
     }
 
-    def topNonZeroFiguresGeneric(rrs: Seq[RunResult], startFigure: Figure, endFigure: Figure): Array[Figure] =
+    def topNonZeroFiguresGeneric(rrs: Vector[RunResult], startFigure: Figure, endFigure: Figure): Array[Figure] =
     {
         val occs = figuresOccurencies(rrs)
         var list = List[(Figure, HitCount)]()

@@ -1,7 +1,7 @@
 package com.example
 
 import com.example.loto.model.RunResult
-import com.example.loto.{MetricsTypes, SimpleGraphics, Strategy2}
+import com.example.loto.{Metrics, MetricsTypes, SimpleGraphics, Strategy2}
 
 class MetricsTest extends TestBase
 {
@@ -27,6 +27,16 @@ class MetricsTest extends TestBase
         RunResult("2171", "22.11.2014 23:59", "2  25  10  20  11"),
         RunResult("2170", "22.11.2014 11:59", "9  4  20  11  3")
     )
+
+    test("trustedIntervals")
+    {
+        val metrics = new Metrics()
+        assert(metrics.figuresTrustedInterval(Vector(1, 2, 3, 4, 5), 1.0) === (1, 5))
+        assert(metrics.figuresTrustedInterval(Vector(1, 2, 3, 4, 5), 0.9) === (2, 5))
+        assert(metrics.figuresTrustedInterval(Vector(1, 2, 3, 4, 5), 0.8) === (2, 5))
+        assert(metrics.figuresTrustedInterval(Vector(1, 1, 2, 3, 4, 5), 0.75) === (2, 4))
+        assert(metrics.figuresTrustedInterval(Vector(1, 1, 1, 2, 2, 3, 4, 5, 5, 5, 5), 0.5) === (2, 4))
+    }
 
     test("figuresOccurences 1, 2 input elements")
     {
