@@ -39,7 +39,6 @@ extends MetricsTypes
         buffer
     }
 
-    type SliceSize = Int
     def getIntersections(futureRrs: Vector[RunResult], bet: Array[Figure]): (MaxIntersection, MaxIntersectionCount, SliceSize) =
     {
         var ind = 0

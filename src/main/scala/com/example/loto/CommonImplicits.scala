@@ -12,4 +12,14 @@ object CommonImplicits
 
         def notIn(seq: Product) = !in(seq)
     }
+
+    class Incrementer(var obj: Int)
+    {
+        def ++ =
+        {
+            val res = obj
+            obj += 1
+            res
+        }
+    }
 }

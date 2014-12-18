@@ -12,13 +12,28 @@ import scala.util.Random
 
 class StrategiesOptimization extends FunSuite
 {
+    test("optimize strategy5 without non popular figures")
+    {
+        var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
+        for(betSize <- 6 to 8; startFigure <- 1 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy5(RunResults.runResults, betSize, startFigure, 36)
+            result = result ++ testStrategy4(strategy, 50)(_.topNonZeroFiguresWithoutNotPopular(_))
+                .map(x => ((betSize, startFigure), x))
+            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+        }
+        result foreach println
+    }
+
     test("optimize strategy4 with middle popular figures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        for(betSize <- 6 to 6; startFigure <- 1 to 1)
+        for(betSize <- 7 to 8; startFigure <- 17 to 17)
         {
             println((betSize, startFigure))
-            result = result ++ testStrategy4(betSize, startFigure, 36)(_.middleOccurencyFigures(_))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
+            result = result ++ testStrategy4(strategy, 50)(_.middleOccurencyFigures(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -28,10 +43,11 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 with zero popular figures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        for(betSize <- 6 to 12; startFigure <- 17 to 17)
+        for(betSize <- 6 to 9; startFigure <- 1 to 17)
         {
             println((betSize, startFigure))
-            result = result ++ testStrategy4(betSize, startFigure, 36)(_.zeroOccurencyFigures(_))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
+            result = result ++ testStrategy4(strategy, 50)(_.zeroOccurencyFigures(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -41,16 +57,18 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 without non popular figures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        for(betSize <- 7 to 8; startFigure <- 11 to 17)
+        for(betSize <- 7 to 8; startFigure <- 17 to 17)
         {
             println((betSize, startFigure))
-            result = result ++ testStrategy4(betSize, startFigure, 36)(_.topNonZeroFiguresWithoutNotPopular(_))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
+            result = result ++ testStrategy4(strategy, 50)(_.topNonZeroFiguresWithoutNotPopular(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
         result foreach println
     }
 
+/*
     test("optimize strategy3 without non popular figures")
     {
         var result = List[(Int, Int, Int, Int)]()
@@ -83,6 +101,7 @@ class StrategiesOptimization extends FunSuite
         testStrategy1((m, rrs) => m.topNonZeroFiguresWithoutNotPopular(rrs))
     }
 
+*/
     def testStrategy1(betGenerator: (Strategy1, Vector[RunResult]) => Array[Int]): Unit =
         testStrategy(new Strategy1(RunResults.runResults), betGenerator)
 
@@ -161,17 +180,16 @@ class StrategiesOptimization extends FunSuite
         result.sortBy(- _._4).take(200) foreach println
     }
 
-    def testStrategy4(topFiguresCount: Int = 7, startFigure: Int = 16, endFigure: Int = 36)(
-        betGenerator: (Strategy4, Vector[RunResult]) => Array[Int]) =
+    def testStrategy4[TStrategy <: StrategyWithMoneyStatistics](strategy: TStrategy, chunkSize: Int)(
+        betGenerator: (TStrategy, Vector[RunResult]) => Array[Int]) =
     {
-        val strategy = new Strategy4(RunResults.runResults, topFiguresCount, startFigure, endFigure)
-        val pRangeSize = 50
+        val pRangeSize = chunkSize
         val pRange1 = 1 to pRangeSize
         val pRange2 = (pRangeSize + 1) to 2 * pRangeSize
         val pRange3 = (2 * pRangeSize + 1) to 3 * pRangeSize
         val pRange4 = (3 * pRangeSize + 1) to 4 * pRangeSize
-        val sRange = 0 to 200
-        val fRange = 1 to 200
+        val sRange = 0 to pRangeSize * 4
+        val fRange = 1 to pRangeSize * 4
 
         type PastWindow = Int; type SkipWindow = Int; type FutureWindow = Int
         type Hit2 = Int; type Hit3 = Int; type Hit4 = Int; type Hit5 = Int
@@ -208,40 +226,4 @@ class StrategiesOptimization extends FunSuite
         }
         Await.result(result, 120 minutes)
     }
-/*
-    test("optimized optimize strategy1")
-    {
-        val pwiLowerBound = 1
-        val pwiUpperBound = 100
-        var pwi = pwiLowerBound
-
-        val swiLowerBound = 0
-        val swiUpperBound = 100
-        var swi = swiLowerBound
-
-        val fwiLowerBound = 1
-        val fwiUpperBound = 100
-        var fwi = fwiLowerBound
-
-        val metrics = new Metrics(RunResults.runResults)
-        var results = ArrayBuffer[(Int, Int, Int, Int)]()
-        while(pwi <= pwiUpperBound)
-        {
-            if(pwi % 10 == 0) println("+")
-            swi = swiLowerBound
-            while(swi <= swiUpperBound)
-            {
-                fwi = fwiLowerBound
-                while(fwi <= fwiUpperBound)
-                {
-                    results += ((pwi, swi, fwi, metrics.strategy1(pwi, swi, fwi)(metrics.topNonZeroFigures).count(_._2._1 == 5)))
-                    fwi += 1
-                }
-                swi += 1
-            }
-            pwi += 1
-        }
-        results.toList.sortBy(- _._4).take(100) foreach println
-    }
-*/
 }
