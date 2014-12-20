@@ -47,7 +47,7 @@
                    <p>Bet: </p>
                    <p><span ng-repeat="figure in item.bet">{{figure}} </span></p>
                    <p>Bet Candidate: </p>
-                   <p><span ng-repeat="el in item.betCandidate">{{el.figure}} - {{el.hit}} </span></p>
+                   <p ng-repeat="el in item.betCandidate"><span>{{el.figure}} - {{el.hit}} </span></p>
                 </div>
             </div>
         </div>

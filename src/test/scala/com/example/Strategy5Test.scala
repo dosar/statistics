@@ -1,6 +1,6 @@
 package com.example
 
-import com.example.loto.CommonImplicits.{Incrementer}
+import com.example.loto.CommonImplicits.Incrementer
 import com.example.loto.Strategy5
 
 /**
@@ -19,7 +19,7 @@ class Strategy5Test extends TestBase
             (1, 2, 3, 4, 5),
             (1, 2, 3, 4, 5)
         ), topFiguresCount = 4, startFigure = 1)
-        val result = strategy.withTopNonZeroFigures(2, 1, 2)
+        val result = strategy.apply(2, 1, 2)(strategy.topNonZeroFiguresGeneric)
         assert(result(0)._1.toSet == Set(1, 2, 9, 10))
         assert(result(0)._2 == (1, 1, 0, 0, 0, 0))
         assert(result(1)._1.toSet == Set(1, 2, 3, 10))

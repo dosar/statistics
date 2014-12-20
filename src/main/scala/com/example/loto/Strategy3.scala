@@ -13,12 +13,12 @@ extends MetricsTypes
 {
     def withTopNonZeroFigures(pastWindow: Int, skipWindow: Int, betWindow: Int) =
     {
-        apply(pastWindow, skipWindow, betWindow)(topNonZeroFigures)
+        apply(pastWindow, skipWindow, betWindow)(topNonZeroFiguresGeneric)
     }
 
     def withTopNonZeroFiguresWithoutNotPopular(pastWindow: Int, skipWindow: Int, betWindow: Int) =
     {
-        apply(pastWindow, skipWindow, betWindow)(topNonZeroFiguresWithoutNotPopular)
+        apply(pastWindow, skipWindow, betWindow)(topNonZeroFiguresGeneric)
     }
 
     def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Figure]) =

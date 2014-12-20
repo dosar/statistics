@@ -2,13 +2,19 @@ package com.example.loto
 
 import com.example.loto.model.RunResult
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-class Strategy5(runResults: Vector[RunResult], override val topFiguresCount: Int = 7, override val startFigure: Int = 16,
-    override val endFigure: Int = 36)
-extends MetricsTypes with StrategyWithMoneyStatistics[Vector[RunResult], Array[Int]]
+/*
+* Фильтруем значения используя доверительные интервалы
+* */
+class Strategy6(runResults: Vector[RunResult], override val topFiguresCount: Int = 7,
+    override val startFigure: Int = 16, override val endFigure: Int = 36)
+extends MetricsTypes with StrategyWithMoneyStatistics[(mutable.Map[Int, Int], Vector[RunResult]), Array[Int]]
 {
-    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Figure]) =
+    type PastWindow = Vector[RunResult]
+
+    override def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: ((mutable.Map[Figure, HitCount], PastWindow)) => Array[Figure]) =
     {
         val startIndex = pastWindow + skipWindow
         var index = startIndex
@@ -16,7 +22,8 @@ extends MetricsTypes with StrategyWithMoneyStatistics[Vector[RunResult], Array[I
         while (index <= runResults.length - betWindow)
         {
             val pastRrs = runResults.drop(index - pastWindow - skipWindow).take(pastWindow)
-            val bet = betGenerator(pastRrs)
+            val betCandidate = figuresOccurencies(pastRrs)
+            val bet = betGenerator(betCandidate, pastRrs)
             val futureRrs = runResults.slice(index, index + betWindow)
             val (statistics, indexIncrement) = getIntersectionStatistics(futureRrs, bet)
             buffer += ((bet, statistics))

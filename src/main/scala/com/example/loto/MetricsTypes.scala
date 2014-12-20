@@ -42,7 +42,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
         result
     }
 
-    def figuresOccurencies(rrs: Vector[RunResult]): mutable.Map[Figure, HitCount] =
+    def figuresOccurencies(rrs: Vector[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): mutable.Map[Figure, HitCount] =
     {
         var ind = 0
         val figuresMap = new Array[Int](36)
@@ -128,10 +128,6 @@ trait MetricsTypes extends MoneyHitStatisticsType
         array.toArray
     }
 
-    def topNonZeroFigures(rrs: Vector[RunResult]): Array[Figure] = topNonZeroFiguresGeneric(rrs, 1, 36)
-
-    def topNonZeroFiguresWithoutNotPopular(rrs: Vector[RunResult]): Array[Figure] = topNonZeroFiguresGeneric(rrs, startFigure, endFigure)
-
     /*
     * betCandidate должен быть отсортирован в нужном порядке
     * */
@@ -156,7 +152,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
         buffer
     }
 
-    def topNonZeroFiguresGeneric1(rrs: Vector[RunResult], startFigure: Figure, endFigure: Figure): Array[Figure] =
+    def topNonZeroFiguresGeneric1(rrs: Vector[RunResult]): Array[Figure] =
     {
         val figureHits = new Array[Int](endFigure - startFigure + 1)
         val incrementer = new Incrementer(startFigure)
@@ -179,10 +175,10 @@ trait MetricsTypes extends MoneyHitStatisticsType
             updateHits(rrResult(4))
             ind += 1
         }
-        PairArraySorter.sort(figureHits, figures, topFiguresCount)._2
+        new PairArrayHeapSorter(figureHits, figures, topFiguresCount).sort._2
     }
 
-    def topNonZeroFiguresGeneric(rrs: Vector[RunResult], startFigure: Figure, endFigure: Figure): Array[Figure] =
+    def topNonZeroFiguresGeneric(rrs: Vector[RunResult]): Array[Figure] =
     {
         val occs = figuresOccurencies(rrs)
         var list = List[(Figure, HitCount)]()

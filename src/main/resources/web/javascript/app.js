@@ -13,10 +13,103 @@ lotoApp.config(function($routeProvider){
            templateUrl: 'runresults.html',
            controller: 'DataCtrl'
        })
+       .when('/trustedIntervals', {
+           templateUrl: 'trustedintervals.html',
+           controller: 'TiCtrl'
+       })
+       .when('/occurencies', {
+           templateUrl: 'occurencies.html',
+           controller: 'OccCtrl'
+       })
        .when('/detailedata', {
            templateUrl: 'detailed_runresults.html',
            controller: 'DetailedResultsCtrl'
        });
+});
+
+lotoApp.controller('OccCtrl', function($scope, $http){
+
+    $http.get("/occurencies").success(function(result){
+        $scope.chartConfig.series = [];
+        $scope.chartConfig.series.push({data: result});
+    });
+
+    $scope.chartConfig = {
+        options: {
+            chart: {
+                type: 'line'
+                //width: 2000,
+                //height: 500
+            }
+        },
+        xAxis : { categories: []}
+        ,
+        yAxis : { categories: []}
+        ,
+        series: [{data:  []}]
+        ,
+        title: {
+            text: 'Частота выпадения чисел'
+        },
+        loading: false
+    }
+});
+
+lotoApp.controller('TiCtrl', function($scope, $http){
+
+    $scope.window = 10;
+    $scope.p1 = 90;
+    $scope.p2 = 90;
+    $scope.p3 = 90;
+    $scope.p4 = 90;
+    $scope.p5 = 90;
+
+    $scope.getData = function(){
+        $http.get("/trustedintervals?pw=" + $scope.window + "&&p1=" + $scope.p1 + "&&p2=" + $scope.p2 + "&&p3=" + $scope.p3 +
+            "&&p4=" + $scope.p4 + "&&p5=" + $scope.p5).success(function(result){
+                $scope.chartConfig.series = [];
+                $scope.pushInterval($scope.chartConfig, result, 0, "blue");
+                $scope.pushInterval($scope.chartConfig, result, 1, "green");
+                $scope.pushInterval($scope.chartConfig, result, 2, "yellow");
+                $scope.pushInterval($scope.chartConfig, result, 3, "red");
+                $scope.pushInterval($scope.chartConfig, result, 4, "black");
+            });
+    };
+
+    $scope.pushInterval = function(config, result, index, color) {
+        config.series.push({
+            data: jQuery.map(result, function (elem) {
+                return elem[index][0];
+            }),
+            color: color
+        });
+        config.series.push({
+            data: jQuery.map(result, function (elem) {
+                return elem[index][1];
+            }),
+            color: color
+        });
+    };
+
+    $scope.chartConfig = {
+        options: {
+            chart: {
+                type: 'line'
+                //width: 2000,
+                //height: 500
+            }
+        },
+        xAxis : { categories: []}
+        ,
+        yAxis : { categories: []}
+        ,
+        series: [{data:  []}]
+        ,
+        title: {
+            text: 'Доверительные интервалы'
+        },
+        loading: false
+    }
 });
 
 lotoApp.controller('MainCtrl', function($scope){
@@ -46,191 +139,13 @@ lotoApp.controller('DataCtrl', function ($scope, $http) {
 
 
 lotoApp.controller('DetailedResultsCtrl', function ($scope, $http) {
-    $scope.items = [
-            {
-            pastWS: 0,
-            skipWS: 0,
-            fWS: 0,
-            betCandidate: [
-                {figure: 1, hit: 6},
-                {figure: 2, hit: 5},
-                {figure: 3, hit: 4},
-                {figure: 4, hit: 3},
-                {figure: 5, hit: 2}
-            ],
-            bet: [1,2,3,4,5],
-            runResults: [
-                { result: [
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true},
-                         ],
-                  color: 'red'},
-                { result: [
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true}
-                         ],
-                  color: 'red'},
-                { result: [
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true}
-                         ],
-                  color: 'red'},
-                { result: [
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true}
-                         ],
-                  color: 'red'},
-                { result: [
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true}
-                         ],
-                  color: 'red'},
-                { result: [
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true},
-                            {figure: 0, intersected: false},
-                            {figure: 0, intersected: true}
-                         ],
-                  color: 'red'}
-            ]
-        },
-        {
-            pastWS: 0,
-            skipWS: 0,
-            fWS: 0,
-            betCandidate: [],
-            bet: [6,7,8,9,10],
-            runResults: [
-                { result: [
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true},
-                ],
-                    color: 'yellow'},
-                { result: [
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true}
-                ],
-                    color: 'yellow'},
-                { result: [
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true}
-                ],
-                    color: 'yellow'},
-                { result: [
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true}
-                ],
-                    color: 'yellow'},
-                { result: [
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true}
-                ],
-                    color: 'yellow'},
-                { result: [
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true},
-                    {figure: 1, intersected: false},
-                    {figure: 1, intersected: true}
-                ],
-                    color: 'yellow'}
-            ]
-        },
-        {
-            pastWS: 0,
-            skipWS: 0,
-            fWS: 0,
-            betCandidate: [],
-            bet: [11,12,13,14,15],
-            runResults: [
-                { result: [
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true},
-                ],
-                    color: 'green'},
-                { result: [
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true}
-                ],
-                    color: 'green'},
-                { result: [
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true}
-                ],
-                    color: 'green'},
-                { result: [
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true}
-                ],
-                    color: 'green'},
-                { result: [
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true}
-                ],
-                    color: 'green'},
-                { result: [
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true},
-                    {figure: 2, intersected: false},
-                    {figure: 2, intersected: true}
-                ],
-                    color: 'green'}
-            ]
-        }
-    ];
+    $scope.items = [];
     $scope.pastWindow = 10;
     $scope.skipWindow = 0;
     $scope.futureWindow = 10;
     $scope.startFigure = 1;
-    $scope.endFigure = 10;
-    $scope.topFiguresCount = 10;
+    $scope.endFigure = 36;
+    $scope.topFiguresCount = 7;
 
     $scope.getData = function(){
         $http.get("/strategydebug?pW=" + $scope.pastWindow + "&&sW=" +

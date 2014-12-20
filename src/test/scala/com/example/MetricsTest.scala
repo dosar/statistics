@@ -1,6 +1,6 @@
 package com.example
 
-import com.example.loto.model.RunResult
+import com.example.loto.model.{RunResults, RunResult}
 import com.example.loto.{Metrics, MetricsTypes, SimpleGraphics, Strategy2}
 
 class MetricsTest extends TestBase
@@ -27,6 +27,12 @@ class MetricsTest extends TestBase
         RunResult("2171", "22.11.2014 23:59", "2  25  10  20  11"),
         RunResult("2170", "22.11.2014 11:59", "9  4  20  11  3")
     )
+
+    test("figureOccurencies on all data")
+    {
+        val metrics = new Metrics()
+        metrics.figuresOccurencies(RunResults.runResults, 1, 36).toVector.sortBy(_._2) foreach println
+    }
 
     test("trustedIntervals")
     {

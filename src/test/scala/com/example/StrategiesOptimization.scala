@@ -19,7 +19,7 @@ class StrategiesOptimization extends FunSuite
         {
             println((betSize, startFigure))
             val strategy = new Strategy5(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4(strategy, 50)(_.topNonZeroFiguresWithoutNotPopular(_))
+            result = result ++ testStrategy4[Vector[RunResult], Strategy5](strategy, 50)(_.topNonZeroFiguresGeneric(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -29,11 +29,11 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 with middle popular figures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        for(betSize <- 7 to 8; startFigure <- 17 to 17)
+        for(betSize <- 6 to 8; startFigure <- 1 to 17)
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4(strategy, 50)(_.middleOccurencyFigures(_))
+            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 50)(_.middleOccurencyFigures(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -43,11 +43,11 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 with zero popular figures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        for(betSize <- 6 to 9; startFigure <- 1 to 17)
+        for(betSize <- 6 to 8; startFigure <- 1 to 17)
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4(strategy, 50)(_.zeroOccurencyFigures(_))
+            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 50)(_.zeroOccurencyFigures(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -57,11 +57,11 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 without non popular figures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        for(betSize <- 7 to 8; startFigure <- 17 to 17)
+        for(betSize <- 7 to 8; startFigure <- 16 to 17)
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4(strategy, 50)(_.topNonZeroFiguresWithoutNotPopular(_))
+            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 50)(_.topNonZeroFiguresGeneric1(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -180,8 +180,8 @@ class StrategiesOptimization extends FunSuite
         result.sortBy(- _._4).take(200) foreach println
     }
 
-    def testStrategy4[TStrategy <: StrategyWithMoneyStatistics](strategy: TStrategy, chunkSize: Int)(
-        betGenerator: (TStrategy, Vector[RunResult]) => Array[Int]) =
+    def testStrategy4[TFrom, TStrategy <: StrategyWithMoneyStatistics[TFrom, Array[Int]]](strategy: TStrategy, chunkSize: Int)(
+        betGenerator: (TStrategy, TFrom) => Array[Int]) =
     {
         val pRangeSize = chunkSize
         val pRange1 = 1 to pRangeSize
@@ -205,14 +205,14 @@ class StrategiesOptimization extends FunSuite
             {
                 if(pw % 10 == 0 && sw == 0 && fw == 1) println("+")
                 val strategyResult = strategy.apply(pw, sw, fw)(rrs => betGenerator(strategy, rrs))
-                if(strategyResult.forall(x => x._2._5 - x._2._6 > -(fw * 1000) /*&& x._2._6 <= 10000*/))
-                {
+//                if(strategyResult.forall(x => x._2._5 - x._2._6 > -(fw * 1000) /*&& x._2._6 <= 10000*/))
+//                {
                     val (hit2, hit3, hit4, hit5, mplus, mminus) = strategyResult.foldLeft(0, 0, 0, 0, 0, 0)
                     { case ((ah2, ah3, ah4, ah5, amp, amm), (_, (h2, h3, h4, h5, mp, mm))) =>
                         (ah2 + h2, ah3 + h3, ah4 + h4, ah5 + h5, amp + mp, amm + mm)
                     }
                     sorter.update(fragment, (pw, sw, fw, hit2, hit3, hit4, hit5, mplus, mminus))
-                }
+//                }
             }
         }
 

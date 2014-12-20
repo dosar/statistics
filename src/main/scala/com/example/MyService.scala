@@ -45,6 +45,29 @@ trait MyService extends HttpService with DefaultJsonProtocol
     pathPrefix("web") {
       getFromDirectory("/home/alespuh/work/loto/src/main/resources/web/")
     } ~
+    (path("trustedintervals") & parameters('pw.as[Int], 'p1.as[Int], 'p2.as[Int], 'p3.as[Int], 'p4.as[Int], 'p5.as[Int]))
+    { (window, p1, p2, p3, p4, p5) =>
+      get {
+        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
+          complete {
+            new SimpleGraphics(RunResults.runResults)
+                .trustedIntervals(window, p1 / 100.0, p2 / 100.0, p3 / 100.0, p4 / 100.0, p5 / 100.0).toJson.toString
+          }
+        }
+      }
+    } ~
+    path("occurencies")
+    {
+      get {
+        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
+          complete {
+            val metrics = new Metrics()
+            metrics.figuresOccurencies(RunResults.runResults, 1, 36).toVector
+                .sortBy(_._1).map(_._2).toArray.toJson.toString
+          }
+        }
+      }
+    } ~
     path("runresults") {
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
@@ -73,7 +96,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
             val strategy = new Strategy4(RunResults.runResults, takeCount, sf, ef)
-            val data: Array[StrategyIteration] = strategy.debug(pw, sw, fw)(strategy.topNonZeroFiguresWithoutNotPopular)
+            val data: Array[StrategyIteration] = strategy.debug(pw, sw, fw)(strategy.topNonZeroFiguresGeneric)
             data.toJson.toString
           }
         }

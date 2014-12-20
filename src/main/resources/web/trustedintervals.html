@@ -1,0 +1,40 @@
+<div class="container" style="margin-top: 60px">
+    <div ng-controller="TiCtrl" class="row">
+
+        <!--Доверительные интервалы на окне-->
+        <div class="row" style="overflow-x: auto">
+            <highchart id="chart" config="chartConfig"></highchart>
+        </div>
+
+        <!--<div id="rrs" class="row" />-->
+        <div class="row" style="margin-top: 20px">
+            <div class=" form group col-xs-4">
+                <label for="window">Окно для расчета доверительных интервалов</label>
+                <input ng-model="window" type="text" id="window" value="{{window}}"/>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="p1" class="">Вероятность доверительного интервала 1 числа из тиража</label>
+                <input ng-model="p1" type="text" id="p1" value="{{p1}}"/>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="p2" class="">Вероятность доверительного интервала 2 числа из тиража</label>
+                <input ng-model="p2" type="text" id="p2" value="{{p2}}"/>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 20px">
+            <div class=" form group col-xs-4">
+                <label for="p3">Вероятность доверительного интервала 3 числа из тиража</label>
+                <input ng-model="p3" type="text" id="p3" value="{{p3}}"/>
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="p4" class="">Вероятность доверительного интервала 4 числа из тиража</label>
+                <input ng-model="p4" type="text" id="p4" value="{{p4}}" />
+            </div>
+            <div class=" form group col-xs-4">
+                <label for="p5" class="">Вероятность доверительного интервала 5 числа из тиража</label>
+                <input ng-model="p5" type="text" id="p5"  value="{{p5}}"/>
+            </div>
+            <button type="button" ng-click="getData()">Go</button>
+        </div>
+    </div>
+</div>

@@ -9,7 +9,7 @@ import scala.collection.mutable.ArrayBuffer
 * */
 class Metrics(override val topFiguresCount: Int = 12) extends MetricsTypes
 {
-    def figuresTrustedInterval(figures: Vector[Figure], probability: Double) =
+    def figuresTrustedInterval(figures: Vector[Figure], probability: Double): (Int, Int) =
     {
         val figuresMap = new Array[Int](36)
         for(figure <- figures)
@@ -43,7 +43,9 @@ class Metrics(override val topFiguresCount: Int = 12) extends MetricsTypes
             }
         }
         val result = figureOccurencies.drop(dropCount).dropRight(dropRightCount)
-        (result.head._1, result.last._1)
+        if(result.isEmpty)
+            (figures(0), figures(0))
+        else (result.head._1, result.last._1)
     }
 
     def figureIntersectionStatistics(runResults: Vector[RunResult]) =

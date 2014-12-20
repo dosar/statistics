@@ -9,18 +9,8 @@ import scala.collection.mutable.ArrayBuffer
 * */
 class Strategy4(runResults: Vector[RunResult], override val topFiguresCount: Int = 7, override val startFigure: Int = 16,
     override val endFigure: Int = 36)
-extends MetricsTypes with StrategyWithMoneyStatistics
+extends MetricsTypes with StrategyWithMoneyStatistics[Vector[RunResult], Array[Int]]
 {
-    def withTopNonZeroFigures(pastWindow: Int, skipWindow: Int, betWindow: Int) =
-    {
-        apply(pastWindow, skipWindow, betWindow)(topNonZeroFigures)
-    }
-
-    def withTopNonZeroFiguresWithoutNotPopular(pastWindow: Int, skipWindow: Int, betWindow: Int) =
-    {
-        apply(pastWindow, skipWindow, betWindow)(topNonZeroFiguresWithoutNotPopular)
-    }
-
     def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Figure]): ArrayBuffer[(Array[Figure], (IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus))] =
     {
         val startIndex = pastWindow
@@ -63,7 +53,7 @@ extends MetricsTypes with StrategyWithMoneyStatistics
         while (index <= runResults.length - sliceSize)
         {
             val pastRrs = runResults.slice(index - pastWindow, index)
-            val betCandidate = figuresOccurencies(pastRrs)
+            val betCandidate = figuresOccurencies(pastRrs, 1, 36).toVector.sortBy(_._2)
             val bet = betGenerator(pastRrs).sorted
             val skipRrs = runResults.slice(index, index + skipWindow)
             val futureRrs = runResults.slice(index + skipWindow, index + sliceSize)
