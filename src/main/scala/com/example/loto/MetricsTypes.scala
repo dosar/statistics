@@ -1,6 +1,6 @@
 package com.example.loto
 
-import com.example.loto.CommonImplicits.Incrementer
+import com.example.loto.CommonImplicits.{IncrementerExcept, Incrementer}
 import com.example.loto.model.RunResult
 
 import scala.collection.mutable
@@ -92,6 +92,45 @@ trait MetricsTypes extends MoneyHitStatisticsType
             ind += 1
         }
         (figureMins, figureMaxs)
+    }
+
+    /*
+    * работаем в предположении, что endFigure = 36, а startFigure = 1
+    * */
+    def topNonZeroFiguresExceptSome(rrs: Vector[RunResult], figureToIgnores: Vector[Figure]): Array[Figure] =
+    {
+        val figureHits = new Array[Int](endFigure - startFigure - figureToIgnores.length + 1)
+        val incrementer = new IncrementerExcept(startFigure, figureToIgnores)
+        val figures = Array.fill(figureHits.length)(incrementer ++)
+        val figureIndexes = Array.fill(endFigure - startFigure + 2)(-1)
+
+        var ind = 0
+        while(ind < figures.length)
+        {
+            figureIndexes(figures(ind)) = ind
+            ind += 1
+        }
+
+        def updateHits(figure: Int) =
+        {
+            val figureIndex = figureIndexes(figure)
+            if(figureIndex != -1)
+                figureHits(figureIndex) += 1
+        }
+
+        ind = 0
+        while(ind < rrs.length)
+        {
+            val rrResult = rrs(ind).result
+            updateHits(rrResult(0))
+            updateHits(rrResult(1))
+            updateHits(rrResult(2))
+            updateHits(rrResult(3))
+            updateHits(rrResult(4))
+            ind += 1
+        }
+        val result = new PairArrayHeapSorter(figureHits, figures, topFiguresCount).sort
+        result._2
     }
 
     /*

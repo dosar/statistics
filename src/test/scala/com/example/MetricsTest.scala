@@ -3,6 +3,8 @@ package com.example
 import com.example.loto.model.{RunResults, RunResult}
 import com.example.loto.{Metrics, MetricsTypes, SimpleGraphics, Strategy2}
 
+import scala.collection.mutable
+
 class MetricsTest extends TestBase
 {
     val runResults = Vector(
@@ -32,6 +34,17 @@ class MetricsTest extends TestBase
     {
         val metrics = new Metrics()
         metrics.figuresOccurencies(RunResults.runResults, 1, 36).toVector.sortBy(_._2) foreach println
+    }
+
+    test("pair occurencies on all data")
+    {
+        val map = mutable.Map[(Int, Int), Int]() withDefaultValue(0)
+        for (rr <- RunResults.runResults)
+        {
+            for(i <- 0 until rr.result.length - 1; j <- i + 1 until rr.result.length)
+                map((rr.result(i), rr.result(j))) += 1
+        }
+        map.toVector.sortBy(_._2) foreach println
     }
 
     test("trustedIntervals")

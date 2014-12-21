@@ -26,6 +26,22 @@ class StrategiesOptimization extends FunSuite
         result foreach println
     }
 
+    test("optimize strategy4 with non zero and without all time non popular figures")
+    {
+        var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
+        val nonPopularFigures = Vector(11, 34, 12, 17, 29, 9, 3, 14, 13, 21, 24, 8, 20, 5, 31, 16, 25)
+        for(betSize <- 6 to 8; ignoredSize <- 1 to 17)
+        {
+            println((betSize, ignoredSize))
+            val nonUseful = nonPopularFigures.take(ignoredSize)
+            val strategy = new Strategy4(RunResults.runResults, betSize, 1, 36)
+            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 25)(_.topNonZeroFiguresExceptSome(_, nonUseful))
+                .map(x => ((betSize, ignoredSize), x))
+            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+        }
+        result foreach println
+    }
+
     test("optimize strategy4 with middle popular figures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()

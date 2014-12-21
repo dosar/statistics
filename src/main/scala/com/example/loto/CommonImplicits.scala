@@ -22,4 +22,18 @@ object CommonImplicits
             res
         }
     }
+
+    class IncrementerExcept(var obj: Int, except: Vector[Int])
+    {
+        def ++ =
+        {
+            var res = obj
+            while(except.contains(res))
+            {
+                res += 1
+            }
+            obj = res + 1
+            res
+        }
+    }
 }

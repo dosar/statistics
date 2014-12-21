@@ -14,6 +14,30 @@ class MetricsTypesTest extends TestBase
         (5, 15, 16, 17, 18)
     )
 
+    test("topFiguresExceptSome take 5")
+    {
+        val metrics = new MetricsTypes
+        {
+            override val topFiguresCount: Int = 5
+            override val startFigure = 1
+            override val endFigure = 36
+        }
+        val result = metrics.topNonZeroFiguresExceptSome(input, Vector(1))
+        assert(List(5, 4, 3, 2, 12) === result.toList)
+    }
+
+    test("topFiguresExceptSome take 4")
+    {
+        val metrics = new MetricsTypes
+        {
+            override val topFiguresCount: Int = 4
+            override val startFigure = 1
+            override val endFigure = 36
+        }
+        val result = metrics.topNonZeroFiguresExceptSome(input, Vector(1))
+        assert(List(5, 4, 3, 2) === result.toList)
+    }
+
     test("test topNonZeroFiguresGeneric")
     {
         val metrics = new MetricsTypes
