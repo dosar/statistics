@@ -36,7 +36,7 @@ class Strategy2(runResults: Vector[RunResult], override val topFiguresCount: Int
         while(ind < futureRrs.length)
         {
             val (rr, globalIndex) = futureRrs(ind)
-            val bet = betGenerator(betCandidate, futureRrs(ind - 1)._1)
+            val bet = betGenerator(betCandidate, runResults(globalIndex - 1))
             val intersection = intersectionSize(rr.result, bet)
             if(maxIntersection < intersection)
             {

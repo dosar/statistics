@@ -25,7 +25,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
     type Index = Int
 
     def topFiguresCount: Int
-    def startFigure = 17
+    def startFigure = 1
     def endFigure = 36
 
     def intersectionSize(rrResult: Array[Figure], bet: Seq[Figure]): Int =
@@ -37,6 +37,34 @@ trait MetricsTypes extends MoneyHitStatisticsType
             val figure = bet(ind)
             if(figure == rrResult(0) || figure == rrResult(1) || figure == rrResult(2) || figure == rrResult(3) || figure == rrResult(4))
                 result += 1
+            ind += 1
+        }
+        result
+    }
+
+    /*
+    * сверху цифру, потом пару для нее, и т.д.
+    * */
+    def piarFiguresOccurencies(rrs: Vector[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): mutable.Map[Figure, HitCount] =
+    {
+        var ind = 0
+        val figuresMap = new Array[Int](36)
+
+        while(ind < rrs.length)
+        {
+            val rrResult = rrs(ind).result
+            figuresMap(rrResult(0) - 1) += 1
+            figuresMap(rrResult(1) - 1) += 1
+            figuresMap(rrResult(2) - 1) += 1
+            figuresMap(rrResult(3) - 1) += 1
+            figuresMap(rrResult(4) - 1) += 1
+            ind += 1
+        }
+        ind = startFigure - 1
+        val result = mutable.Map[Int, Int]() withDefaultValue 0
+        while(ind < endFigure)
+        {
+            result += (ind + 1) -> figuresMap(ind)
             ind += 1
         }
         result
