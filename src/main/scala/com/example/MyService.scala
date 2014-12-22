@@ -43,7 +43,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
   val myRoute =
   {
     pathPrefix("web") {
-      getFromDirectory("/home/alespuh/work/loto/src/main/resources/web/")
+      getFromResourceDirectory("web")
     } ~
     (path("trustedintervals") & parameters('pw.as[Int], 'p1.as[Int], 'p2.as[Int], 'p3.as[Int], 'p4.as[Int], 'p5.as[Int]))
     { (window, p1, p2, p3, p4, p5) =>
