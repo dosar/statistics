@@ -147,22 +147,38 @@ lotoApp.controller('DetailedResultsCtrl', function ($scope, $http) {
     $scope.endFigure = 36;
     $scope.topFiguresCount = 7;
     $scope.customBets = [[]];
+    $scope.figureButtons = [[]];
+
+    var initFigureButtons = function(){
+        for(var j = 0; j < $scope.items.length; j++){
+            for(var i = 1; i <= 36; i++){
+                $scope.figureButtons[j][i] = false;
+            }
+        }
+    }
+
+    initFigureButtons();
 
     $scope.highlightCustomBet = function(index){
         var results = $scope.items[index].runResults;
-        for(var i = 0; i< results.length; i++)
+        for(var i = 0; i < $scope.items[index].runResults.length; i++)
         {
-            for(var j =0; j< results[i].result.length; j++)
+            for(var j = 0; j< $scope.items[index].runResults[i].result.length; j++)
             {
                 var element = results[i].result[j];
-                console.log(element.figure);
+                var customBet = $scope.customBets[index];
+                if(customBet.indexOf(element.figure) > -1)
+                    $scope.items[index].runResults[i].result[j].customIntersected = true;
+
             }
         }
-/*        $scope.items[index].runResults.each(function(runResult){
-            runResult.each(function(element){
-                console.log(element.figure)
-            });
-        });*/
+    }
+
+    $scope.resetCustomBet = function(index){
+        $scope.customBets[index] = [];
+            for(var i in $scope.figureButtons[index]){
+                $scope.figureButtons[index][i] = false;
+            }
     }
 
     $scope.getData = function(){
