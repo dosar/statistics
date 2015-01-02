@@ -70,29 +70,24 @@ trait MetricsTypes extends MoneyHitStatisticsType
         result
     }
 
-    def figuresOccurencies(rrs: Vector[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): mutable.Map[Figure, HitCount] =
+    /*
+    * индекс - число, значение - количество хитов. нулевой индекс не используется
+    * */
+    def figuresOccurencies(rrs: Vector[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): Array[HitCount] =
     {
+        val figuresMap = new Array[Int](37)
         var ind = 0
-        val figuresMap = new Array[Int](36)
-
         while(ind < rrs.length)
         {
             val rrResult = rrs(ind).result
-            figuresMap(rrResult(0) - 1) += 1
-            figuresMap(rrResult(1) - 1) += 1
-            figuresMap(rrResult(2) - 1) += 1
-            figuresMap(rrResult(3) - 1) += 1
-            figuresMap(rrResult(4) - 1) += 1
+            figuresMap(rrResult(0)) += 1
+            figuresMap(rrResult(1)) += 1
+            figuresMap(rrResult(2)) += 1
+            figuresMap(rrResult(3)) += 1
+            figuresMap(rrResult(4)) += 1
             ind += 1
         }
-        ind = startFigure - 1
-        val result = mutable.Map[Int, Int]() withDefaultValue 0
-        while(ind < endFigure)
-        {
-            result += (ind + 1) -> figuresMap(ind)
-            ind += 1
-        }
-        result
+        figuresMap
     }
 
     type Min = Int; type Max = Int

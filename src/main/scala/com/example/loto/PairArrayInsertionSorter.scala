@@ -1,5 +1,7 @@
 package com.example.loto
 
+import com.example.loto.CommonImplicits.Incrementer
+
 object PairArrayInsertionSorter
 {
     /*
@@ -32,15 +34,19 @@ object PairArrayInsertionSorter
 
     def take(master: Array[Int], slave: Array[Int], take: Int)(iterations: Int = Math.min(master.length, take)) =
     {
-        val (masterResult, slaveResult) = (new Array[Int](iterations), new Array[Int](iterations))
-        var ind = 0
-        while(ind < iterations)
+        if(iterations == master.length) (master, slave)
+        else
         {
-            masterResult(ind) = master(ind)
-            slaveResult(ind) = slave(ind)
-            ind += 1
+            val (masterResult, slaveResult) = (new Array[Int](iterations), new Array[Int](iterations))
+            var ind = 0
+            while(ind < iterations)
+            {
+                masterResult(ind) = master(ind)
+                slaveResult(ind) = slave(ind)
+                ind += 1
+            }
+            (masterResult, slaveResult)
         }
-        (masterResult, slaveResult)
     }
 }
 
@@ -95,5 +101,15 @@ class PairArrayHeapSorter(master: Array[Int], slave: Array[Int], take: Int)
     {
         PairArrayInsertionSorter.swap(master, oneIndex, anotherIndex)
         PairArrayInsertionSorter.swap(slave, oneIndex, anotherIndex)
+    }
+}
+
+object FiguresByHitSorter
+{
+    def topFigures(figureHits: Array[Int])(take: Int) =
+    {
+        val incrementer = new Incrementer(1)
+        val figures = Array.fill(figureHits.length)(incrementer ++)
+        PairArrayHeapSorter
     }
 }
