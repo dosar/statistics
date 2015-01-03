@@ -96,7 +96,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
           complete {
             val strategy = new Strategy4(RunResults.runResults, takeCount, sf, ef)
             val data: Array[StrategyIteration] = strategy.debug(pw, sw, fw)(strategy.topNonZeroFiguresGeneric)
-            data.toJson.toString
+            data.take(3).toJson.toString
           }
         }
       }

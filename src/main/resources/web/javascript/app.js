@@ -146,6 +146,24 @@ lotoApp.controller('DetailedResultsCtrl', function ($scope, $http) {
     $scope.startFigure = 1;
     $scope.endFigure = 36;
     $scope.topFiguresCount = 7;
+    $scope.customBets = [[]];
+
+    $scope.highlightCustomBet = function(index){
+        var results = $scope.items[index].runResults;
+        for(var i = 0; i< results.length; i++)
+        {
+            for(var j =0; j< results[i].result.length; j++)
+            {
+                var element = results[i].result[j];
+                console.log(element.figure);
+            }
+        }
+/*        $scope.items[index].runResults.each(function(runResult){
+            runResult.each(function(element){
+                console.log(element.figure)
+            });
+        });*/
+    }
 
     $scope.getData = function(){
         $http.get("/strategydebug?pW=" + $scope.pastWindow + "&&sW=" +
@@ -153,6 +171,9 @@ lotoApp.controller('DetailedResultsCtrl', function ($scope, $http) {
         "&&tFC=" + $scope.topFiguresCount + "&&sF=" + $scope.startFigure +
         "&&eF=" + $scope.endFigure).success(function(result){
             $scope.items = result;
+            for(var i = 0; i< result.length; i++){
+                $scope.customBets[i] = [];
+            }
         });
     }
 
