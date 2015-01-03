@@ -90,14 +90,16 @@ trait MyService extends HttpService with DefaultJsonProtocol
         }
       }
     } ~
-    (path("strategydebug") & parameters('pW.as[Int], 'sW.as[Int], 'fW.as[Int], 'tFC.as[Int], 'sF.as[Int], 'eF.as[Int]))
-    { (pw, sw, fw, takeCount, sf, ef) =>
+    (path("strategydebug") & parameters('pW.as[Int], 'sW.as[Int], 'fW.as[Int], 'tFC.as[Int], 'sF.as[Int], 'eF.as[Int], 'page.as[Int], 'iPP.as[Int]))
+    { (pw, sw, fw, takeCount, sf, ef, page, iPP) =>
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
             val strategy = new Strategy4(RunResults.runResults, takeCount, sf, ef)
             val data: Array[StrategyIteration] = strategy.debug(pw, sw, fw)(strategy.topNonZeroFiguresGeneric)
-            data.take(3).toJson.toString
+            val start = page * iPP - iPP
+            val end = start + iPP
+              (data.length, data.slice(start, end)).toJson.toString
           }
         }
       }
