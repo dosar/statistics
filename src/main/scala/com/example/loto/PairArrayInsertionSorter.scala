@@ -32,7 +32,7 @@ object PairArrayInsertionSorter
         input(anotherIndex) = current
     }
 
-    def take(master: Array[Int], slave: Array[Int], take: Int)(iterations: Int = Math.min(master.length, take)) =
+    def take(master: Array[Int], slave: Array[Int], take: Int)(implicit iterations: Int = Math.min(master.length, take)) =
     {
         if(iterations == master.length) (master, slave)
         else
@@ -52,7 +52,9 @@ object PairArrayInsertionSorter
 
 class PairArrayHeapSorter(master: Array[Int], slave: Array[Int], take: Int)
 {
-    def sort =
+    type MasterArray = Array[Int]; type SlaveArray = Array[Int]
+
+    def sort: (MasterArray, SlaveArray) =
     {
         createHeap
         var ind = master.length
@@ -62,7 +64,7 @@ class PairArrayHeapSorter(master: Array[Int], slave: Array[Int], take: Int)
             heapify(ind - 1)
             ind -= 1
         }
-        PairArrayInsertionSorter.take(master, slave, take)()
+        PairArrayInsertionSorter.take(master, slave, take)
     }
 
     private def heapify(heapLength: Int)
@@ -104,12 +106,39 @@ class PairArrayHeapSorter(master: Array[Int], slave: Array[Int], take: Int)
     }
 }
 
-object FiguresByHitSorter
+object FiguresByHitSorter extends MoneyHitStatisticsType
 {
-    def topFigures(figureHits: Array[Int])(take: Int) =
+    //-1 потому что в figureHits есть неиспользуемый элемент
+    def topFigures(figureHits: Array[Int])(implicit take: Int = figureHits.length - 1): Array[Int] =
+        topFiguresWithHits(figureHits)._2
+
+    //-1 потому что в figureHits есть неиспользуемый элемент
+    def topFiguresWithHits(figureHits: Array[Int])(implicit take: Int = figureHits.length - 1) =
     {
         val incrementer = new Incrementer(1)
         val figures = Array.fill(figureHits.length)(incrementer ++)
-        PairArrayHeapSorter
+        new PairArrayHeapSorter(figureHits, figures, take).sort
+    }
+
+    //-1 если нужно взять все
+    def topFiguresWithFilter(figureHits: Array[Int], filter: HitCount => Boolean)(implicit take: Int = -1): Array[Int] =
+    {
+        val filteredFigureHits = new Array[Int](figureHits.length)
+        val incrementer = new Incrementer(0)
+        val filteredFigures = Array.fill(figureHits.length)(incrementer ++)
+        var ind = 0
+        var filteredInd = 0
+        while(ind < figureHits.length)
+        {
+            if(filter(figureHits(ind)))
+            {
+                filteredFigureHits(filteredInd) = figureHits(ind)
+                filteredFigures(filteredInd) = ind
+                filteredInd += 1
+            }
+            ind += 1
+        }
+        val filteredTake = if(take == -1) filteredFigureHits.length else take
+        new PairArrayHeapSorter(filteredFigureHits, filteredFigures, filteredTake).sort._2
     }
 }

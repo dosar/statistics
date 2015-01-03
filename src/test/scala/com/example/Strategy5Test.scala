@@ -1,6 +1,5 @@
 package com.example
 
-import com.example.loto.CommonImplicits.Incrementer
 import com.example.loto.Strategy5
 
 /**
@@ -24,11 +23,5 @@ class Strategy5Test extends TestBase
         assert(result(0)._2 == (1, 1, 0, 0, 0, 0))
         assert(result(1)._1.toSet == Set(1, 2, 3, 10))
         assert(result(1)._2 == (0, 2, 0, 0, 0, 0))
-    }
-
-    test("dsgf")
-    {
-        var ind = new Incrementer(0)
-        assert(0 === Array.fill(36)(ind ++).toList)
     }
 }

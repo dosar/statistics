@@ -15,13 +15,14 @@ trait MoneyHitStatisticsType
     type IntersectionCount2 =Int; type IntersectionCount3 = Int; type IntersectionCount4 = Int; type IntersectionCount5 = Int
     type MoneyPlus = Int; type MoneyMinus = Int
     type Figure = Int
+    type HitCount = Int
+    type FigureHitsArray = Array[Int]
 }
 
 trait MetricsTypes extends MoneyHitStatisticsType
 {
     type MaxIntersection = Int
     type MaxIntersectionCount = Int
-    type HitCount = Int
     type Index = Int
 
     def topFiguresCount: Int
@@ -75,16 +76,30 @@ trait MetricsTypes extends MoneyHitStatisticsType
     * */
     def figuresOccurencies(rrs: Vector[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): Array[HitCount] =
     {
-        val figuresMap = new Array[Int](37)
         var ind = 0
+        val figuresMap = Array.fill[Int](37)
+        {
+            val result = if(ind < startFigure || ind > endFigure) -1
+            else 0
+            ind += 1
+            result
+        }
+
+        def updateMap(figure: Int) =
+        {
+            if(figure <= endFigure && figure >= startFigure)
+                figuresMap(figure) += 1
+        }
+
+        ind = 0
         while(ind < rrs.length)
         {
             val rrResult = rrs(ind).result
-            figuresMap(rrResult(0)) += 1
-            figuresMap(rrResult(1)) += 1
-            figuresMap(rrResult(2)) += 1
-            figuresMap(rrResult(3)) += 1
-            figuresMap(rrResult(4)) += 1
+            updateMap(rrResult(0))
+            updateMap(rrResult(1))
+            updateMap(rrResult(2))
+            updateMap(rrResult(3))
+            updateMap(rrResult(4))
             ind += 1
         }
         figuresMap

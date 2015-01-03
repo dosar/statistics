@@ -35,7 +35,7 @@ class StrategiesOptimization extends FunSuite
             println((betSize, ignoredSize))
             val nonUseful = nonPopularFigures.take(ignoredSize)
             val strategy = new Strategy4(RunResults.runResults, betSize, 1, 36)
-            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 50)(_.topNonZeroFiguresExceptSome(_, nonUseful))
+            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 25)(_.topNonZeroFiguresExceptSome(_, nonUseful))
                 .map(x => ((betSize, ignoredSize), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -127,9 +127,6 @@ class StrategiesOptimization extends FunSuite
     def testStrategy2(startFigure: Int = 1)(extractor: (Strategy2, Vector[RunResult]) => Array[(Int, Int)]): Unit =
     {
         val strategy = new Strategy2(RunResults.runResults, startFigure = startFigure)
-
-        def figuresOccurencies(rrs: Vector[RunResult]) =
-            strategy.figuresOccurencies(rrs).toArray.sortBy(- _._2)
 
         val pRange = 1 to 300
         val sRange = 0 to 300

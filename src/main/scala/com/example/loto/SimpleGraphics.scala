@@ -2,10 +2,11 @@ package com.example.loto
 
 import com.example.loto.model.RunResult
 
-class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount: Int = 12) extends MetricsTypes
+class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount: Int = 12, override val startFigure: Int = 1,
+    override val endFigure: Int = 36) extends MetricsTypes
 {
     def topFigures: Seq[Figure] =
-        figuresOccurencies(runResults).toVector.sortBy(_._2).map(_._1)
+        FiguresByHitSorter.topFigures(figuresOccurencies(runResults))
 
     def allFigureOccurencies = figuresOccurencies(runResults)
 
@@ -26,7 +27,7 @@ class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount
     * */
     def graficData4(topIntervalSize: Int, testIntervalSize: Int) = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
     { rrs =>
-        figuresOccurencies(rrs).filter(_._2 == 0).map(_._1).toSeq
+        figuresOccurencies(rrs).zipWithIndex.filter(_._1 == 0).map(_._2).toSeq
     }
 
     /*
@@ -34,7 +35,7 @@ class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount
     * */
     def graficData5(topIntervalSize: Int, testIntervalSize: Int) = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
     { rrs =>
-        figuresOccurencies(rrs).filter(_._2 > 0).toSeq.sortBy(_._2).map(_._1)
+        FiguresByHitSorter.topFiguresWithFilter(figuresOccurencies(rrs), _ > 0).reverse
     }
 
     /*
@@ -59,7 +60,7 @@ class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount
     }.toArray
 
     private def pastWindowToFutureWindow(pastIntervalSize: Int, futureIntervalSize: Int)(
-        figuresExtractor: Vector[RunResult] => Seq[Figure]) =
+        figuresExtractor: Vector[RunResult] => Seq[Figure]): Vector[(Seq[Figure], Int)] =
     {
         (for(pastWindow <- runResults.take(runResults.length - futureIntervalSize).zipWithIndex.sliding(pastIntervalSize)) yield
         {

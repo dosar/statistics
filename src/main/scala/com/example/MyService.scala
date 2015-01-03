@@ -62,8 +62,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
             val metrics = new Metrics()
-            metrics.figuresOccurencies(RunResults.runResults, 1, 36).toVector
-                .sortBy(_._1).map(_._2).toArray.toJson.toString
+            FiguresByHitSorter.topFigures(metrics.figuresOccurencies(RunResults.runResults, 1, 36)).toJson.toString
           }
         }
       }

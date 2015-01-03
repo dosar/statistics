@@ -27,7 +27,7 @@ class Strategy1Test extends TestBase
             (12, 13, 14, 15, 16),
             (20, 13, 11, 9, 35)
         ), 5)
-        checkArr(strategy.withTopNonZeroFigures(2, 0, 2), Seq((Array(6, 7, 8, 9, 10), (2, 1)), (Array(5, 1, 2, 3, 4), (0, 0))))
+        checkArr(strategy.withTopNonZeroFigures(2, 0, 2), Seq((Array(6, 7, 8, 9, 10), (2, 1)), (Array(5, 1, 6, 7, 3), (0, 0))))
     }
 
     test("strategy1 2, 1, 2")
@@ -42,6 +42,6 @@ class Strategy1Test extends TestBase
             (12, 13, 14, 15, 16),
             (1, 2, 3, 4, 5)
         ), 5)
-        checkArr(strategy.withTopNonZeroFigures(2, 1, 2), Seq((Array(6, 7, 8, 9, 10), (2, 2)), (Array(5, 1, 6, 7, 16), (2, 1))))
+        checkArr(strategy.withTopNonZeroFigures(2, 1, 2), Seq((Array(6, 7, 8, 9, 10), (2, 2)), (Array(1, 6, 7, 16, 15), (2, 1))))
     }
 }

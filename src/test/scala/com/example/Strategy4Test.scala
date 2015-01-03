@@ -22,7 +22,7 @@ class Strategy4Test extends TestBase
         assert(2 === statistics._2) // посчитали хиты на 3 числа
         assert(1 === statistics._3) // посчитали хиты на 4 числа
         assert(1 === statistics._4) // посчитали хиты на 5 чисел
-        assert((30 + 600 + 3000 + 300000) === statistics._5) // посчитали на сколько в плюс ушли
+        assert((30 + 600 + 3000 + 1000000) === statistics._5) // посчитали на сколько в плюс ушли
         assert(0 === statistics._6) // посчитали на сколько в минус ушли
     }
 
@@ -41,7 +41,7 @@ class Strategy4Test extends TestBase
         assert(2 === statistics._2) // посчитали хиты на 3 числа
         assert(1 === statistics._3) // посчитали хиты на 4 числа
         assert(1 === statistics._4) // посчитали хиты на 5 чисел
-        assert((30 + 600 + 3000 + 300000) === statistics._5) // посчитали на сколько в плюс ушли
+        assert((30 + 600 + 3000 + 1000000) === statistics._5) // посчитали на сколько в плюс ушли
         assert(30 === statistics._6) // посчитали на сколько в минус ушли
     }
 }

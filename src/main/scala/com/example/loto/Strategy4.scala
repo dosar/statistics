@@ -53,13 +53,14 @@ extends MetricsTypes with StrategyWithMoneyStatistics[Vector[RunResult], Array[I
         while (index <= runResults.length - sliceSize)
         {
             val pastRrs = runResults.slice(index - pastWindow, index)
-            val betCandidate = figuresOccurencies(pastRrs, 1, 36).toVector.sortBy(_._2)
+            val (betHits, betFiguresCandidate) = FiguresByHitSorter.topFiguresWithHits(figuresOccurencies(pastRrs, 1, 36))
             val bet = betGenerator(pastRrs).sorted
             val skipRrs = runResults.slice(index, index + skipWindow)
             val futureRrs = runResults.slice(index + skipWindow, index + sliceSize)
             val (_, indexIncrement) = getIntersectionStatistics(futureRrs, bet)
             val runItems = runResultItems(pastRrs, skipRrs, futureRrs.take(indexIncrement), bet)
-            siBuffer += StrategyIteration(betCandidate.map(bc => FigureOccurency(bc._1, bc._2)).toArray, bet, runItems.toArray)
+            siBuffer += StrategyIteration((0 until betFiguresCandidate.length)
+                .map(i => FigureOccurency(betFiguresCandidate(i), betHits(i))).toArray, bet, runItems.toArray)
             index += indexIncrement
         }
         siBuffer.toArray

@@ -1,7 +1,7 @@
 package com.example
 
 import com.example.loto.model.{RunResults, RunResult}
-import com.example.loto.{Metrics, MetricsTypes, SimpleGraphics, Strategy2}
+import com.example.loto._
 
 import scala.collection.mutable
 
@@ -33,7 +33,7 @@ class MetricsTest extends TestBase
     test("figureOccurencies on all data")
     {
         val metrics = new Metrics()
-        metrics.figuresOccurencies(RunResults.runResults, 1, 36).toVector.sortBy(_._2) foreach println
+        FiguresByHitSorter.topFigures(metrics.figuresOccurencies(RunResults.runResults, 1, 36)) foreach println
     }
 
     test("pair occurencies on all data")
@@ -59,10 +59,10 @@ class MetricsTest extends TestBase
 
     test("figuresOccurences 1, 2 input elements")
     {
-        val firstFO = (1 to 36).map(_ -> 0).toMap ++ Map(15 -> 1, 25 -> 1, 12 -> 1, 26 -> 1, 3 -> 1)
-        assert(new SimpleGraphics(runResults.take(1)).allFigureOccurencies === firstFO)
-        val secondFO = firstFO.updated(15, 2).updated(25, 2).updated(12, 2).updated(26, 2).updated(3, 2)
-        assert(new SimpleGraphics(Vector(runResults(0), runResults(2))).allFigureOccurencies === secondFO)
+        assert(new SimpleGraphics(runResults.take(1)).allFigureOccurencies.zipWithIndex.filter(_._1 > 0).map(_._2).toSet ===
+            Set(15, 25, 12, 26, 3))
+        assert(new SimpleGraphics(Vector(runResults(0), runResults(2))).allFigureOccurencies.zipWithIndex.filter(_._1 > 1).map(_._2).toSet ===
+            Set(15, 25, 12, 26, 3))
     }
 
     test("graficData2 past interval 3 future interval 2 takeCount 5")
@@ -79,7 +79,7 @@ class MetricsTest extends TestBase
             (10, 11, 1, 2, 3),
             (12, 13, 14, 15, 16),
             (20, 13, 11, 9, 35)
-        ), 5).graficData4(3, 2), Seq((Seq(32, 17, 35, 26, 23),0), (Seq(32, 17, 35, 26, 23),1)))
+        ), 5, 17, 36).graficData4(3, 2), Vector((Seq(17, 18, 19, 20, 21),0), (Seq(17, 18, 19, 20, 21),1)))
     }
 
     test("graficData5 3 2")
