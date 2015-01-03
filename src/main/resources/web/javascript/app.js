@@ -1,7 +1,7 @@
 /**
  * Created by alespuh on 26.11.14.
  */
-var lotoApp = angular.module('lotoApp', ['highcharts-ng', 'ui.chart', 'ngRoute']);
+var lotoApp = angular.module('lotoApp', ['highcharts-ng', 'ui.chart', 'ngRoute', 'ui.bootstrap', 'angularSpinner']);
 
 lotoApp.config(function($routeProvider){
    $routeProvider
@@ -138,7 +138,7 @@ lotoApp.controller('DataCtrl', function ($scope, $http) {
 });
 
 
-lotoApp.controller('DetailedResultsCtrl', function ($scope, $http) {
+lotoApp.controller('DetailedResultsCtrl', function ($scope, $http,  usSpinnerService) {
     $scope.items = [];
     $scope.pastWindow = 10;
     $scope.skipWindow = 0;
@@ -147,35 +147,125 @@ lotoApp.controller('DetailedResultsCtrl', function ($scope, $http) {
     $scope.endFigure = 36;
     $scope.topFiguresCount = 7;
     $scope.customBets = [[]];
+    $scope.figureButtons = [[]];
+
+    /*Spinner*/
+    $scope.startSpin = function(key){
+        usSpinnerService.spin(key);
+    };
+    $scope.stopSpin = function(key){
+        usSpinnerService.stop(key);
+    };
+
+    /*pagination*/
+    $scope.currentPage = 1;
+    $scope.iPP = 3;
+
+    $scope.pageChanged = function() {
+        $scope.startSpin('spinner-2');
+        $scope.getData();
+    };
+
+    $scope.setItemsPerPage = function(value){
+        $scope.iPP = value;
+        $scope.getData();
+    };
+
+
+    $scope.groupBy = function(arr, key){
+          var result = {};
+          var element;
+        for(var i = 0; i < arr.length; i++){
+            element = arr[i];
+            if(result[element[key]]){
+                result[element[key]].push(element.figure)
+            }
+            else
+            {
+                result[element[key]] = [element.figure]
+            }
+
+        }
+        return result;
+    };
+
+    function sortBy(key, reverse) {
+        return function(a, b) {
+            if (a[key] < b[key]) {
+                return reverse ? 1 : -1;
+            }
+            if (a[key] > b[key]) {
+                return reverse ? -1 : 1;;
+            }
+            return 0;
+        };
+    }
+
+    function chunk(arr, size) {
+        var newArr = [];
+        for (var i=0; i<arr.length; i+=size) {
+            newArr.push(arr.slice(i, i+size));
+        }
+        return newArr;
+    }
+
+
+    var initFigureButtons = function(){
+        for(var j = 0; j < $scope.items.length; j++){
+            for(var i = 1; i <= 36; i++){
+                $scope.figureButtons[j][i] = false;
+            }
+        }
+    };
+
+    initFigureButtons();
 
     $scope.highlightCustomBet = function(index){
         var results = $scope.items[index].runResults;
-        for(var i = 0; i< results.length; i++)
+        for(var i = 0; i < $scope.items[index].runResults.length; i++)
         {
-            for(var j =0; j< results[i].result.length; j++)
+            for(var j = 0; j< $scope.items[index].runResults[i].result.length; j++)
             {
                 var element = results[i].result[j];
-                console.log(element.figure);
+                var customBet = $scope.customBets[index];
+                if(customBet.indexOf(element.figure) > -1)
+                    $scope.items[index].runResults[i].result[j].customIntersected = true;
+
             }
         }
-/*        $scope.items[index].runResults.each(function(runResult){
-            runResult.each(function(element){
-                console.log(element.figure)
-            });
-        });*/
-    }
+    };
+
+    $scope.resetCustomBet = function(index){
+        $scope.customBets[index] = [];
+            for(var i in $scope.figureButtons[index]){
+                $scope.figureButtons[index][i] = false;
+            }
+    };
 
     $scope.getData = function(){
+        $scope.startSpin('spinner-1');
         $http.get("/strategydebug?pW=" + $scope.pastWindow + "&&sW=" +
         $scope.skipWindow + "&&fW="+$scope.futureWindow +
         "&&tFC=" + $scope.topFiguresCount + "&&sF=" + $scope.startFigure +
-        "&&eF=" + $scope.endFigure).success(function(result){
-            $scope.items = result;
-            for(var i = 0; i< result.length; i++){
+        "&&eF=" + $scope.endFigure + "&&page=" + $scope.currentPage + "&&iPP=" + $scope.iPP).success(function(result){
+
+            $scope.items = result[1];
+            for(var i = 0; i < $scope.items.length; i++){
+                $scope.items[i].groupedBetCandidate = $scope.groupBy($scope.items[i].betCandidate, "hit");
+                $scope.items[i].orderedBetCandidate = chunk($scope.items[i].betCandidate.sort(sortBy('figure', false)), 6);
+
+                for(var key in $scope.items[i].groupedBetCandidate){
+                    $scope.items[i].groupedBetCandidate[key].sort(function(a, b){return a-b});
+                }
+            }
+            $scope.totalItems = result[0];
+
+            for(var i = 0; i< result[1].length; i++){
                 $scope.customBets[i] = [];
             }
+            $scope.stopSpin('spinner-1');
         });
-    }
+    };
 
     $scope.renderOneFigure = function (figure, intersected){
         var additionalClass = intersected ? " badge" : "";
