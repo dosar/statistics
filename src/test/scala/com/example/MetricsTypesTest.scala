@@ -22,7 +22,7 @@ class MetricsTypesTest extends TestBase
             override val startFigure = 1
             override val endFigure = 36
         }
-        val result = metrics.topNonZeroFiguresExceptSome(input, Vector(1))
+        val result = metrics.topNonZeroFiguresExceptSome(input, Array(1))
         assert(List(5, 4, 3, 2, 12) === result.toList)
     }
 
@@ -34,7 +34,7 @@ class MetricsTypesTest extends TestBase
             override val startFigure = 1
             override val endFigure = 36
         }
-        val result = metrics.topNonZeroFiguresExceptSome(input, Vector(1))
+        val result = metrics.topNonZeroFiguresExceptSome(input, Array(1))
         assert(List(5, 4, 3, 2) === result.toList)
     }
 

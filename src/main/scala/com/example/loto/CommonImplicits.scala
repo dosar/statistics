@@ -23,7 +23,7 @@ object CommonImplicits
         }
     }
 
-    class IncrementerExcept(var obj: Int, except: Vector[Int])
+    class IncrementerExcept(var obj: Int, except: Set[Int])
     {
         def ++ =
         {

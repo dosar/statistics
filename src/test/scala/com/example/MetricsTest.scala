@@ -2,6 +2,7 @@ package com.example
 
 import com.example.loto.model.{RunResults, RunResult}
 import com.example.loto._
+import com.example.loto.sorter.FiguresByHitSorter
 
 import scala.collection.mutable
 

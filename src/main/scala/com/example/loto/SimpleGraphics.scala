@@ -1,6 +1,7 @@
 package com.example.loto
 
 import com.example.loto.model.RunResult
+import com.example.loto.sorter.FiguresByHitSorter
 
 class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount: Int = 12, override val startFigure: Int = 1,
     override val endFigure: Int = 36) extends MetricsTypes

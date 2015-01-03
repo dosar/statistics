@@ -29,11 +29,11 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 with non zero and without all time non popular figures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        val nonPopularFigures = Vector(11, 34, 12, 17, 29, 9, 3, 14, 13, 21, 24, 8, 20, 5, 31, 16, 25)
-        for(betSize <- 6 to 8; ignoredSize <- 1 to 17)
+        val nonPopularFigures = Vector(3, 5, 8, 9, 11, 12, 13, 14, 16, 17, 20, 21, 24, 25, 29, 31, 34)
+        for(betSize <- 6 to 6; ignoredSize <- 1 to 17)
         {
             println((betSize, ignoredSize))
-            val nonUseful = nonPopularFigures.take(ignoredSize)
+            val nonUseful = (nonPopularFigures.take(ignoredSize) :+ 0).toArray
             val strategy = new Strategy4(RunResults.runResults, betSize, 1, 36)
             result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 25)(_.topNonZeroFiguresExceptSome(_, nonUseful))
                 .map(x => ((betSize, ignoredSize), x))

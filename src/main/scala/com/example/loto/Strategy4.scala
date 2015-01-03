@@ -1,6 +1,7 @@
 package com.example.loto
 
 import com.example.loto.model.RunResult
+import com.example.loto.sorter.FiguresByHitSorter
 
 import scala.collection.mutable.ArrayBuffer
 

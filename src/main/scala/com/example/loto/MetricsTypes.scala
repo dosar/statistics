@@ -1,7 +1,9 @@
 package com.example.loto
 
-import com.example.loto.CommonImplicits.{IncrementerExcept, Incrementer}
+import com.example.loto.CommonImplicits.Incrementer
+import com.example.loto.array.ArrayFiller
 import com.example.loto.model.RunResult
+import com.example.loto.sorter.PairArrayHeapSorter
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -134,13 +136,13 @@ trait MetricsTypes extends MoneyHitStatisticsType
 
     /*
     * работаем в предположении, что endFigure = 36, а startFigure = 1
+    * figureToIgnores - отсортирован по возрастанию и завершается 0
     * */
-    def topNonZeroFiguresExceptSome(rrs: Vector[RunResult], figureToIgnores: Vector[Figure]): Array[Figure] =
+    def topNonZeroFiguresExceptSome(rrs: Vector[RunResult], figureToIgnores: Array[Figure]): Array[Figure] =
     {
-        val figureHits = new Array[Int](endFigure - startFigure - figureToIgnores.length + 1)
-        val incrementer = new IncrementerExcept(startFigure, figureToIgnores)
-        val figures = Array.fill(figureHits.length)(incrementer ++)
-        val figureIndexes = Array.fill(endFigure - startFigure + 2)(-1)
+        val figureHits = new Array[Int](endFigure - startFigure - figureToIgnores.size + 2)
+        val figures = ArrayFiller.createFiguresArray(figureToIgnores)
+        val figureIndexes = ArrayFiller.createArray(endFigure - startFigure + 2, -1)
 
         var ind = 0
         while(ind < figures.length)
@@ -318,7 +320,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
     }
 
     def getIntersectionStatistics(futureRrs: Vector[RunResult], bet: Array[Figure]):
-    ((IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus), SliceSize) =
+        ((IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus), SliceSize) =
     {
         var ind = 0
         var (i2, i3, i4, i5, mplus, mminus) = (0, 0, 0, 0, 0, 0)
