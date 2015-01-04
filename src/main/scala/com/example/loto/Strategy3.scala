@@ -21,7 +21,7 @@ extends MetricsTypes
         apply(pastWindow, skipWindow, betWindow)(topNonZeroFiguresGeneric)
     }
 
-    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Figure]) =
+    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Int]) =
     {
         val startIndex = pastWindow
         val sliceSize = skipWindow + betWindow
@@ -39,7 +39,7 @@ extends MetricsTypes
         buffer
     }
 
-    def getIntersections(futureRrs: Vector[RunResult], bet: Array[Figure]): (MaxIntersection, MaxIntersectionCount, SliceSize) =
+    def getIntersections(futureRrs: Vector[RunResult], bet: Array[Int]): (MaxIntersection, MaxIntersectionCount, SliceSize) =
     {
         var ind = 0
         var (maxIntersection, maxIntersectionCount) = (0, 0)

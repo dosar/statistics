@@ -173,8 +173,8 @@ lotoApp.controller('DetailedResultsCtrl', function ($scope, $http,  usSpinnerSer
 
 
     $scope.groupBy = function(arr, key){
-          var result = {};
-          var element;
+        var result = {};
+        var element;
         for(var i = 0; i < arr.length; i++){
             element = arr[i];
             if(result[element[key]]){

@@ -12,7 +12,7 @@ class Strategy4(runResults: Vector[RunResult], override val topFiguresCount: Int
     override val endFigure: Int = 36)
 extends MetricsTypes with StrategyWithMoneyStatistics[Vector[RunResult], Array[Int]]
 {
-    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Figure]): ArrayBuffer[(Array[Figure], (IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus))] =
+    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Int]): ArrayBuffer[(Array[Figure], (IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus))] =
     {
         val startIndex = pastWindow
         val sliceSize = skipWindow + betWindow
@@ -30,7 +30,7 @@ extends MetricsTypes with StrategyWithMoneyStatistics[Vector[RunResult], Array[I
         buffer
     }
 
-    def debug(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Figure]): Array[StrategyIteration] =
+    def debug(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Int]): Array[StrategyIteration] =
     {
         val startIndex = pastWindow
         val sliceSize = skipWindow + betWindow
@@ -54,6 +54,7 @@ extends MetricsTypes with StrategyWithMoneyStatistics[Vector[RunResult], Array[I
         while (index <= runResults.length - sliceSize)
         {
             val pastRrs = runResults.slice(index - pastWindow, index)
+            //от 1 до 36, чтобы видеть все хиты
             val (betHits, betFiguresCandidate) = FiguresByHitSorter.topFiguresWithHits(figuresOccurencies(pastRrs, 1, 36))
             val bet = betGenerator(pastRrs).sorted
             val skipRrs = runResults.slice(index, index + skipWindow)

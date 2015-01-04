@@ -16,12 +16,12 @@ class SimpleParallelSort[TElem: ClassTag](chunks: Int = 4, chunkSize: Int = 50, 
         val chunkArray = chunkArrays(chunk)
         val existed = valueGetter(chunkArray(0))
         val candidate = valueGetter(elem)
-        if(existed.compareTo(candidate) < 0)
+        if(compare(existed, candidate) < 0)
         {
             chunkArray(0) = elem
             chunkIndexes(chunk) = 1
         }
-        else if(existed.compareTo(candidate) == 0 && chunkIndexes(chunk) < chunkSize)
+        else if(compare(existed, candidate) == 0 && chunkIndexes(chunk) < chunkSize)
         {
             chunkArray(chunkIndexes(chunk)) = elem
             chunkIndexes(chunk) += 1

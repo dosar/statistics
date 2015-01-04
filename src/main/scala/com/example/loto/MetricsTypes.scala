@@ -3,7 +3,7 @@ package com.example.loto
 import com.example.loto.CommonImplicits.Incrementer
 import com.example.loto.array.ArrayFiller
 import com.example.loto.model.RunResult
-import com.example.loto.sorter.PairArrayHeapSorter
+import com.example.loto.sorter.{FiguresByHitSorter, PairArrayHeapSorter}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -31,7 +31,10 @@ trait MetricsTypes extends MoneyHitStatisticsType
     def startFigure = 1
     def endFigure = 36
 
-    def intersectionSize(rrResult: Array[Figure], bet: Seq[Figure]): Int =
+    /*
+    * Int = Figure
+    * */
+    def intersectionSize(rrResult: Array[Int], bet: Array[Int]): Int =
     {
         var ind = 0
         var result = 0
@@ -170,6 +173,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
             ind += 1
         }
         val result = new PairArrayHeapSorter(figureHits, figures, topFiguresCount).sort
+//        val result = PairArrayInsertionSorter.sort(figureHits, figures, topFiguresCount)
         result._2
     }
 
@@ -179,17 +183,17 @@ trait MetricsTypes extends MoneyHitStatisticsType
     def middleOccurencyFigures(rrs: Vector[RunResult]) =
     {
         val occs = figuresOccurencies(rrs)
-        val arr = new Array[(Figure, HitCount)](endFigure - startFigure + 1)
-        var figure = startFigure
-        while(figure <= endFigure)
+        val topFigures = FiguresByHitSorter.topFigures(occs)
+        val result = new Array[Int](topFiguresCount)
+        var occInd = (topFigures.length - result.length) / 2
+        var resultInd = 0
+        while(resultInd < result.length)
         {
-            val hits = occs(figure)
-            arr(figure - startFigure) = (figure, hits)
-            figure += 1
+            result(resultInd) = topFigures(occInd)
+            occInd += 1
+            resultInd += 1
         }
-        val sorted = arr.sortBy(- _._2)
-        val drop = (arr.length - topFiguresCount) / 2
-        sorted.map(_._1).drop(drop).take(topFiguresCount).toArray
+        result
     }
 
     def zeroOccurencyFigures(rrs: Vector[RunResult]) =
@@ -319,7 +323,10 @@ trait MetricsTypes extends MoneyHitStatisticsType
         else 0
     }
 
-    def getIntersectionStatistics(futureRrs: Vector[RunResult], bet: Array[Figure]):
+    /*
+    * Int = Figure
+    * */
+    def getIntersectionStatistics(futureRrs: Vector[RunResult], bet: Array[Int]):
         ((IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus), SliceSize) =
     {
         var ind = 0
@@ -329,7 +336,8 @@ trait MetricsTypes extends MoneyHitStatisticsType
         {
             val rr = futureRrs(ind)
             val intersection = intersectionSize(rr.result, bet)
-            if(intersection == 5) return ((i2, i3, i4, 1, 1000000 + mplus, mminus), ind + 1)
+            if(intersection == 5)
+                return ((i2, i3, i4, 1, 1000000 + mplus, mminus), ind + 1)
             else if(intersection == 2) i2 += 1
             else if(intersection == 3) i3 += 1
             else if(intersection == 4) i4 += 1

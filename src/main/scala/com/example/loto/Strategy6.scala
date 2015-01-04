@@ -14,7 +14,7 @@ extends MetricsTypes with StrategyWithMoneyStatistics[(Array[Int], Vector[RunRes
     type PastWindow = Vector[RunResult]
 
     override def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(
-        betGenerator: ((FigureHitsArray, PastWindow)) => Array[Figure]) =
+        betGenerator: ((FigureHitsArray, PastWindow)) => Array[Int]) =
     {
         val startIndex = pastWindow + skipWindow
         var index = startIndex

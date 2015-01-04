@@ -13,9 +13,10 @@ object FiguresByHitSorter extends MoneyHitStatisticsType
         topFiguresWithHits(figureHits)._2
 
     //-1 потому что в figureHits есть неиспользуемый элемент
-    def topFiguresWithHits(figureHits: Array[Int])(implicit take: Int = figureHits.length - 1) =
+    def topFiguresWithHits(figureHits: Array[Int])(implicit take: Int = figureHits.length - 1):
+        (PairArrayHeapSorter#MasterArray, PairArrayHeapSorter#SlaveArray) =
     {
-        val incrementer = new Incrementer(1)
+        val incrementer = new Incrementer(0)
         val figures = Array.fill(figureHits.length)(incrementer ++)
         new PairArrayHeapSorter(figureHits, figures, take).sort
     }

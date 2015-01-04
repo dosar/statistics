@@ -9,7 +9,7 @@ class Strategy2(runResults: Vector[RunResult], override val topFiguresCount: Int
 {
     type PreviousRR = RunResult
     def strategy2(pastWindow: Int, skipWindow: Int, betWindow: Int)(extractor: Vector[RunResult] => Array[(Figure, HitCount)])(
-        betGenerator: (Array[(Figure, HitCount)], PreviousRR) => Array[Figure]) =
+        betGenerator: (Array[(Figure, HitCount)], PreviousRR) => Array[Int]) =
     {
         val startIndex = pastWindow
         val sliceSize = skipWindow + betWindow
@@ -29,7 +29,7 @@ class Strategy2(runResults: Vector[RunResult], override val topFiguresCount: Int
     }
 
     def getIntersections(futureRrs: Vector[(RunResult, Int)], betCandidate: Array[(Figure, HitCount)])(
-        betGenerator: (Array[(Figure, HitCount)], PreviousRR) => Array[Figure]): (MaxIntersection, MaxIntersectionCount) =
+        betGenerator: (Array[(Figure, HitCount)], PreviousRR) => Array[Int]): (MaxIntersection, MaxIntersectionCount) =
     {
         var ind = 0
         var (maxIntersection, maxIntersectionCount) = (0, 0)
