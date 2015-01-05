@@ -138,6 +138,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
     }
 
     /*
+    * Метрика
     * работаем в предположении, что endFigure = 36, а startFigure = 1
     * figureToIgnores - отсортирован по возрастанию и завершается 0
     * */
@@ -178,6 +179,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
     }
 
     /*
+    * Метрика
     * в том числе с нулями
     * */
     def middleOccurencyFigures(rrs: Vector[RunResult]) =
@@ -196,6 +198,9 @@ trait MetricsTypes extends MoneyHitStatisticsType
         result
     }
 
+    /*
+    * Метрика
+    * */
     def zeroOccurencyFigures(rrs: Vector[RunResult]) =
     {
         val occs = figuresOccurencies(rrs)
@@ -212,6 +217,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
     }
 
     /*
+    * Метрика
     * betCandidate должен быть отсортирован в нужном порядке
     * */
     def topNonZeroFiguresWithoutPrevious(betCandidate: Array[(Figure, HitCount)], previousRunResult: RunResult): Array[Figure] =
@@ -234,7 +240,9 @@ trait MetricsTypes extends MoneyHitStatisticsType
         }
         buffer
     }
-
+    /*
+    * Метрика
+    * */
     def topNonZeroFiguresGeneric1(rrs: Vector[RunResult]): Array[Figure] =
     {
         val figureHits = new Array[Int](endFigure - startFigure + 1)
@@ -260,6 +268,10 @@ trait MetricsTypes extends MoneyHitStatisticsType
         }
         new PairArrayHeapSorter(figureHits, figures, topFiguresCount).sort._2
     }
+
+    /*
+    * Метрика
+    * */
 
     def topNonZeroFiguresGeneric(rrs: Vector[RunResult]): Array[Figure] =
     {
