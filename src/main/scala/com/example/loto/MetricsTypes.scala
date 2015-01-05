@@ -1,7 +1,8 @@
 package com.example.loto
 
 import com.example.loto.CommonImplicits.Incrementer
-import com.example.loto.array.ArrayFiller
+import com.example.loto.array.ArrayPerformanceUtil
+import com.example.loto.betgenerator.FromMiddleOccurenciesBetGenerator
 import com.example.loto.model.RunResult
 import com.example.loto.sorter.{FiguresByHitSorter, PairArrayHeapSorter}
 
@@ -49,6 +50,39 @@ trait MetricsTypes extends MoneyHitStatisticsType
     }
 
     /*
+    * возвращает массив массивов. в каждом внутреннем массиве первый элемент - длина
+    * */
+    def backFigureOccurencies(rrs: Vector[RunResult]): Array[Array[Figure]] =
+    {
+        import ArrayPerformanceUtil._
+        var figure = 0
+        val figureHits = figuresOccurencies(rrs)
+        val result = new Array[Array[Figure]](maxForArray(figureHits) + 1)
+        while(figure < figureHits.length)
+        {
+            val hits = figureHits(figure)
+            if(hits > -1)
+            {
+                if(result(hits) == null)
+                    result(hits) = new Array[Int](rrs.length)
+                safeSetArrayElement(result(hits), result(hits)(0) + 1, figure){ result(hits) = _ }
+                result(hits)(0) += 1
+            }
+
+            figure += 1
+        }
+        result
+    }
+
+    //индекс - количество хитов, значение - числа выпавшие индекс раз
+    //там где для хитов нет чисел - нулл
+    def fromMiddleOccurencies(rrs: Vector[RunResult]) =
+    {
+        val figuresByHit = backFigureOccurencies(rrs)
+        new FromMiddleOccurenciesBetGenerator(figuresByHit, topFiguresCount, startFigure, endFigure).generate()
+    }
+
+    /*
     * сверху цифру, потом пару для нее, и т.д.
     * */
     def piarFiguresOccurencies(rrs: Vector[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): mutable.Map[Figure, HitCount] =
@@ -82,13 +116,13 @@ trait MetricsTypes extends MoneyHitStatisticsType
     def figuresOccurencies(rrs: Vector[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): Array[HitCount] =
     {
         var ind = 0
-        val figuresMap = Array.fill[Int](37)
+        val figuresMap = ArrayPerformanceUtil.createArray(37,
         {
             val result = if(ind < startFigure || ind > endFigure) -1
             else 0
             ind += 1
             result
-        }
+        })
 
         def updateMap(figure: Int) =
         {
@@ -144,8 +178,8 @@ trait MetricsTypes extends MoneyHitStatisticsType
     def topNonZeroFiguresExceptSome(rrs: Vector[RunResult], figureToIgnores: Array[Figure]): Array[Figure] =
     {
         val figureHits = new Array[Int](endFigure - startFigure - figureToIgnores.size + 2)
-        val figures = ArrayFiller.createFiguresArray(figureToIgnores)
-        val figureIndexes = ArrayFiller.createArray(endFigure - startFigure + 2, -1)
+        val figures = ArrayPerformanceUtil.createFiguresArray(figureToIgnores)
+        val figureIndexes = ArrayPerformanceUtil.createArray(endFigure - startFigure + 2, -1)
 
         var ind = 0
         while(ind < figures.length)
@@ -178,12 +212,12 @@ trait MetricsTypes extends MoneyHitStatisticsType
     }
 
     /*
-    * в том числе с нулями
+    * в том числе с нулями и с числами которые фильтруются, если они попадают
+    * в середину (непонятно как такое может случиться с хитами в -1)
     * */
     def middleOccurencyFigures(rrs: Vector[RunResult]) =
     {
-        val occs = figuresOccurencies(rrs)
-        val topFigures = FiguresByHitSorter.topFigures(occs)
+        val topFigures = FiguresByHitSorter.topFigures(figuresOccurencies(rrs))
         val result = new Array[Int](topFiguresCount)
         var occInd = (topFigures.length - result.length) / 2
         var resultInd = 0

@@ -18,7 +18,7 @@ extends MetricsTypes with StrategyWithMoneyStatistics[Vector[RunResult], Array[I
         val sliceSize = skipWindow + betWindow
         var index = startIndex
         val buffer = ArrayBuffer[(Array[Figure], (IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus))]()
-        while (index <= runResults.length - sliceSize)
+        while (index < runResults.length - skipWindow)
         {
             val pastRrs = runResults.slice(index - pastWindow, index)
             val bet = betGenerator(pastRrs)
@@ -51,7 +51,7 @@ extends MetricsTypes with StrategyWithMoneyStatistics[Vector[RunResult], Array[I
                 }
         }
 
-        while (index <= runResults.length - sliceSize)
+        while (index < runResults.length - skipWindow)
         {
             val pastRrs = runResults.slice(index - pastWindow, index)
             //от 1 до 36, чтобы видеть все хиты

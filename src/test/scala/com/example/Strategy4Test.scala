@@ -2,11 +2,22 @@ package com.example
 
 import com.example.loto.Strategy4
 
-/**
- * Created by alespuh on 09.12.14.
- */
 class Strategy4Test extends TestBase
 {
+    test("strategy4 test apply")
+    {
+        val strategy = new Strategy4(Vector(
+            (1, 2, 3, 4, 5),
+            (1, 2, 3, 4, 5),
+            (1, 4, 5, 6, 7),
+            (1, 4, 5, 6, 7),
+            (1, 2, 3, 4, 5)
+        ), 5, 1, 36)
+        val applyResult = strategy.apply(2, 0, 2)(strategy.topNonZeroFiguresGeneric)
+        assert(applyResult.map{ case(figures, statistics) => (figures.toSet, statistics) }.toSet ===
+            Set((Set(1, 2, 3, 4, 5), (0, 2, 0, 0, 600, 0)), (Set(1, 4, 5, 6, 7), (0, 1, 0, 0, 300, 0))))
+    }
+
     test("strategy 4 intersections with statistics with 5 hit and zero minus")
     {
         val strategy = new Strategy4(Vector())

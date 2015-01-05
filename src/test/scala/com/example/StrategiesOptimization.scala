@@ -11,6 +11,7 @@ import scala.concurrent.{Await, Future}
 
 class StrategiesOptimization extends FunSuite
 {
+    /* вторая стратегия из лучших */
     test("optimize strategy5 topNonZeroFiguresGeneric")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
@@ -25,6 +26,7 @@ class StrategiesOptimization extends FunSuite
         result foreach println
     }
 
+    /* тут тоже не очень */
     test("optimize strategy4 topNonZeroFiguresExceptSome")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
@@ -42,6 +44,22 @@ class StrategiesOptimization extends FunSuite
         result foreach println
     }
 
+    test("optimize strategy4 fromMiddleOccurencies")
+    {
+        var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
+        val rrs = RunResults.runResults
+        for(betSize <- 6 to 8; startFigure <- 1 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy4(rrs, betSize, startFigure, 36)
+            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 75)(_.fromMiddleOccurencies(_))
+                .map(x => ((betSize, startFigure), x))
+            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+        }
+        result foreach println
+    }
+
+    /* лучшая стратега на данный момент */
     test("optimize strategy4 middleOccurencyFigures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
@@ -49,13 +67,14 @@ class StrategiesOptimization extends FunSuite
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 50)(_.middleOccurencyFigures(_))
+            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 75)(_.middleOccurencyFigures(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
         result foreach println
     }
 
+    /* тут тоже не очень */
     test("optimize strategy4 zeroOccurencyFigures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
@@ -70,6 +89,7 @@ class StrategiesOptimization extends FunSuite
         result foreach println
     }
 
+    /* эта шляпа стабильно не приносит хороших результатов */
     test("optimize strategy4 topNonZeroFiguresGeneric1")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()

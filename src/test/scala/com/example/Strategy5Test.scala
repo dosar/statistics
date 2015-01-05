@@ -7,7 +7,7 @@ import com.example.loto.Strategy5
  */
 class Strategy5Test extends TestBase
 {
-    test("strategy 5 intersections with statistics with 5 hit and nonzero minus")
+    test("strategy 5 test apply")
     {
         val strategy = new Strategy5(Vector(
             (1, 2, 8, 9, 10),

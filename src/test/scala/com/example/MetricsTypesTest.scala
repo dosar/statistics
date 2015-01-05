@@ -1,6 +1,7 @@
 package com.example
 
 import com.example.loto.MetricsTypes
+import com.example.loto.betgenerator.FromMiddleOccurenciesBetGenerator
 import com.example.loto.model.RunResult
 
 class MetricsTypesTest extends TestBase
@@ -14,6 +15,64 @@ class MetricsTypesTest extends TestBase
         (5, 15, 16, 17, 18)
     )
 
+    val fromMiddleOccurenciesInput = Array(
+        null,
+        Array(2, 19, 21, 0, 0, 0),
+        Array(3, 9, 12, 26, 0, 0),
+        Array(3, 3, 7, 23),
+        Array(13, 4, 8, 11, 14, 20, 22, 25, 27, 29, 30, 31, 35, 36),
+        Array(4, 1, 18, 24, 28),
+        Array(3, 16, 32, 33),
+        Array(5, 5, 6, 10, 13, 17),
+        Array(1, 34),
+        Array(1, 15),
+        null,
+        Array(1, 2)
+    )
+
+    test("backFigureOccurencies")
+    {
+        val metrics = new MetricsTypes
+        {
+            override val topFiguresCount: Int = 5
+            override val startFigure = 1
+            override val endFigure = 36
+        }
+        val result = metrics.backFigureOccurencies(Vector((1, 2, 3, 4, 5), (2, 3, 4, 5, 6), (2, 3, 4, 5, 12), (7, 8, 9, 10, 11), (32, 33, 34, 35, 36)))
+
+        def checkInnerArray(ind: Int, size: Int, expected: Seq[Int]) =
+        {
+            assert(size === result(ind)(0))
+            assert(expected.toSet === result(ind).drop(1).take(result(ind)(0)).toSet)
+        }
+
+        checkInnerArray(0, 19, 13 to 31)
+        checkInnerArray(1, 13, Seq(1, 6, 7, 8, 9, 10, 11, 12, 32, 33, 34, 35, 36))
+        assertResult(null)(result(2))
+        checkInnerArray(3, 4, Seq(2, 3, 4, 5))
+    }
+
+    test("fromMiddleOccurencies take 5 start 1 end 36")
+    {
+        def fromMiddleOccurencies(x: Array[Array[Int]]) = new FromMiddleOccurenciesBetGenerator(x, 5, 1, 36).generate()
+
+        assert(fromMiddleOccurencies(fromMiddleOccurenciesInput) === Array(16, 32, 33, 5, 1))
+    }
+
+    test("fromMiddleOccurencies take 5 start 17 end 36")
+    {
+        def fromMiddleOccurencies(x: Array[Array[Int]]) = new FromMiddleOccurenciesBetGenerator(x, 5, 17, 36).generate()
+
+        assert(fromMiddleOccurencies(fromMiddleOccurenciesInput) === Array(32, 33, 17, 18, 34))
+    }
+
+    test("fromMiddleOccurencies take 5 start 1 end 17")
+    {
+        def fromMiddleOccurencies(x: Array[Array[Int]]) = new FromMiddleOccurenciesBetGenerator(x, 5, 1, 17).generate()
+
+        assert(fromMiddleOccurencies(fromMiddleOccurenciesInput) === Array(16, 5, 1, 6, 4))
+    }
+
     test("topFiguresExceptSome take 5")
     {
         val metrics = new MetricsTypes
@@ -22,7 +81,7 @@ class MetricsTypesTest extends TestBase
             override val startFigure = 1
             override val endFigure = 36
         }
-        val result = metrics.topNonZeroFiguresExceptSome(input, Array(1))
+        val result = metrics.topNonZeroFiguresExceptSome(input, Array(1, 0))
         assert(List(5, 4, 3, 2, 12) === result.toList)
     }
 
@@ -34,7 +93,7 @@ class MetricsTypesTest extends TestBase
             override val startFigure = 1
             override val endFigure = 36
         }
-        val result = metrics.topNonZeroFiguresExceptSome(input, Array(1))
+        val result = metrics.topNonZeroFiguresExceptSome(input, Array(1, 0))
         assert(List(5, 4, 3, 2) === result.toList)
     }
 
