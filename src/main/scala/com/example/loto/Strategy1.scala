@@ -4,14 +4,15 @@ import com.example.loto.model.RunResult
 
 import scala.collection.mutable.ArrayBuffer
 
-class Strategy1(runResults: Array[RunResult], override val topFiguresCount: Int = 12) extends MetricsTypes
+class Strategy1(runResults: Array[RunResult], override val topFiguresCount: Int = 12, override val startFigure: Int = 1,
+    override val endFigure: Int = 36) extends MetricsTypes
 {
     def withTopNonZeroFigures(pastWindow: Int, skipWindow: Int, betWindow: Int) =
     {
         apply(pastWindow, skipWindow, betWindow)(topNonZeroFiguresGeneric)
     }
 
-    def withTopNonZeroFiguresWithoutNotPopular(pastWindow: Int, skipWindow: Int, betWindow: Int) =
+    def withTopNonZeroFiguresWithoutNotPopular(pastWindow: Int, skipWindow: Int, betWindow: Int): ArrayBuffer[(Array[Figure], (MaxIntersection, MaxIntersectionCount))] =
     {
         apply(pastWindow, skipWindow, betWindow)(topNonZeroFiguresGeneric)
     }

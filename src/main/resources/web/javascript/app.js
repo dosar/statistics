@@ -45,30 +45,31 @@ lotoApp.controller('GeneralGraphicCtrl', function ($scope, $http){
     $scope.metricType = "";
     $scope.metricSelected = false;
     $scope.strategySelected = false;
+    $scope.excludeFigures = "1";
     $scope.getData = function(){
         if(typeof $scope.startFigure === 'undefined' && typeof  $scope.endFigure === 'undefined')
         {
             $scope.startFigure = "";
             $scope.endFigure = "";
         }
-        console.log("sf:" + $scope.startFigure, "ef:" + $scope.endFigure, "tcf:" + $scope.topFiguresCount, "excludeFigures:" + $scope.excludeFigures,
-                "pw:" + $scope.pastWindow, "sf:" + $scope.skipWindow, "fw:" + $scope.futureWindow, "strType:" + $scope.strategyType, "mType:" + $scope.metricType)
-        $http.get("/graphicdata?pW=" + $scope.pastWindow + "&&sW=" +
-            $scope.skipWindow + "&&fW="+$scope.futureWindow +
-            "&&tFC=" + $scope.topFiguresCount + "&&sF=" + $scope.startFigure +
-            "&&eF=" + $scope.endFigure + "&&sType=" + $scope.strategyType + "&&mType=" + $scope.metricType).success(function(result){
-            $scope.chartConfig.series = [];
-            $scope.chartConfig.series.push({
-                data: jQuery.map(result, function(elem){
-                    return elem[0];
-                })
-            });
-            $scope.chartConfig.series.push({
-                data: jQuery.map(result, function(elem){
-                    return elem[1];
-                })
-            });
-            $scope.showChart = true;
+        console.log("sf:" + $scope.startFigure, "ef:" + $scope.endFigure, "tfc:" + $scope.topFiguresCount, "excludeFigures:" + $scope.excludeFigures,
+            "pw:" + $scope.pastWindow, "sw:" + $scope.skipWindow, "fw:" + $scope.futureWindow, "strType:" + $scope.strategyType, "mType:" + $scope.metricType)
+        $http.get("/graphicdata?pw=" + $scope.pastWindow + "&&sw=" + $scope.skipWindow + "&&fw="+$scope.futureWindow +
+            "&&tfc=" + $scope.topFiguresCount + "&&sf=" + $scope.startFigure + "&&ef=" + $scope.endFigure +
+            "&&sType=" + $scope.strategyType + "&&mType=" + $scope.metricType + "&&excludeFigures=" +
+            $scope.excludeFigures).success(function(result){
+                $scope.chartConfig.series = [];
+                $scope.chartConfig.series.push({
+                    data: jQuery.map(result, function(elem){
+                        return elem[0];
+                    })
+                });
+                $scope.chartConfig.series.push({
+                    data: jQuery.map(result, function(elem){
+                        return elem[1];
+                    })
+                });
+                $scope.showChart = true;
         });
     };
 

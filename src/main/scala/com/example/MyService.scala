@@ -26,8 +26,6 @@ class MyServiceActor extends Actor with MyService {
 // this trait defines our service behavior independently from the service actor
 trait MyService extends HttpService with DefaultJsonProtocol
 {
-  val pWindow = 10
-  val fWindow = 20
   implicit val figureOrderStatistics = jsonFormat4(FigureOrderStatistics)
   implicit val figureOrderFrequencyOneRun = jsonFormat4(FigureOrderFrequencyOneRun)
   implicit val figureDiapasonStatistics = jsonFormat4(FigureDiapasonStatistics)
@@ -100,6 +98,17 @@ trait MyService extends HttpService with DefaultJsonProtocol
             val start = page * iPP - iPP
             val end = start + iPP
               (data.length, data.slice(start, end)).toJson.toString
+          }
+        }
+      }
+    } ~
+    (path("graphicdata") & parameters('sf.as[Int], 'ef.as[Int], 'tfc.as[Int], 'excludeFigures.as[String], 'pw.as[Int],
+      'sw.as[Int], 'fw.as[Int], 'strType.as[String], 'mType.as[String]))
+    { (sf, ef, tfc, excludeFigures, pw, sw, fw, strType, mType) =>
+      get {
+        respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
+          complete {
+            new StrategySelector(sf, ef, tfc, excludeFigures, pw, sw, fw, strType, mType).result.toJson.toString
           }
         }
       }
