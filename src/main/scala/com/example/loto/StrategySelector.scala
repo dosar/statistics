@@ -14,7 +14,7 @@ class StrategySelector(sf: Int, ef: Int, tcf: Int, excludeFigures: String, pw: I
     {
         if(strType == "Strategy1")
         {
-            val strategy = new Strategy1(RunResults.runResults)
+            val strategy = new Strategy1(RunResults.runResults, tcf, sf, ef)
             if(mType == "TopNonZeroFiguresExceptSome")
                 strategy(pw, sw, fw)(rrs => strategy.topNonZeroFiguresExceptSome(rrs, figuresToIgnore))
             else if(mType == "MiddleOccurencyFigures") strategy(pw, sw, fw)(strategy.middleOccurencyFigures)
@@ -29,7 +29,7 @@ class StrategySelector(sf: Int, ef: Int, tcf: Int, excludeFigures: String, pw: I
         }
         else if(strType == "Strategy3")
         {
-            val strategy = new Strategy3(RunResults.runResults)
+            val strategy = new Strategy3(RunResults.runResults, tcf, sf, ef)
             if(mType == "TopNonZeroFiguresExceptSome") strategy(pw, sw, fw)(rrs => strategy.topNonZeroFiguresExceptSome(rrs, figuresToIgnore))
             else if(mType == "MiddleOccurencyFigures") strategy(pw, sw, fw)(strategy.middleOccurencyFigures)
             else if(mType == "ZeroOccurencyFigures") strategy(pw, sw, fw)(strategy.zeroOccurencyFigures)
@@ -39,7 +39,7 @@ class StrategySelector(sf: Int, ef: Int, tcf: Int, excludeFigures: String, pw: I
         }.map(_._2)
         else if(strType == "Strategy4") extractMaxIntersections
         {
-            val strategy = new Strategy4(RunResults.runResults)
+            val strategy = new Strategy4(RunResults.runResults, tcf, sf, ef)
             if(mType == "TopNonZeroFiguresExceptSome") strategy(pw, sw, fw)(rrs => strategy.topNonZeroFiguresExceptSome(rrs, figuresToIgnore))
             else if(mType == "MiddleOccurencyFigures") strategy(pw, sw, fw)(strategy.middleOccurencyFigures)
             else if(mType == "ZeroOccurencyFigures") strategy(pw, sw, fw)(strategy.zeroOccurencyFigures)
@@ -49,7 +49,7 @@ class StrategySelector(sf: Int, ef: Int, tcf: Int, excludeFigures: String, pw: I
         }
         else if(strType == "Strategy5") extractMaxIntersections
         {
-            val strategy = new Strategy5(RunResults.runResults)
+            val strategy = new Strategy5(RunResults.runResults, tcf, sf, ef)
             if(mType == "TopNonZeroFiguresExceptSome") strategy(pw, sw, fw)(rrs => strategy.topNonZeroFiguresExceptSome(rrs, figuresToIgnore))
             else if(mType == "MiddleOccurencyFigures") strategy(pw, sw, fw)(strategy.middleOccurencyFigures)
             else if(mType == "ZeroOccurencyFigures") strategy(pw, sw, fw)(strategy.zeroOccurencyFigures)
