@@ -45,15 +45,19 @@ lotoApp.controller('GeneralGraphicCtrl', function ($scope, $http){
     $scope.metricType = "";
     $scope.metricSelected = false;
     $scope.strategySelected = false;
-    $scope.excludeFigures = "1";
     $scope.getData = function(){
         if(typeof $scope.startFigure === 'undefined' && typeof  $scope.endFigure === 'undefined')
         {
-            $scope.startFigure = "";
-            $scope.endFigure = "";
+            $scope.startFigure = 0;
+            $scope.endFigure = 0;
+        }
+        if(typeof  $scope.excludeFigures === 'undefined')
+        {
+            $scope.excludeFigures = "0";
         }
         console.log("sf:" + $scope.startFigure, "ef:" + $scope.endFigure, "tfc:" + $scope.topFiguresCount, "excludeFigures:" + $scope.excludeFigures,
             "pw:" + $scope.pastWindow, "sw:" + $scope.skipWindow, "fw:" + $scope.futureWindow, "strType:" + $scope.strategyType, "mType:" + $scope.metricType)
+
         $http.get("/graphicdata?pw=" + $scope.pastWindow + "&&sw=" + $scope.skipWindow + "&&fw="+$scope.futureWindow +
             "&&tfc=" + $scope.topFiguresCount + "&&sf=" + $scope.startFigure + "&&ef=" + $scope.endFigure +
             "&&sType=" + $scope.strategyType + "&&mType=" + $scope.metricType + "&&excludeFigures=" +
