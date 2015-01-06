@@ -103,7 +103,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       }
     } ~
     (path("graphicdata") & parameters('sf.as[Int], 'ef.as[Int], 'tfc.as[Int], 'excludeFigures.as[String], 'pw.as[Int],
-      'sw.as[Int], 'fw.as[Int], 'strType.as[String], 'mType.as[String]))
+      'sw.as[Int], 'fw.as[Int], 'sType.as[String], 'mType.as[String]))
     { (sf, ef, tfc, excludeFigures, pw, sw, fw, strType, mType) =>
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
