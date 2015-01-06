@@ -6,7 +6,7 @@ var lotoApp = angular.module('lotoApp', ['highcharts-ng', 'ui.chart', 'ngRoute',
 lotoApp.config(function($routeProvider){
    $routeProvider
        .when('/', {
-           templateUrl: 'maingraphics.html',
+           templateUrl: 'graphics.html',
            controller: 'GraphicCtrl'
        })
        .when('/data', {
@@ -25,6 +25,75 @@ lotoApp.config(function($routeProvider){
            templateUrl: 'detailed_runresults.html',
            controller: 'DetailedResultsCtrl'
        });
+});
+
+lotoApp.directive('changed',function(){
+    return function($scope, elem, att){
+        elem.bind('change',function(){
+           if(att.changed == 'metricType')
+           $scope.metricSelected = true;
+           if(att.changed == 'strategyType')
+           $scope.strategySelected = true;
+           $scope.$apply();
+        });
+    }
+});
+
+lotoApp.controller('GeneralGraphicCtrl', function ($scope, $http){
+    $scope.showChart = false;
+    $scope.strategyType = "";
+    $scope.metricType = "";
+    $scope.metricSelected = false;
+    $scope.strategySelected = false;
+    $scope.getData = function(){
+        if(typeof $scope.startFigure === 'undefined' && typeof  $scope.endFigure === 'undefined')
+        {
+            $scope.startFigure = "";
+            $scope.endFigure = "";
+        }
+        console.log("sf:" + $scope.startFigure, "ef:" + $scope.endFigure, "tcf:" + $scope.topFiguresCount, "excludeFigures:" + $scope.excludeFigures,
+                "pw:" + $scope.pastWindow, "sf:" + $scope.skipWindow, "fw:" + $scope.futureWindow, "strType:" + $scope.strategyType, "mType:" + $scope.metricType)
+        $http.get("/graphicdata?pW=" + $scope.pastWindow + "&&sW=" +
+            $scope.skipWindow + "&&fW="+$scope.futureWindow +
+            "&&tFC=" + $scope.topFiguresCount + "&&sF=" + $scope.startFigure +
+            "&&eF=" + $scope.endFigure + "&&sType=" + $scope.strategyType + "&&mType=" + $scope.metricType).success(function(result){
+            $scope.chartConfig.series = [];
+            $scope.chartConfig.series.push({
+                data: jQuery.map(result, function(elem){
+                    return elem[0];
+                })
+            });
+            $scope.chartConfig.series.push({
+                data: jQuery.map(result, function(elem){
+                    return elem[1];
+                })
+            });
+            $scope.showChart = true;
+        });
+    };
+
+    $scope.chartConfig = {
+        options: {
+            chart: {
+                type: 'line'
+                //width: 2000,
+                //height: 500
+            }
+        },
+        xAxis : { categories: []}
+        ,
+        yAxis : { categories: []}
+        ,
+        series: [{data:  []}]
+        ,
+        title: {
+            text: ''
+        },
+
+        loading: false
+    };
+
+
 });
 
 lotoApp.controller('OccCtrl', function($scope, $http){
