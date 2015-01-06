@@ -1,9 +1,8 @@
 package com.example
 
 import akka.actor.Actor
-import com.example.loto.model.RunResults
 import com.example.loto._
-import com.example.loto.sorter.FiguresByHitSorter
+import com.example.loto.model.RunResults
 import spray.http.MediaTypes._
 import spray.json.{DefaultJsonProtocol, pimpAny}
 import spray.routing._
@@ -61,7 +60,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
             val metrics = new Metrics()
-            FiguresByHitSorter.topFigures(metrics.figuresOccurencies(RunResults.runResults, 1, 36)).toJson.toString
+            metrics.figuresOccurencies(RunResults.runResults, 1, 36).toJson.toString
           }
         }
       }
