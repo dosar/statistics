@@ -7,11 +7,11 @@ import scala.collection.mutable.ArrayBuffer
 /*
 * Фильтруем значения используя доверительные интервалы
 * */
-class Strategy6(runResults: Vector[RunResult], override val topFiguresCount: Int = 7,
+class Strategy6(runResults: Array[RunResult], override val topFiguresCount: Int = 7,
     override val startFigure: Int = 16, override val endFigure: Int = 36)
-extends MetricsTypes with StrategyWithMoneyStatistics[(Array[Int], Vector[RunResult]), Array[Int]]
+extends MetricsTypes with StrategyWithMoneyStatistics[(Array[Int], Array[RunResult]), Array[Int]]
 {
-    type PastWindow = Vector[RunResult]
+    type PastWindow = Array[RunResult]
 
     override def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(
         betGenerator: ((FigureHitsArray, PastWindow)) => Array[Int]) =

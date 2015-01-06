@@ -6,7 +6,7 @@ class Strategy1Test extends TestBase
 {
     test("strategy1 3, 0, 2")
     {
-        val strategy = new Strategy1(Vector(
+        val strategy = new Strategy1(Array(
             (1, 2, 3, 4, 5),
             (6, 7, 8, 9, 10),
             (6, 7, 8, 9, 10),
@@ -19,7 +19,7 @@ class Strategy1Test extends TestBase
 
     test("strategy1 2, 0, 2")
     {
-        val strategy = new Strategy1(Vector(
+        val strategy = new Strategy1(Array(
             (6, 7, 8, 9, 10),
             (6, 7, 8, 9, 10),
             (1, 2, 3, 4, 5),
@@ -32,7 +32,7 @@ class Strategy1Test extends TestBase
 
     test("strategy1 2, 1, 2")
     {
-        val strategy = new Strategy1(Vector(
+        val strategy = new Strategy1(Array(
             (6, 7, 8, 9, 10),
             (6, 7, 8, 9, 10),
             (1, 2, 3, 4, 5),

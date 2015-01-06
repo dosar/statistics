@@ -19,7 +19,7 @@ class StrategiesOptimization extends FunSuite
         {
             println((betSize, startFigure))
             val strategy = new Strategy5(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Vector[RunResult], Strategy5](strategy, 50)(_.topNonZeroFiguresGeneric(_))
+            result = result ++ testStrategy4[Array[RunResult], Strategy5](strategy, 50)(_.topNonZeroFiguresGeneric(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -37,7 +37,7 @@ class StrategiesOptimization extends FunSuite
             println((betSize, ignoredSize))
             val nonUseful = (nonPopularFigures.take(ignoredSize) :+ 0).toArray
             val strategy = new Strategy4(rrs, betSize, 1, 36)
-            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 50)(_.topNonZeroFiguresExceptSome(_, nonUseful))
+            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 50)(_.topNonZeroFiguresExceptSome(_, nonUseful))
                 .map(x => ((betSize, ignoredSize), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -52,7 +52,7 @@ class StrategiesOptimization extends FunSuite
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(rrs, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 75)(_.fromMiddleOccurencies(_))
+            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 75)(_.fromMiddleOccurencies(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -63,11 +63,11 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 middleOccurencyFigures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        for(betSize <- 6 to 8; startFigure <- 1 to 17)
+        for(betSize <- 6 to 6; startFigure <- 1 to 1)
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 75)(_.middleOccurencyFigures(_))
+            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 25)(_.middleOccurencyFigures(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -82,7 +82,7 @@ class StrategiesOptimization extends FunSuite
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 50)(_.zeroOccurencyFigures(_))
+            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 50)(_.zeroOccurencyFigures(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -97,7 +97,7 @@ class StrategiesOptimization extends FunSuite
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Vector[RunResult], Strategy4](strategy, 50)(_.topNonZeroFiguresGeneric1(_))
+            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 50)(_.topNonZeroFiguresGeneric1(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -150,13 +150,13 @@ class StrategiesOptimization extends FunSuite
         result.sortBy(- _._4).take(200) foreach println
     }
 */
-    def testStrategy1(betGenerator: (Strategy1, Vector[RunResult]) => Array[Int]): Unit =
+    def testStrategy1(betGenerator: (Strategy1, Array[RunResult]) => Array[Int]): Unit =
         testStrategy(new Strategy1(RunResults.runResults), betGenerator)
 
-    def testStrategy3(topFiguresCount: Int, startFigure: Int, endFigure: Int)(betGenerator: (Strategy3, Vector[RunResult]) => Array[Int]) =
+    def testStrategy3(topFiguresCount: Int, startFigure: Int, endFigure: Int)(betGenerator: (Strategy3, Array[RunResult]) => Array[Int]) =
         testStrategy(new Strategy3(RunResults.runResults, topFiguresCount, startFigure, endFigure), betGenerator)
 
-    def testStrategy2(startFigure: Int = 1)(extractor: (Strategy2, Vector[RunResult]) => Array[(Int, Int)]): Unit =
+    def testStrategy2(startFigure: Int = 1)(extractor: (Strategy2, Array[RunResult]) => Array[(Int, Int)]): Unit =
     {
         val strategy = new Strategy2(RunResults.runResults, startFigure = startFigure)
 
@@ -176,10 +176,10 @@ class StrategiesOptimization extends FunSuite
     type Strategy =
     {
         def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(
-            betGenerator: Vector[RunResult] => Array[Int]): Seq[(Array[Int], (Int, Int))]
+            betGenerator: Array[RunResult] => Array[Int]): Seq[(Array[Int], (Int, Int))]
     }
 
-    def testStrategy[TStrategy <: Strategy](strategy: TStrategy, betGenerator: (TStrategy, Vector[RunResult]) => Array[Int]): IndexedSeq[(Int, Int, Int, Int)] =
+    def testStrategy[TStrategy <: Strategy](strategy: TStrategy, betGenerator: (TStrategy, Array[RunResult]) => Array[Int]): IndexedSeq[(Int, Int, Int, Int)] =
     {
         val pRangeSize = 25
         val pRange1 = 1 to pRangeSize
@@ -222,6 +222,7 @@ class StrategiesOptimization extends FunSuite
         val pRange4 = (3 * pRangeSize + 1) to 4 * pRangeSize
         val sRange = 0 to pRangeSize * 4
         val fRange = 1 to pRangeSize * 4
+//        val fRange = 1 to 10
 
         type PastWindow = Int; type SkipWindow = Int; type FutureWindow = Int
         type Hit2 = Int; type Hit3 = Int; type Hit4 = Int; type Hit5 = Int

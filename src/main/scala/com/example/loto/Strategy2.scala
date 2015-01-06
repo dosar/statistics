@@ -4,11 +4,11 @@ import com.example.loto.model.RunResult
 
 import scala.collection.mutable.ArrayBuffer
 
-class Strategy2(runResults: Vector[RunResult], override val topFiguresCount: Int = 12,
+class Strategy2(runResults: Array[RunResult], override val topFiguresCount: Int = 12,
     override val startFigure: Int = 1, override val endFigure: Int = 36) extends MetricsTypes
 {
     type PreviousRR = RunResult
-    def strategy2(pastWindow: Int, skipWindow: Int, betWindow: Int)(extractor: Vector[RunResult] => Array[(Figure, HitCount)])(
+    def strategy2(pastWindow: Int, skipWindow: Int, betWindow: Int)(extractor: Array[RunResult] => Array[(Figure, HitCount)])(
         betGenerator: (Array[(Figure, HitCount)], PreviousRR) => Array[Int]) =
     {
         val startIndex = pastWindow
@@ -28,7 +28,7 @@ class Strategy2(runResults: Vector[RunResult], override val topFiguresCount: Int
         buffer
     }
 
-    def getIntersections(futureRrs: Vector[(RunResult, Int)], betCandidate: Array[(Figure, HitCount)])(
+    def getIntersections(futureRrs: Array[(RunResult, Int)], betCandidate: Array[(Figure, HitCount)])(
         betGenerator: (Array[(Figure, HitCount)], PreviousRR) => Array[Int]): (MaxIntersection, MaxIntersectionCount) =
     {
         var ind = 0

@@ -33,7 +33,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
   implicit val figureDiapasonStatistics = jsonFormat4(FigureDiapasonStatistics)
   implicit val figureOccurency = jsonFormat2(FigureOccurency)
   implicit val figureIntersection = jsonFormat2(FigureIntersection)
-  implicit val runResultItem = jsonFormat2(RunResultItem)
+  implicit val runResultItem = jsonFormat3(RunResultItem)
   implicit val strategyIteration = jsonFormat3(StrategyIteration)
 
   val metrics = new Metrics()

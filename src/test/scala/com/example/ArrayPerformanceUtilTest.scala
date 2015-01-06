@@ -5,6 +5,18 @@ import org.scalatest.FunSuite
 
 class ArrayPerformanceUtilTest extends FunSuite
 {
+    test("test slice 2 last")
+    {
+        val input = Array(1, 2, 3, 0)
+        assert(ArrayPerformanceUtil.slice(input, 2, 2) === input.slice(2, 2))
+    }
+
+    test("test slice 5 last")
+    {
+        val input = Array(1, 2, 3, 0)
+        assert(ArrayPerformanceUtil.slice(input, 2, 5) === input.slice(2, 5))
+    }
+
     test("test createFiguresArray filter left chunk")
     {
         assert(ArrayPerformanceUtil.createFiguresArray(Array(1, 2, 3, 0)) === (4 to 36).toArray)
@@ -27,6 +39,6 @@ class ArrayPerformanceUtilTest extends FunSuite
 
     test("test fill with default")
     {
-        assert(ArrayPerformanceUtil.createArray(10, -1) === Array(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1))
+        assert(ArrayPerformanceUtil.createArray(10)(x => -1) === Array(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1))
     }
 }

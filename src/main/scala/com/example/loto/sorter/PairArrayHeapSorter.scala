@@ -1,5 +1,7 @@
 package com.example.loto.sorter
 
+import com.example.loto.array.ArrayPerformanceUtil
+
 /**
  * Created by alespuh on 03.01.15.
  */
@@ -17,7 +19,7 @@ class PairArrayHeapSorter(master: Array[Int], slave: Array[Int], take: Int)
             heapify(ind - 1)
             ind -= 1
         }
-        PairArrayInsertionSorter.take(master, slave, take)
+        ArrayPerformanceUtil.take(master, slave, take)
     }
 
     private def heapify(heapLength: Int)

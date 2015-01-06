@@ -6,7 +6,7 @@ class Strategy4Test extends TestBase
 {
     test("strategy4 test apply")
     {
-        val strategy = new Strategy4(Vector(
+        val strategy = new Strategy4(Array(
             (1, 2, 3, 4, 5),
             (1, 2, 3, 4, 5),
             (1, 4, 5, 6, 7),
@@ -20,8 +20,8 @@ class Strategy4Test extends TestBase
 
     test("strategy 4 intersections with statistics with 5 hit and zero minus")
     {
-        val strategy = new Strategy4(Vector())
-        val (statistics, _) = strategy.getIntersectionStatistics(Vector(
+        val strategy = new Strategy4(Array())
+        val (statistics, _) = strategy.getIntersectionStatistics(Array(
             (1, 2, 8, 9, 10),
             (1, 2, 3, 9, 10),
             (1, 2, 3, 9, 10),
@@ -39,8 +39,8 @@ class Strategy4Test extends TestBase
 
     test("strategy 4 intersections with statistics with 5 hit and nonzero minus")
     {
-        val strategy = new Strategy4(Vector())
-        val (statistics, _) = strategy.getIntersectionStatistics(Vector(
+        val strategy = new Strategy4(Array())
+        val (statistics, _) = strategy.getIntersectionStatistics(Array(
             (1, 2, 8, 9, 10),
             (1, 2, 3, 9, 10),
             (1, 2, 3, 9, 10),

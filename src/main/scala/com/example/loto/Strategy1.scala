@@ -4,7 +4,7 @@ import com.example.loto.model.RunResult
 
 import scala.collection.mutable.ArrayBuffer
 
-class Strategy1(runResults: Vector[RunResult], override val topFiguresCount: Int = 12) extends MetricsTypes
+class Strategy1(runResults: Array[RunResult], override val topFiguresCount: Int = 12) extends MetricsTypes
 {
     def withTopNonZeroFigures(pastWindow: Int, skipWindow: Int, betWindow: Int) =
     {
@@ -16,7 +16,7 @@ class Strategy1(runResults: Vector[RunResult], override val topFiguresCount: Int
         apply(pastWindow, skipWindow, betWindow)(topNonZeroFiguresGeneric)
     }
 
-    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Int]) =
+    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Array[RunResult] => Array[Int]) =
     {
         val startIndex = pastWindow
         val sliceSize = skipWindow + betWindow
@@ -34,7 +34,7 @@ class Strategy1(runResults: Vector[RunResult], override val topFiguresCount: Int
         buffer
     }
 
-    def getIntersections(futureRrs: Vector[RunResult], bet: Array[Figure]): (MaxIntersection, MaxIntersectionCount) =
+    def getIntersections(futureRrs: Array[RunResult], bet: Array[Figure]): (MaxIntersection, MaxIntersectionCount) =
     {
         var ind = 0
         var (maxIntersection, maxIntersectionCount) = (0, 0)

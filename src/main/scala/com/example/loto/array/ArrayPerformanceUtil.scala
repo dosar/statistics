@@ -5,6 +5,37 @@ package com.example.loto.array
  */
 object ArrayPerformanceUtil
 {
+    def take(master: Array[Int], slave: Array[Int], take: Int)(implicit iterations: Int = Math.min(master.length, take)) =
+    {
+        if(iterations == master.length) (master, slave)
+        else
+        {
+            val (masterResult, slaveResult) = (new Array[Int](iterations), new Array[Int](iterations))
+            var ind = 0
+            while(ind < iterations)
+            {
+                masterResult(ind) = master(ind)
+                slaveResult(ind) = slave(ind)
+                ind += 1
+            }
+            (masterResult, slaveResult)
+        }
+    }
+
+    def takeFromEndReversed(master: Array[Int], slave: Array[Int], take: Int)(implicit iterations: Int = Math.min(master.length, take)) =
+    {
+        val (masterResult, slaveResult) = (new Array[Int](iterations), new Array[Int](iterations))
+        val inputStartIndex = master.length - 1
+        var ind = 0
+        while(ind < iterations)
+        {
+            masterResult(ind) = master(inputStartIndex - 1)
+            slaveResult(ind) = slave(inputStartIndex - 1)
+            ind += 1
+        }
+        (masterResult, slaveResult)
+    }
+
     /*ожидаем, что exceptFigure отсортирован по возрастанию и в конце завершающий 0*/
     def createFiguresArray(exceptFigures: Array[Int]) =
     {
@@ -26,13 +57,14 @@ object ArrayPerformanceUtil
         result
     }
 
-    def createArray(size: Int, default: => Int) =
+    type Index = Int
+    def createArray(size: Int)(default: Index => Int) =
     {
         var ind = 0
         val result = new Array[Int](size)
         while(ind < size)
         {
-            result(ind) = default
+            result(ind) = default(ind)
             ind += 1
         }
         result
@@ -76,5 +108,13 @@ object ArrayPerformanceUtil
             expandedArray(ind) = value
             ifCapacityExceeded(expandedArray)
         }
+    }
+
+    def slice[T: Manifest](arr: Array[T], from: Int, until: Int) =
+    {
+        val length = Math.min(until, arr.length) - from
+        val result = new Array[T](length)
+        scala.compat.Platform.arraycopy(arr, from, result, 0, length)
+        result
     }
 }

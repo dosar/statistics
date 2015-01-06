@@ -52,7 +52,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
     /*
     * возвращает массив массивов. в каждом внутреннем массиве первый элемент - длина
     * */
-    def backFigureOccurencies(rrs: Vector[RunResult]): Array[Array[Figure]] =
+    def backFigureOccurencies(rrs: Array[RunResult]): Array[Array[Figure]] =
     {
         import ArrayPerformanceUtil._
         var figure = 0
@@ -76,7 +76,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
 
     //индекс - количество хитов, значение - числа выпавшие индекс раз
     //там где для хитов нет чисел - нулл
-    def fromMiddleOccurencies(rrs: Vector[RunResult]) =
+    def fromMiddleOccurencies(rrs: Array[RunResult]) =
     {
         val figuresByHit = backFigureOccurencies(rrs)
         new FromMiddleOccurenciesBetGenerator(figuresByHit, topFiguresCount, startFigure, endFigure).generate()
@@ -85,7 +85,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
     /*
     * сверху цифру, потом пару для нее, и т.д.
     * */
-    def piarFiguresOccurencies(rrs: Vector[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): mutable.Map[Figure, HitCount] =
+    def piarFiguresOccurencies(rrs: Array[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): mutable.Map[Figure, HitCount] =
     {
         var ind = 0
         val figuresMap = new Array[Int](36)
@@ -113,39 +113,32 @@ trait MetricsTypes extends MoneyHitStatisticsType
     /*
     * индекс - число, значение - количество хитов. нулевой индекс не используется
     * */
-    def figuresOccurencies(rrs: Vector[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): Array[HitCount] =
+    def figuresOccurencies(rrs: Array[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): Array[HitCount] =
     {
+        val figuresMap = ArrayPerformanceUtil.createArray(37){ ind => if(ind < startFigure || ind > endFigure) -1 else 0 }
+
         var ind = 0
-        val figuresMap = ArrayPerformanceUtil.createArray(37,
-        {
-            val result = if(ind < startFigure || ind > endFigure) -1
-            else 0
-            ind += 1
-            result
-        })
-
-        def updateMap(figure: Int) =
-        {
-            if(figure <= endFigure && figure >= startFigure)
-                figuresMap(figure) += 1
-        }
-
-        ind = 0
         while(ind < rrs.length)
         {
             val rrResult = rrs(ind).result
-            updateMap(rrResult(0))
-            updateMap(rrResult(1))
-            updateMap(rrResult(2))
-            updateMap(rrResult(3))
-            updateMap(rrResult(4))
+            updateMap(figuresMap, rrResult(0))
+            updateMap(figuresMap, rrResult(1))
+            updateMap(figuresMap, rrResult(2))
+            updateMap(figuresMap, rrResult(3))
+            updateMap(figuresMap, rrResult(4))
             ind += 1
         }
         figuresMap
     }
 
+    private def updateMap(figuresMap: Array[Int], figure: Int) =
+    {
+        if(figure <= endFigure && figure >= startFigure)
+            figuresMap(figure) += 1
+    }
+
     type Min = Int; type Max = Int
-    def figureIntervals(rrs: Seq[RunResult]): (Array[Min], Array[Max]) =
+    def figureIntervals(rrs: Array[RunResult]): (Array[Min], Array[Max]) =
     {
         var ind = 0
         val (figureMins, figureMaxs) = (Array.fill[Min](5)(40), new Array[Max](5))
@@ -175,11 +168,11 @@ trait MetricsTypes extends MoneyHitStatisticsType
     * работаем в предположении, что endFigure = 36, а startFigure = 1
     * figureToIgnores - отсортирован по возрастанию и завершается 0
     * */
-    def topNonZeroFiguresExceptSome(rrs: Vector[RunResult], figureToIgnores: Array[Figure]): Array[Figure] =
+    def topNonZeroFiguresExceptSome(rrs: Array[RunResult], figureToIgnores: Array[Figure]): Array[Figure] =
     {
         val figureHits = new Array[Int](endFigure - startFigure - figureToIgnores.size + 2)
         val figures = ArrayPerformanceUtil.createFiguresArray(figureToIgnores)
-        val figureIndexes = ArrayPerformanceUtil.createArray(endFigure - startFigure + 2, -1)
+        val figureIndexes = ArrayPerformanceUtil.createArray(endFigure - startFigure + 2)(i => -1)
 
         var ind = 0
         while(ind < figures.length)
@@ -215,7 +208,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
     * в том числе с нулями и с числами которые фильтруются, если они попадают
     * в середину (непонятно как такое может случиться с хитами в -1)
     * */
-    def middleOccurencyFigures(rrs: Vector[RunResult]) =
+    def middleOccurencyFigures(rrs: Array[RunResult]) =
     {
         val topFigures = FiguresByHitSorter.topFigures(figuresOccurencies(rrs))
         val result = new Array[Int](topFiguresCount)
@@ -230,7 +223,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
         result
     }
 
-    def zeroOccurencyFigures(rrs: Vector[RunResult]) =
+    def zeroOccurencyFigures(rrs: Array[RunResult]) =
     {
         val occs = figuresOccurencies(rrs)
         var array = ArrayBuffer[Figure]()
@@ -269,7 +262,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
         buffer
     }
 
-    def topNonZeroFiguresGeneric1(rrs: Vector[RunResult]): Array[Figure] =
+    def topNonZeroFiguresGeneric1(rrs: Array[RunResult]): Array[Figure] =
     {
         val figureHits = new Array[Int](endFigure - startFigure + 1)
         val incrementer = new Incrementer(startFigure)
@@ -295,7 +288,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
         new PairArrayHeapSorter(figureHits, figures, topFiguresCount).sort._2
     }
 
-    def topNonZeroFiguresGeneric(rrs: Vector[RunResult]): Array[Figure] =
+    def topNonZeroFiguresGeneric(rrs: Array[RunResult]): Array[Figure] =
     {
         val occs = figuresOccurencies(rrs)
         var list = List[(Figure, HitCount)]()
@@ -311,56 +304,30 @@ trait MetricsTypes extends MoneyHitStatisticsType
         sorted.map(_._1).take(topFiguresCount).toArray
     }
 
-    def betCost(betSize: Int) =
-    {
-        if(betSize == 5) 30
-        else if(betSize == 6) 180
-        else if(betSize == 7) 630
-        else if(betSize == 8) 1680
-        else if(betSize == 9) 3780
-        else if(betSize == 10) 7560
-        else if(betSize == 11) 13860
-        else if(betSize == 12) 23760
-        else 0
-    }
+    //индекс - размер ставки
+    val betCost = Array(0, 0, 0, 0, 0, 30, 180, 630, 1680, 3780, 7560, 13860, 23760)
 
-    def betWon(betSize: Int, intersectionSize: Int) =
-    {
-        if(betSize == 5)
-        {
-            if(intersectionSize == 2) 30
-            else if (intersectionSize == 3) 300
-            else if (intersectionSize == 4) 3000
-            else 0
-        }
-        else if(betSize == 6)
-        {
-            if(intersectionSize == 2) 120
-            else if (intersectionSize == 3) 990
-            else if (intersectionSize == 4) 7200
-            else 0
-        }
-        else if(betSize == 7)
-        {
-            if(intersectionSize == 2) 300
-            else if (intersectionSize == 3) 2160
-            else if (intersectionSize == 4) 12780
-            else 0
-        }
-        else if(betSize >= 8)
-        {
-            if(intersectionSize == 2) 600
-            else if (intersectionSize == 3) 3900
-            else if (intersectionSize == 4) 19920
-            else 0
-        }
-        else 0
-    }
+    //первый индекс - размер ставки, индекс внутреннего массива - размер пересечения
+    val betWon = Array(
+        Array(0, 0, 0, 0, 0), // betSize == 0
+        Array(0, 0, 0, 0, 0), // betSize == 1
+        Array(0, 0, 0, 0, 0), // betSize == 2
+        Array(0, 0, 0, 0, 0), // betSize == 3
+        Array(0, 0, 0, 0, 0), // betSize == 4 и т.д.
+        Array(0, 0, 30, 300, 3000),
+        Array(0, 0, 120, 990, 7200),
+        Array(0, 0, 300, 2160, 12780),
+        Array(0, 0, 600, 3900, 19920),
+        Array(0, 0, 600, 3900, 19920),
+        Array(0, 0, 600, 3900, 19920),
+        Array(0, 0, 600, 3900, 19920),
+        Array(0, 0, 600, 3900, 19920)
+    )
 
     /*
     * Int = Figure
     * */
-    def getIntersectionStatistics(futureRrs: Vector[RunResult], bet: Array[Int]):
+    def getIntersectionStatistics(futureRrs: Array[RunResult], bet: Array[Int]):
         ((IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus), SliceSize) =
     {
         var ind = 0
@@ -375,7 +342,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
             else if(intersection == 2) i2 += 1
             else if(intersection == 3) i3 += 1
             else if(intersection == 4) i4 += 1
-            if(intersection > 1) mplus += betWon(betSize, intersection)
+            if(intersection > 1) mplus += betWon(betSize)(intersection)
             else mminus += betCost(betSize)
             ind += 1
         }

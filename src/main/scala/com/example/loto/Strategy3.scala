@@ -7,7 +7,7 @@ import scala.collection.mutable.ArrayBuffer
 /*
 * перестаем ставить по старой ставке если получили хит на 5 чисел
 * */
-class Strategy3(runResults: Vector[RunResult], override val topFiguresCount: Int = 7, override val startFigure: Int = 1,
+class Strategy3(runResults: Array[RunResult], override val topFiguresCount: Int = 7, override val startFigure: Int = 1,
     override val endFigure: Int = 36)
 extends MetricsTypes
 {
@@ -21,7 +21,7 @@ extends MetricsTypes
         apply(pastWindow, skipWindow, betWindow)(topNonZeroFiguresGeneric)
     }
 
-    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Vector[RunResult] => Array[Int]) =
+    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Array[RunResult] => Array[Int]) =
     {
         val startIndex = pastWindow
         val sliceSize = skipWindow + betWindow
@@ -39,7 +39,7 @@ extends MetricsTypes
         buffer
     }
 
-    def getIntersections(futureRrs: Vector[RunResult], bet: Array[Int]): (MaxIntersection, MaxIntersectionCount, SliceSize) =
+    def getIntersections(futureRrs: Array[RunResult], bet: Array[Int]): (MaxIntersection, MaxIntersectionCount, SliceSize) =
     {
         var ind = 0
         var (maxIntersection, maxIntersectionCount) = (0, 0)

@@ -3,7 +3,7 @@ package com.example.loto
 import com.example.loto.model.RunResult
 import com.example.loto.sorter.FiguresByHitSorter
 
-class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount: Int = 12, override val startFigure: Int = 1,
+class SimpleGraphics(runResults: Array[RunResult], override val topFiguresCount: Int = 12, override val startFigure: Int = 1,
     override val endFigure: Int = 36) extends MetricsTypes
 {
     def topFigures: Seq[Figure] =
@@ -20,7 +20,7 @@ class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount
     /*
     * берем топ популярных чисел и смотрим сколько из них повторяется в тиражах по окнам
     * */
-    def graficData2(topIntervalSize: Int, testIntervalSize: Int) =
+    def graficData2(topIntervalSize: Int, testIntervalSize: Int): Array[(Array[Figure], Int)] =
         pastWindowToFutureWindow(topIntervalSize, testIntervalSize)(topNonZeroFiguresGeneric)
 
     /*
@@ -28,7 +28,7 @@ class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount
     * */
     def graficData4(topIntervalSize: Int, testIntervalSize: Int) = pastWindowToFutureWindow(topIntervalSize, testIntervalSize)
     { rrs =>
-        figuresOccurencies(rrs).zipWithIndex.filter(_._1 == 0).map(_._2).toSeq
+        figuresOccurencies(rrs).zipWithIndex.filter(_._1 == 0).map(_._2)
     }
 
     /*
@@ -61,7 +61,7 @@ class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount
     }.toArray
 
     private def pastWindowToFutureWindow(pastIntervalSize: Int, futureIntervalSize: Int)(
-        figuresExtractor: Vector[RunResult] => Seq[Figure]): Vector[(Seq[Figure], Int)] =
+        figuresExtractor: Array[RunResult] => Array[Figure]): Array[(Array[Figure], Int)] =
     {
         (for(pastWindow <- runResults.take(runResults.length - futureIntervalSize).zipWithIndex.sliding(pastIntervalSize)) yield
         {
@@ -70,6 +70,6 @@ class SimpleGraphics(runResults: Vector[RunResult], override val topFiguresCount
             val futureRuns = runResults.drop(last).take(futureIntervalSize)
             val intersections = futureRuns.map(fr => fr.result.intersect(topIntervalFigures)).map(_.size)
             (topIntervalFigures, if(intersections.isEmpty) 0 else intersections.max)
-        }).toVector
+        }).toArray
     }
 }

@@ -2,6 +2,7 @@ package com.example.loto.sorter
 
 import com.example.loto.CommonImplicits.Incrementer
 import com.example.loto.MoneyHitStatisticsType
+import com.example.loto.array.ArrayPerformanceUtil
 
 /**
  * Created by alespuh on 03.01.15.
@@ -16,8 +17,7 @@ object FiguresByHitSorter extends MoneyHitStatisticsType
     def topFiguresWithHits(figureHits: Array[Int])(implicit take: Int = figureHits.length - 1):
         (PairArrayHeapSorter#MasterArray, PairArrayHeapSorter#SlaveArray) =
     {
-        val incrementer = new Incrementer(0)
-        val figures = Array.fill(figureHits.length)(incrementer ++)
+        val figures = ArrayPerformanceUtil.createArray(figureHits.length)(i => i)
         new PairArrayHeapSorter(figureHits, figures, take).sort
     }
 

@@ -9,7 +9,7 @@ class Strategy5Test extends TestBase
 {
     test("strategy 5 test apply")
     {
-        val strategy = new Strategy5(Vector(
+        val strategy = new Strategy5(Array(
             (1, 2, 8, 9, 10),
             (1, 2, 3, 9, 10),
             (1, 2, 3, 9, 10),

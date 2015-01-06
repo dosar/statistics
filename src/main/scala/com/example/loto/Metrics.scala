@@ -48,7 +48,7 @@ class Metrics(override val topFiguresCount: Int = 12) extends MetricsTypes
         else (result.head._1, result.last._1)
     }
 
-    def figureIntersectionStatistics(runResults: Vector[RunResult]) =
+    def figureIntersectionStatistics(runResults: Array[RunResult]) =
     {
         val intersections = for((p, f) <- runResults.zip(runResults.drop(1))) yield
             p.result.intersect(f.result).size
@@ -57,7 +57,7 @@ class Metrics(override val topFiguresCount: Int = 12) extends MetricsTypes
             .toArray
     }
 
-    def figureIntervals(runResults: Vector[RunResult], window: Int): ArrayBuffer[(Array[Int], Array[Int])] =
+    def figureIntervals(runResults: Array[RunResult], window: Int): ArrayBuffer[(Array[Int], Array[Int])] =
     {
         var windowRrs = runResults
         val result = new ArrayBuffer[(Array[Int], Array[Int])]()

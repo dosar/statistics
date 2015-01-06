@@ -8,7 +8,7 @@ import scala.collection.mutable
 
 class MetricsTest extends TestBase
 {
-    val runResults = Vector(
+    val runResults = Array(
         RunResult("2189", "30.11.2014 23:59", "15  25  12  26  3"),
         RunResult("2188", "30.11.2014 11:59", "7   13  1   27  14"),
         RunResult("2187", "30.11.2014 23:59", "15  25  12  26  3"),
@@ -62,18 +62,18 @@ class MetricsTest extends TestBase
     {
         assert(new SimpleGraphics(runResults.take(1)).allFigureOccurencies.zipWithIndex.filter(_._1 > 0).map(_._2).toSet ===
             Set(15, 25, 12, 26, 3))
-        assert(new SimpleGraphics(Vector(runResults(0), runResults(2))).allFigureOccurencies.zipWithIndex.filter(_._1 > 1).map(_._2).toSet ===
+        assert(new SimpleGraphics(Array(runResults(0), runResults(2))).allFigureOccurencies.zipWithIndex.filter(_._1 > 1).map(_._2).toSet ===
             Set(15, 25, 12, 26, 3))
     }
 
     test("graficData2 past interval 3 future interval 2 takeCount 5")
     {
-        check(new SimpleGraphics(runResults.take(6), 5).graficData2(3, 2), Vector((Seq(15, 25, 12, 26, 3), 0), (Seq(14, 29, 28, 34, 27), 1)))
+        check(new SimpleGraphics(runResults.take(6), 5).graficData2(3, 2).toVector, Vector((Seq(15, 25, 12, 26, 3), 0), (Seq(14, 29, 28, 34, 27), 1)))
     }
 
     test("graficData4 3 2")
     {
-        check(new SimpleGraphics(Vector(
+        check(new SimpleGraphics(Array(
             (1, 2, 3, 4, 5),
             (2, 6, 7, 8, 9),
             (1, 3, 5, 7, 9),
@@ -85,7 +85,7 @@ class MetricsTest extends TestBase
 
     test("graficData5 3 2")
     {
-        check(new SimpleGraphics(Vector(
+        check(new SimpleGraphics(Array(
             (1, 2, 3, 4, 5),
             (6, 7, 8, 9, 10),
             (6, 7, 8, 9, 10),
@@ -103,8 +103,8 @@ class MetricsTest extends TestBase
 
     test("getIntersections")
     {
-        val strategy = new Strategy2(Vector((6, 7, 8, 9, 10)), 5)
-        assert(strategy.getIntersections(Vector((rr(6, 3, 2, 10, 1), 1)),
+        val strategy = new Strategy2(Array((6, 7, 8, 9, 10)), 5)
+        assert(strategy.getIntersections(Array((rr(6, 3, 2, 10, 1), 1)),
             Array(6 -> 2, 3 -> 1, 2 -> 1, 10 -> 1))(strategy.topNonZeroFiguresWithoutPrevious) === (2, 1))
     }
 

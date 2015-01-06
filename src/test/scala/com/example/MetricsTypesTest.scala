@@ -6,7 +6,7 @@ import com.example.loto.model.RunResult
 
 class MetricsTypesTest extends TestBase
 {
-    val input: Vector[RunResult] = Vector(
+    val input: Array[RunResult] = Array(
         (1, 3, 4, 2, 5),
         (4, 2, 3, 5, 1),
         (2, 3, 4, 5, 9),
@@ -38,7 +38,7 @@ class MetricsTypesTest extends TestBase
             override val startFigure = 1
             override val endFigure = 36
         }
-        val result = metrics.backFigureOccurencies(Vector((1, 2, 3, 4, 5), (2, 3, 4, 5, 6), (2, 3, 4, 5, 12), (7, 8, 9, 10, 11), (32, 33, 34, 35, 36)))
+        val result = metrics.backFigureOccurencies(Array((1, 2, 3, 4, 5), (2, 3, 4, 5, 6), (2, 3, 4, 5, 12), (7, 8, 9, 10, 11), (32, 33, 34, 35, 36)))
 
         def checkInnerArray(ind: Int, size: Int, expected: Seq[Int]) =
         {

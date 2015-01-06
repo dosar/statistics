@@ -1,5 +1,7 @@
 package com.example.loto.sorter
 
+import com.example.loto.array.ArrayPerformanceUtil
+
 object PairArrayInsertionSorter
 {
     /*
@@ -20,7 +22,7 @@ object PairArrayInsertionSorter
             }
             ind += 1
         }
-        this.take(master, slave, take)(iterations)
+        ArrayPerformanceUtil.take(master, slave, take)(iterations)
     }
 
     def swap(input: Array[Int], oneIndex: Int, anotherIndex: Int)
@@ -28,23 +30,6 @@ object PairArrayInsertionSorter
         val current = input(oneIndex)
         input(oneIndex) = input(anotherIndex)
         input(anotherIndex) = current
-    }
-
-    def take(master: Array[Int], slave: Array[Int], take: Int)(implicit iterations: Int = Math.min(master.length, take)) =
-    {
-        if(iterations == master.length) (master, slave)
-        else
-        {
-            val (masterResult, slaveResult) = (new Array[Int](iterations), new Array[Int](iterations))
-            var ind = 0
-            while(ind < iterations)
-            {
-                masterResult(ind) = master(ind)
-                slaveResult(ind) = slave(ind)
-                ind += 1
-            }
-            (masterResult, slaveResult)
-        }
     }
 }
 

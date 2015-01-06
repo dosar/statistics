@@ -6,7 +6,7 @@ class Strategy3Test extends TestBase
 {
     test("intersections")
     {
-        val (maxIntersection, count, indexIncrement) = new Strategy3(Vector.empty).getIntersections(Vector(
+        val (maxIntersection, count, indexIncrement) = new Strategy3(Array.empty).getIntersections(Array(
             (1, 2, 3, 4, 6),
             (1, 2, 3, 4, 5),
             (1, 3, 4, 7, 8)
@@ -18,7 +18,7 @@ class Strategy3Test extends TestBase
 
     test("strategy3 3, 0, 3")
     {
-        val metrics = new Strategy3(Vector(
+        val metrics = new Strategy3(Array(
             (1, 2, 3, 4, 5),
             (6, 7, 8, 9, 10),
             (1, 2, 3, 4, 5),
