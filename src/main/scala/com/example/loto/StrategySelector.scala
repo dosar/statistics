@@ -40,7 +40,12 @@ class StrategySelector(sf: Int, ef: Int, tcf: Int, excludeFigures: String, pw: I
         else if(strType == "Strategy4") extractMaxIntersections
         {
             val strategy = new Strategy4(RunResults.runResults, tcf, sf, ef)
-            if(mType == "TopNonZeroFiguresExceptSome") strategy(pw, sw, fw)(rrs => strategy.topNonZeroFiguresExceptSome(rrs, figuresToIgnore))
+            if(mType == "TopNonZeroFiguresExceptSome")
+            {
+                val exceptSomeStrategy = new Strategy4(RunResults.runResults, tcf, 1, 36)
+                exceptSomeStrategy
+                    .apply(pw, sw, fw)(rrs => exceptSomeStrategy.topNonZeroFiguresExceptSome(rrs, figuresToIgnore))
+            }
             else if(mType == "MiddleOccurencyFigures") strategy(pw, sw, fw)(strategy.middleOccurencyFigures)
             else if(mType == "ZeroOccurencyFigures") strategy(pw, sw, fw)(strategy.zeroOccurencyFigures)
             else if(mType == "TopNonZeroFiguresGeneric1") strategy(pw, sw, fw)(strategy.topNonZeroFiguresGeneric1)
@@ -71,7 +76,7 @@ class StrategySelector(sf: Int, ef: Int, tcf: Int, excludeFigures: String, pw: I
             else (0, 0)
         }
 
-    private val figuresToIgnore = excludeFigures.split(",").map(_.trim.toInt).sorted
+    private val figuresToIgnore = excludeFigures.split(",").map(_.trim.toInt).sorted :+ 0
 
     override def topFiguresCount: Int = 42
 }

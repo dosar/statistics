@@ -34,7 +34,7 @@ class MetricsTest extends TestBase
     test("figureOccurencies on all data")
     {
         val metrics = new Metrics()
-        FiguresByHitSorter.topFigures(metrics.figuresOccurencies(RunResults.runResults, 1, 36)) foreach println
+        println(FiguresByHitSorter.topFigures(metrics.figuresOccurencies(RunResults.runResults, 1, 36)).toList)
     }
 
     test("pair occurencies on all data")

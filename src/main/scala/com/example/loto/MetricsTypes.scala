@@ -6,7 +6,6 @@ import com.example.loto.betgenerator.FromMiddleOccurenciesBetGenerator
 import com.example.loto.model.RunResult
 import com.example.loto.sorter.{FiguresByHitSorter, PairArrayHeapSorter}
 
-import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 /**
@@ -42,8 +41,8 @@ trait MetricsTypes extends MoneyHitStatisticsType
         while(ind < bet.length)
         {
             val figure = bet(ind)
-            if(figure == rrResult(0) || figure == rrResult(1) || figure == rrResult(2) || figure == rrResult(3) || figure == rrResult(4))
-                result += 1
+            if(figure == rrResult(0) || figure == rrResult(1) || figure == rrResult(2) || figure == rrResult(3)
+                || figure == rrResult(4)) result += 1
             ind += 1
         }
         result
@@ -54,7 +53,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
     * */
     def backFigureOccurencies(rrs: Array[RunResult]): Array[Array[Figure]] =
     {
-        import ArrayPerformanceUtil._
+        import com.example.loto.array.ArrayPerformanceUtil._
         var figure = 0
         val figureHits = figuresOccurencies(rrs)
         val result = new Array[Array[Figure]](maxForArray(figureHits) + 1)
@@ -83,34 +82,6 @@ trait MetricsTypes extends MoneyHitStatisticsType
     }
 
     /*
-    * сверху цифру, потом пару для нее, и т.д.
-    * */
-    def piarFiguresOccurencies(rrs: Array[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): mutable.Map[Figure, HitCount] =
-    {
-        var ind = 0
-        val figuresMap = new Array[Int](36)
-
-        while(ind < rrs.length)
-        {
-            val rrResult = rrs(ind).result
-            figuresMap(rrResult(0) - 1) += 1
-            figuresMap(rrResult(1) - 1) += 1
-            figuresMap(rrResult(2) - 1) += 1
-            figuresMap(rrResult(3) - 1) += 1
-            figuresMap(rrResult(4) - 1) += 1
-            ind += 1
-        }
-        ind = startFigure - 1
-        val result = mutable.Map[Int, Int]() withDefaultValue 0
-        while(ind < endFigure)
-        {
-            result += (ind + 1) -> figuresMap(ind)
-            ind += 1
-        }
-        result
-    }
-
-    /*
     * индекс - число, значение - количество хитов. нулевой индекс не используется
     * */
     def figuresOccurencies(rrs: Array[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): Array[HitCount] =
@@ -133,7 +104,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
 
     private def updateMap(figuresMap: Array[Int], figure: Int) =
     {
-        if(figure <= endFigure && figure >= startFigure)
+        if(figuresMap(figure) != -1)
             figuresMap(figure) += 1
     }
 
@@ -206,13 +177,9 @@ trait MetricsTypes extends MoneyHitStatisticsType
     }
 
     /*
-<<<<<<< HEAD
+    * Метрика
     * в том числе с нулями и с числами которые фильтруются, если они попадают
     * в середину (непонятно как такое может случиться с хитами в -1)
-=======
-    * Метрика
-    * в том числе с нулями
->>>>>>> 3303dda86b10df25cd4fde82afb8ad30b0fae53b
     * */
     def middleOccurencyFigures(rrs: Array[RunResult]) =
     {

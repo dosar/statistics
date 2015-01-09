@@ -11,17 +11,53 @@ import scala.concurrent.{Await, Future}
 
 class StrategiesOptimization extends FunSuite
 {
+    type PastWindow = Int; type SkipWindow = Int; type FutureWindow = Int
+    type Hit2 = Int; type Hit3 = Int; type Hit4 = Int; type Hit5 = Int
+    type MoneyPlus = Int; type MoneyMinus = Int
+    type Statistics = (PastWindow, SkipWindow, FutureWindow, Hit2, Hit3, Hit4, Hit5, MoneyPlus, MoneyMinus)
+
+    def accumulateResult(betSize: Int, startFigure: Int, result: List[((Int, Int), Statistics)], append: Seq[Statistics]) =
+        result ++ append.map(x => ((betSize, startFigure), x)).filter(x => x._2._9 - x._2._8 > 0).take(200)
+
+    test("optimize strategy4 topFigureCombinedWithPair")
+    {
+        var result = List[((Int, Int), Statistics)]()
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with PairFigureMetrics
+            result = result ++ testStrategy4[Array[RunResult], Strategy4 with PairFigureMetrics](strategy, 10)(_.topFigureCombinedWithPair(_))
+                .map(x => ((betSize, startFigure), x))
+            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+        }
+        result foreach println
+    }
+
+    /* хороша по хитам в 4ки*/
+    test("optimize strategy4 topPairFigures")
+    {
+        var result = List[((Int, Int), Statistics)]()
+        for(betSize <- 6 to 6; startFigure <- 11 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with PairFigureMetrics
+            result = result ++ testStrategy4[Array[RunResult], Strategy4 with PairFigureMetrics](strategy, 50)(_.topPairFigures(_))
+                .map(x => ((betSize, startFigure), x))
+            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+        }
+        result foreach println
+    }
+
     /* вторая стратегия из лучших */
     test("optimize strategy5 topNonZeroFiguresGeneric")
     {
-        var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
+        var result = List[((Int, Int), Statistics)]()
         for(betSize <- 6 to 8; startFigure <- 1 to 17)
         {
             println((betSize, startFigure))
             val strategy = new Strategy5(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Array[RunResult], Strategy5](strategy, 50)(_.topNonZeroFiguresGeneric(_))
-                .map(x => ((betSize, startFigure), x))
-            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+            result = accumulateResult(betSize, startFigure, result,
+                testStrategy4[Array[RunResult], Strategy5](strategy, 50)(_.topNonZeroFiguresGeneric(_)))
         }
         result foreach println
     }
@@ -30,16 +66,16 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 topNonZeroFiguresExceptSome")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        val nonPopularFigures = Vector(3, 5, 8, 9, 11, 12, 13, 14, 16, 17, 20, 21, 24, 25, 29, 31, 34)
+        val nonPopularFigures = Array(36, 30, 35, 27, 4, 32, 6, 15, 26, 33, 1, 10, 19, 22, 2, 28, 7, 18, 20, 31, 8, 16,
+            25, 23, 13, 24, 5, 21, 3, 34, 17, 29, 14, 12, 9, 11).reverse
         val rrs = RunResults.runResults
-        for(betSize <- 7 to 7; ignoredSize <- 1 to 10)
+        for(betSize <- 6 to 6; ignoredSize <- 1 to 17)
         {
             println((betSize, ignoredSize))
-            val nonUseful = (nonPopularFigures.take(ignoredSize) :+ 0).toArray
+            val nonUseful = nonPopularFigures.take(ignoredSize).sorted :+ 0
             val strategy = new Strategy4(rrs, betSize, 1, 36)
-            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 50)(_.topNonZeroFiguresExceptSome(_, nonUseful))
-                .map(x => ((betSize, ignoredSize), x))
-            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+            result = accumulateResult(betSize, ignoredSize, result,
+                testStrategy4[Array[RunResult], Strategy4](strategy, 25)(_.topNonZeroFiguresExceptSome(_, nonUseful)))
         }
         result foreach println
     }
@@ -48,11 +84,11 @@ class StrategiesOptimization extends FunSuite
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
         val rrs = RunResults.runResults
-        for(betSize <- 6 to 8; startFigure <- 1 to 17)
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(rrs, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 75)(_.fromMiddleOccurencies(_))
+            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 100)(_.fromMiddleOccurencies(_))
                 .map(x => ((betSize, startFigure), x))
             result = result.sortBy(x => x._2._9 - x._2._8).take(200)
         }
@@ -63,7 +99,7 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 middleOccurencyFigures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        for(betSize <- 6 to 6; startFigure <- 1 to 1)
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
@@ -189,7 +225,7 @@ class StrategiesOptimization extends FunSuite
         val sRange = 0 to 100
         val fRange = 1 to 100
 
-        val sorter = new SimpleParallelSort[(Int, Int, Int, Int)](4, 50, (0, 0, 0, 0))(_._4)
+        val sorter = new SimpleParallelSort[(Int, Int, Int, Int), Int](4, 50, (0, 0, 0, 0))(_._4)
 
         def calcFragment(pRange: Range, fragment: Int) =
         {
@@ -209,7 +245,9 @@ class StrategiesOptimization extends FunSuite
         {
             sorter.result
         }
-        Await.result(result, 120 minutes)
+        val awaitedResult = Await.result(result, 120 minutes)
+        awaitedResult foreach println
+        awaitedResult
     }
 
     def testStrategy4[TFrom, TStrategy <: StrategyWithMoneyStatistics[TFrom, Array[Int]]](strategy: TStrategy, chunkSize: Int)(
@@ -221,22 +259,22 @@ class StrategiesOptimization extends FunSuite
         val pRange3 = (2 * pRangeSize + 1) to 3 * pRangeSize
         val pRange4 = (3 * pRangeSize + 1) to 4 * pRangeSize
         val sRange = 0 to pRangeSize * 4
-        val fRange = 1 to pRangeSize * 4
-//        val fRange = 1 to 10
+        val fRangeStart = 1
+//        val fRangeStart = 10
+        val fRange = fRangeStart to pRangeSize * 4
+//        val fRange = fRangeStart to 60
 
-        type PastWindow = Int; type SkipWindow = Int; type FutureWindow = Int
-        type Hit2 = Int; type Hit3 = Int; type Hit4 = Int; type Hit5 = Int
-        type MoneyPlus = Int; type MoneyMinus = Int
+//        val sorter = new SimpleParallelSort[(PastWindow, SkipWindow, FutureWindow, Hit2, Hit3, Hit4, Hit5,
+//            MoneyPlus, MoneyMinus)](4, 50, (0, 0, 0, 0, 0, 0, 0, 0, 0))(x => x._8 - x._9,
+//            { (left: Int, right: Int) => (left / 100000).compareTo(right / 100000) })
 
-        val sorter = new SimpleParallelSort[(PastWindow, SkipWindow, FutureWindow, Hit2, Hit3, Hit4, Hit5,
-            MoneyPlus, MoneyMinus)](4, 50, (0, 0, 0, 0, 0, 0, 0, 0, 0))(x => x._8 - x._9,
-            { (left: Int, right: Int) => (left / 100000).compareTo(right / 100000) })
+        val sorter = new SimpleParallelSort[Statistics, (Hit5, Hit4, Hit3)](4, 50, (0, 0, 0, 0, 0, 0, 0, 0, 0))(x => (x._7, x._6, x._5))
 
         def calcFragment(pRange: Range, fragment: Int) =
         {
             for(pw <- pRange; sw <- sRange; fw <- fRange)
             {
-                if(pw % 10 == 0 && sw == 0 && fw == 1) println("+")
+                if(pw % 10 == 0 && sw == 0 && fw == fRangeStart) println("+")
                 val strategyResult = strategy.apply(pw, sw, fw)(rrs => betGenerator(strategy, rrs))
 //                if(strategyResult.forall(x => x._2._5 - x._2._6 > -(fw * 1000) /*&& x._2._6 <= 10000*/))
 //                {
@@ -249,14 +287,21 @@ class StrategiesOptimization extends FunSuite
             }
         }
 
-        val future1 = Future { calcFragment(pRange1, 0) }
-        val future2 = Future { calcFragment(pRange2, 1) }
-        val future3 = Future { calcFragment(pRange3, 2) }
-        val future4 = Future { calcFragment(pRange4, 3) }
-        val result = for{result1 <- future1; result2 <- future2; result3 <- future3; result4 <- future4} yield
+        calcFutureResult(sorter, calcFragment(pRange1, 0), calcFragment(pRange2, 1), calcFragment(pRange3, 2), calcFragment(pRange4, 3))
+    }
+
+    def calcFutureResult(sorter: SimpleParallelSort[Statistics, _], body1: => Unit, body2: => Unit, body3: => Unit, body4: => Unit) =
+    {
+        val future1 = Future { body1 }
+        val future2 = Future { body2 }
+        val future3 = Future { body3 }
+        val future4 = Future { body4 }
+        val resultFuture = for{ result1 <- future1; result2 <- future2; result3 <- future3; result4 <- future4 } yield
         {
             sorter.result
         }
-        Await.result(result, 120 minutes)
+        val result = Await.result(resultFuture, Duration.Inf).filter(x => x._9 - x._8 > 0)
+        result foreach println
+        result
     }
 }

@@ -9,7 +9,7 @@ import scala.collection.mutable.ArrayBuffer
 /*
 * перестаем ставить по старой ставке если получили хит на 5 чисел
 * */
-class Strategy4(runResults: Array[RunResult], override val topFiguresCount: Int = 7, override val startFigure: Int = 16,
+class Strategy4(runResults: Array[RunResult], override val topFiguresCount: Int = 7, override val startFigure: Int = 1,
     override val endFigure: Int = 36)
 extends MetricsTypes with StrategyWithMoneyStatistics[Array[RunResult], Array[Int]]
 {
