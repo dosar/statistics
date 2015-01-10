@@ -17,18 +17,85 @@ class StrategiesOptimization extends FunSuite
     type Statistics = (PastWindow, SkipWindow, FutureWindow, Hit2, Hit3, Hit4, Hit5, MoneyPlus, MoneyMinus)
 
     def accumulateResult(betSize: Int, startFigure: Int, result: List[((Int, Int), Statistics)], append: Seq[Statistics]) =
-        result ++ append.map(x => ((betSize, startFigure), x)).filter(x => x._2._9 - x._2._8 > 0).take(200)
+        (result ++ append.map(x => ((betSize, startFigure), x))).sortBy{ case (_, x) => (x._7, x._6, x._5) }.reverse.take(200)
 
-    test("optimize strategy4 topFigureCombinedWithPair")
+    /*тоже есть 4 хита в 5ку*/
+    test("optimize strategy4 topWithMiddle getCombinedBetIntersectionStatistics")
     {
         var result = List[((Int, Int), Statistics)]()
         for(betSize <- 6 to 6; startFigure <- 1 to 17)
         {
             println((betSize, startFigure))
-            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with PairFigureMetrics
-            result = result ++ testStrategy4[Array[RunResult], Strategy4 with PairFigureMetrics](strategy, 10)(_.topFigureCombinedWithPair(_))
-                .map(x => ((betSize, startFigure), x))
-            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with CombinedBetFigureMetrics
+            def test = testStrategy4[Array[RunResult], Strategy4 with CombinedBetFigureMetrics](strategy, 50) _
+            result = accumulateResult(betSize, startFigure, result, test(_.topWithMiddle(_))(strategy.getCombinedBetIntersectionStatistics))
+        }
+        result foreach println
+    }
+
+    /*3 хита*/
+    test("optimize strategy4 topWithTrueMiddle getCombinedBetIntersectionStatistics")
+    {
+        var result = List[((Int, Int), Statistics)]()
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with CombinedBetFigureMetrics
+            def test = testStrategy4[Array[RunResult], Strategy4 with CombinedBetFigureMetrics](strategy, 25) _
+            result = accumulateResult(betSize, startFigure, result, test(_.topWithTrueMiddle(_))(strategy.getCombinedBetIntersectionStatistics))
+        }
+        result foreach println
+    }
+
+    /*3 хита*/
+    test("optimize strategy4 topWithZero getCombinedBetIntersectionStatistics")
+    {
+        var result = List[((Int, Int), Statistics)]()
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with CombinedBetFigureMetrics
+            def test = testStrategy4[Array[RunResult], Strategy4 with CombinedBetFigureMetrics](strategy, 25) _
+            result = accumulateResult(betSize, startFigure, result, test(_.topWithZero(_))(strategy.getCombinedBetIntersectionStatistics))
+        }
+        result foreach println
+    }
+
+    test("optimize strategy4 middleWithTrueMiddle getCombinedBetIntersectionStatistics")
+    {
+        var result = List[((Int, Int), Statistics)]()
+        for(betSize <- 6 to 6; startFigure <- 10 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with CombinedBetFigureMetrics
+            def test = testStrategy4[Array[RunResult], Strategy4 with CombinedBetFigureMetrics](strategy, 25) _
+            result = accumulateResult(betSize, startFigure, result, test(_.middleWithTrueMiddle(_))(strategy.getCombinedBetIntersectionStatistics))
+        }
+        result foreach println
+    }
+
+    test("optimize strategy4 middleWithZero getCombinedBetIntersectionStatistics")
+    {
+        var result = List[((Int, Int), Statistics)]()
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with CombinedBetFigureMetrics
+            def test = testStrategy4[Array[RunResult], Strategy4 with CombinedBetFigureMetrics](strategy, 25) _
+            result = accumulateResult(betSize, startFigure, result, test(_.middleWithZero(_))(strategy.getCombinedBetIntersectionStatistics))
+        }
+        result foreach println
+    }
+
+    test("optimize strategy4 trueMiddleWithZero getCombinedBetIntersectionStatistics")
+    {
+        var result = List[((Int, Int), Statistics)]()
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with CombinedBetFigureMetrics
+            def test = testStrategy4[Array[RunResult], Strategy4 with CombinedBetFigureMetrics](strategy, 25) _
+            result = accumulateResult(betSize, startFigure, result, test(_.trueMiddleWithZero(_))(strategy.getCombinedBetIntersectionStatistics))
         }
         result foreach println
     }
@@ -37,49 +104,17 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 topPairFigures")
     {
         var result = List[((Int, Int), Statistics)]()
-        for(betSize <- 6 to 6; startFigure <- 11 to 17)
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with PairFigureMetrics
-            result = result ++ testStrategy4[Array[RunResult], Strategy4 with PairFigureMetrics](strategy, 50)(_.topPairFigures(_))
-                .map(x => ((betSize, startFigure), x))
-            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
-        }
-        result foreach println
-    }
-
-    /* вторая стратегия из лучших */
-    test("optimize strategy5 topNonZeroFiguresGeneric")
-    {
-        var result = List[((Int, Int), Statistics)]()
-        for(betSize <- 6 to 8; startFigure <- 1 to 17)
-        {
-            println((betSize, startFigure))
-            val strategy = new Strategy5(RunResults.runResults, betSize, startFigure, 36)
-            result = accumulateResult(betSize, startFigure, result,
-                testStrategy4[Array[RunResult], Strategy5](strategy, 50)(_.topNonZeroFiguresGeneric(_)))
+            def test = testStrategy4[Array[RunResult], Strategy4 with PairFigureMetrics](strategy, 50)(_.topPairFigures(_)) _
+            result = accumulateResult(betSize, startFigure, result, test(strategy.getIntersectionStatistics))
         }
         result foreach println
     }
 
     /* тут тоже не очень */
-    test("optimize strategy4 topNonZeroFiguresExceptSome")
-    {
-        var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        val nonPopularFigures = Array(36, 30, 35, 27, 4, 32, 6, 15, 26, 33, 1, 10, 19, 22, 2, 28, 7, 18, 20, 31, 8, 16,
-            25, 23, 13, 24, 5, 21, 3, 34, 17, 29, 14, 12, 9, 11).reverse
-        val rrs = RunResults.runResults
-        for(betSize <- 6 to 6; ignoredSize <- 1 to 17)
-        {
-            println((betSize, ignoredSize))
-            val nonUseful = nonPopularFigures.take(ignoredSize).sorted :+ 0
-            val strategy = new Strategy4(rrs, betSize, 1, 36)
-            result = accumulateResult(betSize, ignoredSize, result,
-                testStrategy4[Array[RunResult], Strategy4](strategy, 25)(_.topNonZeroFiguresExceptSome(_, nonUseful)))
-        }
-        result foreach println
-    }
-
     test("optimize strategy4 fromMiddleOccurencies")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
@@ -88,9 +123,8 @@ class StrategiesOptimization extends FunSuite
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(rrs, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 100)(_.fromMiddleOccurencies(_))
-                .map(x => ((betSize, startFigure), x))
-            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+            def test = testStrategy4[Array[RunResult], Strategy4](strategy, 50)(_.fromMiddleOccurencies(_)) _
+            result = accumulateResult(betSize, startFigure, result, test(strategy.getIntersectionStatistics))
         }
         result foreach println
     }
@@ -103,9 +137,8 @@ class StrategiesOptimization extends FunSuite
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 25)(_.middleOccurencyFigures(_))
-                .map(x => ((betSize, startFigure), x))
-            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+            def test = testStrategy4[Array[RunResult], Strategy4](strategy, 50)(_.middleOccurencyFigures(_)) _
+            result = accumulateResult(betSize, startFigure, result, test(strategy.getIntersectionStatistics))
         }
         result foreach println
     }
@@ -114,13 +147,12 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 zeroOccurencyFigures")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        for(betSize <- 6 to 8; startFigure <- 1 to 17)
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 50)(_.zeroOccurencyFigures(_))
-                .map(x => ((betSize, startFigure), x))
-            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+            def test = testStrategy4[Array[RunResult], Strategy4](strategy, 50)(_.zeroOccurencyFigures(_)) _
+            result = accumulateResult(betSize, startFigure, result, test(strategy.getIntersectionStatistics))
         }
         result foreach println
     }
@@ -129,18 +161,61 @@ class StrategiesOptimization extends FunSuite
     test("optimize strategy4 topNonZeroFiguresGeneric1")
     {
         var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
-        for(betSize <- 7 to 8; startFigure <- 16 to 17)
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
         {
             println((betSize, startFigure))
             val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36)
-            result = result ++ testStrategy4[Array[RunResult], Strategy4](strategy, 50)(_.topNonZeroFiguresGeneric1(_))
-                .map(x => ((betSize, startFigure), x))
-            result = result.sortBy(x => x._2._9 - x._2._8).take(200)
+            def test = testStrategy4[Array[RunResult], Strategy4](strategy, 50)(_.topNonZeroFiguresGeneric1(_)) _
+            result = accumulateResult(betSize, startFigure, result, test(strategy.getIntersectionStatistics))
         }
         result foreach println
     }
 
-/*
+    /* вторая стратегия из лучших */
+    test("optimize strategy5 topNonZeroFiguresGeneric")
+    {
+        var result = List[((Int, Int), Statistics)]()
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy5(RunResults.runResults, betSize, startFigure, 36)
+            def test = testStrategy4[Array[RunResult], Strategy5](strategy, 50)(_.topNonZeroFiguresGeneric(_)) _
+            result = accumulateResult(betSize, startFigure, result, test(strategy.getIntersectionStatistics))
+        }
+        result foreach println
+    }
+
+    test("optimize strategy4 topNonZeroFiguresExceptSome")
+    {
+        var result = List[((Int, Int), (Int, Int, Int, Int, Int, Int, Int, Int, Int))]()
+        val nonPopularFigures = Array(36, 30, 35, 27, 4, 32, 6, 15, 26, 33, 1, 10, 19, 22, 2, 28, 7, 18, 20, 31, 8, 16,
+            25, 23, 13, 24, 5, 21, 3, 34, 17, 29, 14, 12, 9, 11).reverse
+        val rrs = RunResults.runResults
+        for(betSize <- 6 to 6; ignoredSize <- 1 to 17)
+        {
+            println((betSize, ignoredSize))
+            val nonUseful = nonPopularFigures.take(ignoredSize).sorted :+ 0
+            val strategy = new Strategy4(rrs, betSize, 1, 36)
+            def test = testStrategy4[Array[RunResult], Strategy4](strategy, 50)(_.topNonZeroFiguresExceptSome(_, nonUseful)) _
+            result = accumulateResult(betSize, ignoredSize, result, test(strategy.getIntersectionStatistics))
+        }
+        result foreach println
+    }
+
+    test("optimize strategy4 topFigureCombinedWithPair")
+    {
+        var result = List[((Int, Int), Statistics)]()
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with PairFigureMetrics
+            def test = testStrategy4[Array[RunResult], Strategy4 with PairFigureMetrics](strategy, 50) _
+            result = accumulateResult(betSize, startFigure, result, test(_.topFigureCombinedWithPair(_))(strategy.getIntersectionStatistics))
+        }
+        result foreach println
+    }
+
+    /*
     test("optimize strategy3 without non popular figures")
     {
         var result = List[(Int, Int, Int, Int)]()
@@ -251,7 +326,7 @@ class StrategiesOptimization extends FunSuite
     }
 
     def testStrategy4[TFrom, TStrategy <: StrategyWithMoneyStatistics[TFrom, Array[Int]]](strategy: TStrategy, chunkSize: Int)(
-        betGenerator: (TStrategy, TFrom) => Array[Int]) =
+        betGenerator: (TStrategy, TFrom) => Array[Int])(intersectionStatistics: (Array[RunResult], Array[Int]) => (MoneyHitStatisticsType#StrategyStatistics, MoneyHitStatisticsType#SliceSize)): IndexedSeq[Statistics] =
     {
         val pRangeSize = chunkSize
         val pRange1 = 1 to pRangeSize
@@ -275,7 +350,7 @@ class StrategiesOptimization extends FunSuite
             for(pw <- pRange; sw <- sRange; fw <- fRange)
             {
                 if(pw % 10 == 0 && sw == 0 && fw == fRangeStart) println("+")
-                val strategyResult = strategy.apply(pw, sw, fw)(rrs => betGenerator(strategy, rrs))
+                val strategyResult = strategy.apply(pw, sw, fw)(rrs => betGenerator(strategy, rrs))(intersectionStatistics)
 //                if(strategyResult.forall(x => x._2._5 - x._2._6 > -(fw * 1000) /*&& x._2._6 <= 10000*/))
 //                {
                 val (hit2, hit3, hit4, hit5, mplus, mminus) = strategyResult.foldLeft(0, 0, 0, 0, 0, 0)
@@ -300,7 +375,7 @@ class StrategiesOptimization extends FunSuite
         {
             sorter.result
         }
-        val result = Await.result(resultFuture, Duration.Inf).filter(x => x._9 - x._8 > 0)
+        val result = Await.result(resultFuture, Duration.Inf).filter(x => x._8 > 0)
         result foreach println
         result
     }

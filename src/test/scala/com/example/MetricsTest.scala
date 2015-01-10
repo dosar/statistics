@@ -33,7 +33,7 @@ class MetricsTest extends TestBase
 
     test("figureOccurencies on all data")
     {
-        val metrics = new Metrics()
+        val metrics = new Metrics{ override val betSizeLimit = 6 }
         println(FiguresByHitSorter.topFigures(metrics.figuresOccurencies(RunResults.runResults, 1, 36)).toList)
     }
 
@@ -50,12 +50,19 @@ class MetricsTest extends TestBase
 
     test("trustedIntervals")
     {
-        val metrics = new Metrics()
-        assert(metrics.figuresTrustedInterval(Vector(1, 2, 3, 4, 5), 1.0) === (1, 5))
-        assert(metrics.figuresTrustedInterval(Vector(1, 2, 3, 4, 5), 0.9) === (2, 5))
-        assert(metrics.figuresTrustedInterval(Vector(1, 2, 3, 4, 5), 0.8) === (2, 5))
-        assert(metrics.figuresTrustedInterval(Vector(1, 1, 2, 3, 4, 5), 0.75) === (2, 4))
-        assert(metrics.figuresTrustedInterval(Vector(1, 1, 1, 2, 2, 3, 4, 5, 5, 5, 5), 0.5) === (2, 4))
+        val metrics = new ProbabalisticIntervalsMetrics with MetricsTypes
+        {
+            override val betSizeLimit = 6
+            override def probabilities: Array[Double] = Array(1.0, 1.0, 1.0, 1.0, 1.0)
+        }
+
+        implicit def toRr(value: Int): RunResult = (value, 0, 0, 0, 0)
+
+        assertResult((1, 5))(metrics.figuresTrustedInterval(Array(1, 2, 3, 4, 5), 0, 1.0))
+        assertResult((2, 5))(metrics.figuresTrustedInterval(Array(1, 2, 3, 4, 5), 0, 0.9))
+        assertResult((2, 5))(metrics.figuresTrustedInterval(Array(1, 2, 3, 4, 5), 0, 0.8))
+        assertResult((2, 4))(metrics.figuresTrustedInterval(Array(1, 1, 2, 3, 4, 5), 0, 0.75))
+        assertResult((2, 4))(metrics.figuresTrustedInterval(Array(1, 1, 1, 2, 2, 3, 4, 6, 6, 6, 6), 0, 0.5))
     }
 
     test("figuresOccurences 1, 2 input elements")
@@ -97,7 +104,7 @@ class MetricsTest extends TestBase
 
     test("topNonZeroFiguresWithoutPrevious")
     {
-        val metrics = new MetricsTypes{ val topFiguresCount = 5 }
+        val metrics = new MetricsTypes{ val betSizeLimit = 5 }
         assert(metrics.topNonZeroFiguresWithoutPrevious(Array(6 -> 2, 3 -> 1, 2 -> 1, 10 -> 1), (6, 7, 8, 9, 10)) === Array(3, 2, 0, 0, 0))
     }
 

@@ -4,50 +4,8 @@ import com.example.loto.model.RunResult
 
 import scala.collection.mutable.ArrayBuffer
 
-/*
-* topFiguresCount - сколько чисел брать из набора чисел
-* */
-class Metrics(override val topFiguresCount: Int = 12) extends MetricsTypes
+trait Metrics extends MetricsTypes
 {
-    def figuresTrustedInterval(figures: Vector[Figure], probability: Double): (Int, Int) =
-    {
-        val figuresMap = new Array[Int](36)
-        for(figure <- figures)
-            figuresMap(figure - 1) += 1
-        val figureOccurencies = figuresMap.toVector.zipWithIndex
-            .filter{ case (hits, figure) => hits > 0}
-            .map{ case (hits, figure) => (figure + 1) -> hits}
-        val hitSum = figuresMap.sum
-        var hitMinus = 0.0
-        var dropCount = 0
-        var endIndex = figureOccurencies.length - 1
-        var dropRightCount = 0
-        var rightAdditionalHits = 0
-        var leftAdditionalHits = 0
-        while((hitSum - hitMinus) / hitSum > probability)
-        {
-            if((figureOccurencies(dropCount)._2 + leftAdditionalHits) <= (figureOccurencies(endIndex)._2 + rightAdditionalHits))
-            {
-                rightAdditionalHits = 0
-                hitMinus += figureOccurencies(dropCount)._2
-                leftAdditionalHits += figureOccurencies(dropCount)._2
-                dropCount += 1
-            }
-            else
-            {
-                leftAdditionalHits = 0
-                hitMinus += figureOccurencies(endIndex)._2
-                rightAdditionalHits += figureOccurencies(endIndex)._2
-                endIndex -= 1
-                dropRightCount += 1
-            }
-        }
-        val result = figureOccurencies.drop(dropCount).dropRight(dropRightCount)
-        if(result.isEmpty)
-            (figures(0), figures(0))
-        else (result.head._1, result.last._1)
-    }
-
     def figureIntersectionStatistics(runResults: Array[RunResult]) =
     {
         val intersections = for((p, f) <- runResults.zip(runResults.drop(1))) yield
@@ -106,7 +64,6 @@ class Metrics(override val topFiguresCount: Int = 12) extends MetricsTypes
         val order3Figures = runFigures.count(f => f > 29 && f < 40)
         FigureOrderStatistics(order0Figures, order1Figures, order2Figures, order3Figures)
     }
-
 }
 
 case class FigureOrderStatistics(order0Frequency: Int, order1Frequency: Int, order2Frequency: Int, order3Frequency: Int)

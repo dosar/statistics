@@ -21,7 +21,7 @@ class PairFigureMetricsTest extends TestBase
     {
         val metrics = new PairFigureMetrics with MetricsTypes
         {
-            override val topFiguresCount: Int = 6
+            override val betSizeLimit: Int = 6
             override val startFigure = 1
             override val endFigure = 36
         }
@@ -33,7 +33,7 @@ class PairFigureMetricsTest extends TestBase
     {
         val metrics = new PairFigureMetrics with MetricsTypes
         {
-            override val topFiguresCount: Int = 6
+            override val betSizeLimit: Int = 6
             override val startFigure = 1
             override val endFigure = 36
         }
@@ -66,7 +66,7 @@ class PairFigureMetricsTest extends TestBase
     {
         val metrics = new PairFigureMetrics with MetricsTypes
         {
-            override val topFiguresCount: Int = 6
+            override val betSizeLimit: Int = 6
             override val startFigure = 3
             override val endFigure = 16
         }
@@ -98,7 +98,7 @@ class PairFigureMetricsTest extends TestBase
     {
         val metrics = new PairFigureMetrics with MetricsTypes
         {
-            override val topFiguresCount: Int = 4
+            override val betSizeLimit: Int = 4
             override val startFigure = 1
             override val endFigure = 36
         }
@@ -110,7 +110,7 @@ class PairFigureMetricsTest extends TestBase
     {
         val metrics = new PairFigureMetrics with MetricsTypes
         {
-            override val topFiguresCount: Int = 4
+            override val betSizeLimit: Int = 4
             override val startFigure = 3
             override val endFigure = 9
         }

@@ -9,22 +9,23 @@ import scala.collection.mutable.ArrayBuffer
 /*
 * перестаем ставить по старой ставке если получили хит на 5 чисел
 * */
-class Strategy4(runResults: Array[RunResult], override val topFiguresCount: Int = 7, override val startFigure: Int = 1,
+class Strategy4(runResults: Array[RunResult], override val betSizeLimit: Int = 7, override val startFigure: Int = 1,
     override val endFigure: Int = 36)
 extends MetricsTypes with StrategyWithMoneyStatistics[Array[RunResult], Array[Int]]
 {
-    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Array[RunResult] => Array[Int]): ArrayBuffer[(Array[Figure], (IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus))] =
+    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: Array[RunResult] => Array[Int])(implicit
+        intersectionStatistics: (Array[RunResult], Bet) => (StrategyStatistics, SliceSize) = getIntersectionStatistics): ArrayBuffer[(Bet, StrategyStatistics)] =
     {
         val startIndex = pastWindow
         val sliceSize = skipWindow + betWindow
         var index = startIndex
-        val buffer = ArrayBuffer[(Array[Figure], (IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus))]()
+        val buffer = ArrayBuffer[(Array[Figure], StrategyStatistics)]()
         while (index < runResults.length - skipWindow)
         {
             val pastRrs = ArrayPerformanceUtil.slice(runResults, index - pastWindow, index)
             val bet = betGenerator(pastRrs)
             val futureRrs = ArrayPerformanceUtil.slice(runResults, index + skipWindow, index + sliceSize)
-            val (statistics, indexIncrement) = getIntersectionStatistics(futureRrs, bet)
+            val (statistics, indexIncrement) = intersectionStatistics(futureRrs, bet)
             buffer += ((bet, statistics))
             index += indexIncrement
         }

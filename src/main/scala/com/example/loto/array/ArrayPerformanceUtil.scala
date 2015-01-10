@@ -96,6 +96,59 @@ object ArrayPerformanceUtil
         max
     }
 
+    def sumNonNegativeValues(array: Array[Int]) =
+    {
+        var sum = 0
+        var ind = 0
+        while(ind < array.length)
+        {
+            val value = array(ind)
+            if(value > -1)
+                sum += value
+            ind += 1
+        }
+        sum
+    }
+
+    def lastPositiveInd(array: Array[Int]) =
+    {
+        var resultInd = 0
+        var ind = 0
+        while(ind < array.length)
+        {
+            if(array(ind) > 0)
+                resultInd = ind
+            ind += 1
+        }
+        resultInd
+    }
+
+    def firstNonNegativeMinInd(array: Array[Int]) =
+    {
+        var minInd = 0
+        var ind = 1
+        while(ind < array.length)
+        {
+            if(array(ind) < array(minInd) && array(ind) >= 0)
+                minInd = ind
+            ind += 1
+        }
+        minInd
+    }
+
+    def lastNonNegativeMinInd(array: Array[Int]) =
+    {
+        var minInd = 0
+        var ind = 1
+        while(ind < array.length)
+        {
+            if(array(ind) <= array(minInd) && array(ind) >= 0)
+                minInd = ind
+            ind += 1
+        }
+        minInd
+    }
+
     type ExpandedArray = Array[Int]
     def safeSetArrayElement(array: Array[Int], ind: Int, value: Int)(ifCapacityExceeded: ExpandedArray => Unit): Unit =
     {

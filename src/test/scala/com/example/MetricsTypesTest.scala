@@ -34,7 +34,7 @@ class MetricsTypesTest extends TestBase
     {
         val metrics = new MetricsTypes
         {
-            override val topFiguresCount: Int = 5
+            override val betSizeLimit: Int = 5
             override val startFigure = 1
             override val endFigure = 36
         }
@@ -77,7 +77,7 @@ class MetricsTypesTest extends TestBase
     {
         val metrics = new MetricsTypes
         {
-            override val topFiguresCount: Int = 5
+            override val betSizeLimit: Int = 5
             override val startFigure = 1
             override val endFigure = 36
         }
@@ -89,7 +89,7 @@ class MetricsTypesTest extends TestBase
     {
         val metrics = new MetricsTypes
         {
-            override val topFiguresCount: Int = 4
+            override val betSizeLimit: Int = 4
             override val startFigure = 1
             override val endFigure = 36
         }
@@ -101,7 +101,7 @@ class MetricsTypesTest extends TestBase
     {
         val metrics = new MetricsTypes
         {
-            override val topFiguresCount: Int = 5
+            override val betSizeLimit: Int = 5
             override val startFigure = 1
             override val endFigure = 36
         }
@@ -113,7 +113,7 @@ class MetricsTypesTest extends TestBase
     {
         val metrics = new MetricsTypes
         {
-            override val topFiguresCount: Int = 3
+            override val betSizeLimit: Int = 3
             override val startFigure = 2
             override val endFigure = 4
         }
@@ -125,7 +125,7 @@ class MetricsTypesTest extends TestBase
     {
         val metrics = new MetricsTypes
         {
-            override val topFiguresCount: Int = 5
+            override val betSizeLimit: Int = 5
             override val startFigure = 1
             override val endFigure = 36
         }
@@ -137,11 +137,23 @@ class MetricsTypesTest extends TestBase
     {
         val metrics = new MetricsTypes
         {
-            override val topFiguresCount: Int = 3
+            override val betSizeLimit: Int = 3
             override val startFigure = 2
             override val endFigure = 4
         }
         val result = metrics.topNonZeroFiguresGeneric1(input)
         assert(List(4, 3, 2) === result.toList)
+    }
+
+    test("test trueMiddleOccurenciesFigures take 3 start 1 end 20")
+    {
+        val metrics = new MetricsTypes
+        {
+            override val betSizeLimit: Int = 3
+            override val startFigure = 1
+            override val endFigure = 20
+        }
+        val result = metrics.trueMiddleOccurencyFigures(input)
+        assertResult(List(16, 14, 15))(result.toList)
     }
 }

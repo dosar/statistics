@@ -14,8 +14,8 @@ class Strategy4Test extends TestBase
             (1, 2, 3, 4, 5)
         ), 5, 1, 36)
         val applyResult = strategy.apply(2, 0, 2)(strategy.topNonZeroFiguresGeneric)
-        assert(applyResult.map{ case(figures, statistics) => (figures.toSet, statistics) }.toSet ===
-            Set((Set(1, 2, 3, 4, 5), (0, 2, 0, 0, 600, 0)), (Set(1, 4, 5, 6, 7), (0, 1, 0, 0, 300, 0))))
+        assertResult(Set((Set(1, 2, 3, 4, 5), (0, 2, 0, 0, 600, 60)), (Set(1, 4, 5, 6, 7), (0, 1, 0, 0, 300, 30))))(
+            applyResult.map{ case(figures, statistics) => (figures.toSet, statistics) }.toSet)
     }
 
     test("strategy 4 intersections with statistics with 5 hit and zero minus")
@@ -34,7 +34,7 @@ class Strategy4Test extends TestBase
         assert(1 === statistics._3) // посчитали хиты на 4 числа
         assert(1 === statistics._4) // посчитали хиты на 5 чисел
         assert((30 + 600 + 3000 + 1000000) === statistics._5) // посчитали на сколько в плюс ушли
-        assert(0 === statistics._6) // посчитали на сколько в минус ушли
+        assert(150 === statistics._6) // посчитали на сколько в минус ушли
     }
 
     test("strategy 4 intersections with statistics with 5 hit and nonzero minus")
@@ -53,6 +53,6 @@ class Strategy4Test extends TestBase
         assert(1 === statistics._3) // посчитали хиты на 4 числа
         assert(1 === statistics._4) // посчитали хиты на 5 чисел
         assert((30 + 600 + 3000 + 1000000) === statistics._5) // посчитали на сколько в плюс ушли
-        assert(30 === statistics._6) // посчитали на сколько в минус ушли
+        assert(180 === statistics._6) // посчитали на сколько в минус ушли
     }
 }

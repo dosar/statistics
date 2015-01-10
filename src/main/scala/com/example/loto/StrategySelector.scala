@@ -78,5 +78,5 @@ class StrategySelector(sf: Int, ef: Int, tcf: Int, excludeFigures: String, pw: I
 
     private val figuresToIgnore = excludeFigures.split(",").map(_.trim.toInt).sorted :+ 0
 
-    override def topFiguresCount: Int = 42
+    override def betSizeLimit: Int = 42
 }

@@ -33,7 +33,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
   implicit val runResultItem = jsonFormat3(RunResultItem)
   implicit val strategyIteration = jsonFormat3(StrategyIteration)
 
-  val metrics = new Metrics()
+  val metrics = new Metrics(){ override val betSizeLimit = 6 }
   val simpleGraphics = new SimpleGraphics(RunResults.runResults)
   import metrics._
   import simpleGraphics._
@@ -59,7 +59,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val metrics = new Metrics()
+            val metrics = new Metrics{ override val betSizeLimit = 6 }
             metrics.figuresOccurencies(RunResults.runResults, 1, 36).toJson.toString
           }
         }
@@ -178,7 +178,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = new Strategy3(RunResults.runResults, topFiguresCount = tfCount, startFigure = sFigure, endFigure = eFigure)
+            val data = new Strategy3(RunResults.runResults, betSizeLimit = tfCount, startFigure = sFigure, endFigure = eFigure)
                 .withTopNonZeroFiguresWithoutNotPopular(pWindow, skipWindow, fWindow).map(_._2)
             data.toArray.toJson.toString
           }
@@ -190,7 +190,7 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val data = new Metrics().figureIntervals(RunResults.runResults, pWindow)
+            val data = new Metrics{ override val betSizeLimit = 6 }.figureIntervals(RunResults.runResults, pWindow)
             data.toArray.toJson.toString
           }
         }

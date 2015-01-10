@@ -1,9 +1,11 @@
 package com.example.loto
 
+import com.example.loto.model.RunResult
+
 import scala.collection.mutable.ArrayBuffer
 
 trait StrategyWithMoneyStatistics[TRunResults, TFigures] extends MoneyHitStatisticsType
 {
-    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: TRunResults => TFigures):
-        ArrayBuffer[(Array[Figure], (IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus))]
+    def apply(pastWindow: Int, skipWindow: Int, betWindow: Int)(betGenerator: TRunResults => TFigures)(implicit
+        intersectionStatistics: (Array[RunResult], TFigures) => (StrategyStatistics, SliceSize)): ArrayBuffer[(Array[Figure], StrategyStatistics)]
 }
