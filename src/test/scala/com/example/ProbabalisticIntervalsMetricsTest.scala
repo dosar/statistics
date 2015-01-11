@@ -24,16 +24,18 @@ class ProbabalisticIntervalsMetricsTest extends TestBase
         ( 2,  6,  8, 25, 36)
     )
 
-    test("")
+    test("probabalisticIntervalFigures betSize 6, start 1, end 36")
     {
         val metrics = new Metrics with ProbabalisticIntervalsMetrics
         {
-            override val betSizeLimit: Int = 5
+            override val betSizeLimit: Int = 6
             override val startFigure = 1
-            override val endFigure = 1
+            override val endFigure = 36
             override val probabilities = Array(1.0, 1.0, 1.0, 1.0, 1.0)
         }
 
-        assertResult(Array(3, 10, 16, 18, 32))(metrics.probabalisticIntervalFigures(input))
+        val bet = metrics.probabalisticIntervalFigures(input)
+        assertResult(null)(metrics.getCombinedBetIntersectionStatistics(input, bet))
+        assertResult(Array(3, 10, 16, 18, 32))(bet)
     }
 }

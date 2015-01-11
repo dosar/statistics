@@ -70,7 +70,6 @@ trait ProbabalisticIntervalsMetrics
         var ind = 0
         //        var (i2, i3, i4, i5, mplus, mminus) = (0, 0, 0, 0, 0, 0)
         val statisticsArray = Array(0, 0, 0, 0, 0, 0)
-        val betSize = betSizeLimit
         while(ind < rrs.length)
         {
             statisticsArray(5) += betCost(5) * 6 //потому шо 6 ставок по 5
@@ -134,22 +133,31 @@ trait ProbabalisticIntervalsMetrics
         val result = new Array[Int](intervals.length)
         var intervalInd = 0
 
-        def matchInterval(figure: Figure, interval: (Int, Int)) = figure >= interval._1 && figure <= interval._2
-
         while(intervalInd < intervals.length)
         {
             var figureInd = 0
             val interval = intervals(intervalInd)
-            while(!matchInterval(topFigures(figureInd), interval) &&
-                (exceptFigure == -1 || topFigures(figureInd) != exceptFigure) &&
-                (intervalInd == 0 || topFigures(figureInd) > result(intervalInd)))
-            {
-                figureInd += 1
-            }
-            result(intervalInd)= topFigures(figureInd)
+            result(intervalInd)= findAppropriateFigure(topFigures, intervals, intervalInd, exceptFigure, result)
             intervalInd += 1
         }
         result
+    }
+
+    private def findAppropriateFigure(topFigures: Array[Figure], intervals: Array[(Int, Int)], intervalInd: Int,
+        exceptFigure: Int, result: Array[Int]): Int =
+    {
+        def matchInterval(figure: Figure, interval: (Int, Int)) = figure >= interval._1 && figure <= interval._2
+
+        var figureInd = 0
+        val interval = intervals(intervalInd)
+        while(figureInd < topFigures.length)
+        {
+            if(!matchInterval(topFigures(figureInd), interval)) figureInd += 1
+            else if(exceptFigure != -1 && topFigures(figureInd) == exceptFigure) figureInd += 1
+            else if (intervalInd != 0 && topFigures(figureInd) <= result(intervalInd - 1)) figureInd += 1
+            else return topFigures(figureInd)
+        }
+        (interval._1 + interval._2) / 2
     }
 
     private def forwardLeftIndex(leftIndex: Int, arr: Array[Figure]) =

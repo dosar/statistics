@@ -19,6 +19,22 @@ class StrategiesOptimization extends FunSuite
     def accumulateResult(betSize: Int, startFigure: Int, result: List[((Int, Int), Statistics)], append: Seq[Statistics]) =
         (result ++ append.map(x => ((betSize, startFigure), x))).sortBy{ case (_, x) => (x._7, x._6, x._5) }.reverse.take(200)
 
+    test("optimize strategy4 probabalisticIntervalFigures getCombinedBetIntersectionStatistics")
+    {
+        var result = List[((Int, Int), Statistics)]()
+        for(betSize <- 6 to 6; startFigure <- 1 to 17)
+        {
+            println((betSize, startFigure))
+            val strategy = new Strategy4(RunResults.runResults, betSize, startFigure, 36) with ProbabalisticIntervalsMetrics
+            {
+                override val probabilities: Array[Double] = Array(1.0, 1.0, 1.0, 1.0, 1.0)
+            }
+            def test = testStrategy4[Array[RunResult], Strategy4 with ProbabalisticIntervalsMetrics](strategy, 10) _
+            result = accumulateResult(betSize, startFigure, result, test(_.probabalisticIntervalFigures(_))(strategy.getCombinedBetIntersectionStatistics))
+        }
+        result foreach println
+    }
+
     /*тоже есть 4 хита в 5ку*/
     test("optimize strategy4 topWithMiddle getCombinedBetIntersectionStatistics")
     {
