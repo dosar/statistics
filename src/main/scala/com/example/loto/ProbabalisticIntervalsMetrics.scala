@@ -17,8 +17,18 @@ trait ProbabalisticIntervalsMetrics
     def probabalisticIntervalFigures(rrs: Array[RunResult]): Bet =
     {
         if(betSizeLimit != 6) throw new Error("умеем работать только с 6 для betSizeLimit")
+        prob(rrs, FiguresByHitSorter.topFigures(figuresOccurencies(rrs)))
+    }
+
+    def probabalisticIntervalFigures1(rrs: Array[RunResult]): Bet =
+    {
+        if(betSizeLimit != 6) throw new Error("умеем работать только с 6 для betSizeLimit")
+        prob(rrs, FiguresByHitSorter.topFiguresMergeSort(figuresOccurencies(rrs)))
+    }
+
+    private def prob(rrs: Array[RunResult], topFigures: Array[Int]): Bet =
+    {
         val result = new Array[Int](30)
-        val topFigures = FiguresByHitSorter.topFigures(figuresOccurencies(rrs))
         val intervals = Array(figuresTrustedInterval(rrs, 0, probabilities(0)),
             figuresTrustedInterval(rrs, 1, probabilities(1)),
             figuresTrustedInterval(rrs, 2, probabilities(2)),
@@ -137,7 +147,7 @@ trait ProbabalisticIntervalsMetrics
         {
             var figureInd = 0
             val interval = intervals(intervalInd)
-            result(intervalInd)= findAppropriateFigure(topFigures, intervals, intervalInd, exceptFigure, result)
+            result(intervalInd) = findAppropriateFigure(topFigures, intervals, intervalInd, exceptFigure, result)
             intervalInd += 1
         }
         result

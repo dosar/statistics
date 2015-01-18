@@ -1,10 +1,9 @@
 package com.example.loto
 
-import com.example.loto.CommonImplicits.Incrementer
 import com.example.loto.array.ArrayPerformanceUtil
 import com.example.loto.betgenerator.FromMiddleOccurenciesBetGenerator
 import com.example.loto.model.RunResult
-import com.example.loto.sorter.{FiguresByHitSorter, PairArrayHeapSorter}
+import com.example.loto.sorter.{PairArrayInsertionSorter, FiguresByHitSorter, PairArrayHeapSorter}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -277,48 +276,16 @@ trait MetricsTypes extends MoneyHitStatisticsType
     * */
     def topNonZeroFiguresGeneric1(rrs: Array[RunResult]): Array[Figure] =
     {
-        val figureHits = new Array[Int](endFigure - startFigure + 1)
-        val incrementer = new Incrementer(startFigure)
-        val figures = Array.fill(figureHits.length)(incrementer ++)
-
-        def updateHits(figure: Int) =
-        {
-            val index = figure - startFigure
-            if(index >= 0 && figure <= endFigure) figureHits(index) += 1
-        }
-
-        var ind = 0
-        while(ind < rrs.length)
-        {
-            val rrResult = rrs(ind).result
-            updateHits(rrResult(0))
-            updateHits(rrResult(1))
-            updateHits(rrResult(2))
-            updateHits(rrResult(3))
-            updateHits(rrResult(4))
-            ind += 1
-        }
-        new PairArrayHeapSorter(figureHits, figures, betSizeLimit).sort._2
+        val occurencies = figuresOccurencies(rrs)
+        val figures = ArrayPerformanceUtil.createArray(occurencies.length)(i => i)
+        PairArrayInsertionSorter.sort(occurencies, figures)(betSizeLimit)._2
     }
 
     /*
     * Метрика
     * */
     def topNonZeroFiguresGeneric(rrs: Array[RunResult]): Array[Figure] =
-    {
-        val occs = figuresOccurencies(rrs)
-        var list = List[(Figure, HitCount)]()
-        var figure = startFigure
-        while(figure <= endFigure)
-        {
-            val hits = occs(figure)
-            if(hits > 0)
-                list = (figure, hits) :: list
-            figure += 1
-        }
-        val sorted = list.sortBy(- _._2)
-        sorted.map(_._1).take(betSizeLimit).toArray
-    }
+        FiguresByHitSorter.topFigures(figuresOccurencies(rrs))(betSizeLimit)
 
     //индекс - размер ставки
     val betCost = Array(0, 0, 0, 0, 0, 30, 180, 630, 1680, 3780, 7560, 13860, 23760)

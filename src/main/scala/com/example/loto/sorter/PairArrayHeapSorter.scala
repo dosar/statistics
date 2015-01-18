@@ -2,13 +2,8 @@ package com.example.loto.sorter
 
 import com.example.loto.array.ArrayPerformanceUtil
 
-/**
- * Created by alespuh on 03.01.15.
- */
-class PairArrayHeapSorter(master: Array[Int], slave: Array[Int], take: Int)
+class PairArrayHeapSorter(master: Array[Int], slave: Array[Int], take: Int) extends PairArraySorter
 {
-    type MasterArray = Array[Int]; type SlaveArray = Array[Int]
-
     def sort: (MasterArray, SlaveArray) =
     {
         createHeap
@@ -19,7 +14,7 @@ class PairArrayHeapSorter(master: Array[Int], slave: Array[Int], take: Int)
             heapify(ind - 1)
             ind -= 1
         }
-        ArrayPerformanceUtil.take(master, slave, take)
+        ArrayPerformanceUtil.take(master, slave, Math.min(master.length, take))
     }
 
     private def heapify(heapLength: Int)
@@ -56,7 +51,7 @@ class PairArrayHeapSorter(master: Array[Int], slave: Array[Int], take: Int)
 
     private def swap(oneIndex: Int, anotherIndex: Int)
     {
-        PairArrayInsertionSorter.swap(master, oneIndex, anotherIndex)
-        PairArrayInsertionSorter.swap(slave, oneIndex, anotherIndex)
+        swap(master, oneIndex, anotherIndex)
+        swap(slave, oneIndex, anotherIndex)
     }
 }

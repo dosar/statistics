@@ -5,14 +5,14 @@ package com.example.loto.array
  */
 object ArrayPerformanceUtil
 {
-    def take(master: Array[Int], slave: Array[Int], take: Int)(implicit iterations: Int = Math.min(master.length, take)) =
+    def take(master: Array[Int], slave: Array[Int], take: Int) =
     {
-        if(iterations == master.length) (master, slave)
+        if(take == master.length) (master, slave)
         else
         {
-            val (masterResult, slaveResult) = (new Array[Int](iterations), new Array[Int](iterations))
+            val (masterResult, slaveResult) = (new Array[Int](take), new Array[Int](take))
             var ind = 0
-            while(ind < iterations)
+            while(ind < take)
             {
                 masterResult(ind) = master(ind)
                 slaveResult(ind) = slave(ind)

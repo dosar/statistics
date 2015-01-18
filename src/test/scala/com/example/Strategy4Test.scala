@@ -1,6 +1,7 @@
 package com.example
 
-import com.example.loto.Strategy4
+import com.example.loto.{ProbabalisticIntervalsMetrics, Strategy4}
+import com.example.loto.model.RunResults
 
 class Strategy4Test extends TestBase
 {
@@ -54,5 +55,14 @@ class Strategy4Test extends TestBase
         assert(1 === statistics._4) // посчитали хиты на 5 чисел
         assert((30 + 600 + 3000 + 1000000) === statistics._5) // посчитали на сколько в плюс ушли
         assert(180 === statistics._6) // посчитали на сколько в минус ушли
+    }
+
+    test("test funny behavior with many hits")
+    {
+        val strategy = new Strategy4(RunResults.runResults, 6, 1, 36) with ProbabalisticIntervalsMetrics
+        {
+            override val probabilities: Array[Double] = Array(1.0, 1.0, 1.0, 1.0, 1.0)
+        }
+        val result = strategy.apply(40, 19, 12)(strategy.probabalisticIntervalFigures)(strategy.getCombinedBetIntersectionStatistics)
     }
 }

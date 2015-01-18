@@ -10,6 +10,17 @@ import com.example.loto.array.ArrayPerformanceUtil
 object FiguresByHitSorter extends MoneyHitStatisticsType
 {
     //-1 потому что в figureHits есть неиспользуемый элемент
+    def topFiguresMergeSort(figureHits: Array[Int])(implicit take: Int = figureHits.length - 1): Array[Int] =
+        topFiguresMergeSortWithHits(figureHits)._2
+
+    //-1 потому что в figureHits есть неиспользуемый элемент
+    def topFiguresMergeSortWithHits(figureHits: Array[Int])(implicit take: Int = figureHits.length - 1): (Array[HitCount], Array[Figure]) =
+    {
+        val figures = ArrayPerformanceUtil.createArray(figureHits.length)(i => i)
+        PairArrayInsertionSorter.sort(figureHits, figures)
+    }
+
+    //-1 потому что в figureHits есть неиспользуемый элемент
     def topFigures(figureHits: Array[Int])(implicit take: Int = figureHits.length - 1): Array[Int] =
         topFiguresWithHits(figureHits)._2
 
