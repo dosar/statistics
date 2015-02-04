@@ -1,11 +1,29 @@
-package com.example.loto
+package com.example.loto.metrics
 
 import com.example.loto.array.ArrayPerformanceUtil
+import com.example.loto.array.ArrayPerformanceUtil._
 import com.example.loto.betgenerator.FromMiddleOccurenciesBetGenerator
 import com.example.loto.model.RunResult
-import com.example.loto.sorter.{PairArrayInsertionSorter, FiguresByHitSorter, PairArrayHeapSorter}
+import com.example.loto.sorter.{PairArrayQuickSorter, FiguresByHitSorter, PairArrayInsertionSorter}
 
 import scala.collection.mutable.ArrayBuffer
+
+object StrategyStatistics
+{
+    def aggregateStatistics(result: ArrayBuffer[(Array[Int], StrategyStatistics)]) =
+    {
+        val (hit2, hit3, hit4, hit5, mplus, mminus) = result.foldLeft(0, 0, 0, 0, 0, 0)
+        { case ((ah2, ah3, ah4, ah5, amp, amm), (_, StrategyStatistics(h2, h3, h4, h5, mp, mm))) =>
+            (ah2 + h2, ah3 + h3, ah4 + h4, ah5 + h5, amp + mp, amm + mm)
+        }
+        StrategyStatistics(hit2, hit3, hit4, hit5, mplus, mminus)
+    }
+}
+
+case class StrategyStatistics(i2: Int, i3: Int, i4: Int, i5: Int, mPlus: Int, mMinus: Int)
+{
+    def > (other: StrategyStatistics) = mPlus > other.mPlus
+}
 
 /**
  * Created by alespuh on 08.12.14.
@@ -18,7 +36,6 @@ trait MoneyHitStatisticsType
     type Figure = Int
     type HitCount = Int
     type FigureHitsArray = Array[Int]
-    type StrategyStatistics = (IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus)
     type Bet = Array[Figure]
     type CombinedBet = Array[Figure]
 }
@@ -91,9 +108,13 @@ trait MetricsTypes extends MoneyHitStatisticsType
     def figuresOccurencies(rrs: Array[RunResult], startFigure: Int = startFigure, endFigure: Int = endFigure): Array[HitCount] =
     {
         val figuresMap = ArrayPerformanceUtil.createArray(37){ ind => if(ind < startFigure || ind > endFigure) -1 else 0 }
+        fillFigureOccurencies(rrs, figuresMap)
+    }
 
+    def fillFigureOccurencies(rrs: Array[RunResult], figuresMap: Array[Int]): Array[Int] =
+    {
         var ind = 0
-        while(ind < rrs.length)
+        while (ind < rrs.length)
         {
             val rrResult = rrs(ind).result
             updateMap(figuresMap, rrResult(0))
@@ -153,47 +174,6 @@ trait MetricsTypes extends MoneyHitStatisticsType
             ind += 1
         }
         (figureMins, figureMaxs)
-    }
-
-    /*
-    * Метрика
-    * работаем в предположении, что endFigure = 36, а startFigure = 1
-    * figureToIgnores - отсортирован по возрастанию и завершается 0
-    * */
-    def topNonZeroFiguresExceptSome(rrs: Array[RunResult], figureToIgnores: Array[Figure]): Array[Figure] =
-    {
-        val figureHits = new Array[Int](endFigure - startFigure - figureToIgnores.size + 2)
-        val figures = ArrayPerformanceUtil.createFiguresArray(figureToIgnores)
-        val figureIndexes = ArrayPerformanceUtil.createArray(endFigure - startFigure + 2)(i => -1)
-
-        var ind = 0
-        while(ind < figures.length)
-        {
-            figureIndexes(figures(ind)) = ind
-            ind += 1
-        }
-
-        def updateHits(figure: Int) =
-        {
-            val figureIndex = figureIndexes(figure)
-            if(figureIndex != -1)
-                figureHits(figureIndex) += 1
-        }
-
-        ind = 0
-        while(ind < rrs.length)
-        {
-            val rrResult = rrs(ind).result
-            updateHits(rrResult(0))
-            updateHits(rrResult(1))
-            updateHits(rrResult(2))
-            updateHits(rrResult(3))
-            updateHits(rrResult(4))
-            ind += 1
-        }
-        val result = new PairArrayHeapSorter(figureHits, figures, betSizeLimit).sort
-//        val result = PairArrayInsertionSorter.sort(figureHits, figures, topFiguresCount)
-        result._2
     }
 
     /*
@@ -271,14 +251,30 @@ trait MetricsTypes extends MoneyHitStatisticsType
         }
         buffer
     }
+
     /*
     * Метрика
     * */
-    def topNonZeroFiguresGeneric1(rrs: Array[RunResult]): Array[Figure] =
+    def topNonZeroFiguresGenericIS(rrs: Array[RunResult]): Array[Figure] =
     {
         val occurencies = figuresOccurencies(rrs)
         val figures = ArrayPerformanceUtil.createArray(occurencies.length)(i => i)
         PairArrayInsertionSorter.sort(occurencies, figures)(betSizeLimit)._2
+    }
+
+    def topNonZeroFiguresGenericQS(rrs: Array[RunResult]): Array[Figure] =
+    {
+        val occurencies = figuresOccurencies(rrs)
+        val figures = ArrayPerformanceUtil.createArray(occurencies.length)(i => i)
+        PairArrayQuickSorter.quicksort(occurencies, figures, 0, 36)
+        slice(figures, 37 - betSizeLimit, 37)
+    }
+
+    def leastPopularFigures(rrs: Array[RunResult]): Array[Figure] = checkTallies
+    {
+        val (hits, figures) = FiguresByHitSorter.topFiguresWithHits(figuresOccurencies(rrs))
+        val until = lastPositiveInd(hits) + 1
+        slice(figures, until - betSizeLimit, until)
     }
 
     /*
@@ -310,8 +306,7 @@ trait MetricsTypes extends MoneyHitStatisticsType
     /*
     * Int = Figure
     * */
-    def getIntersectionStatistics(futureRrs: Array[RunResult], bet: Array[Int]):
-        ((IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus), SliceSize) =
+    def getIntersectionStatistics(futureRrs: Array[RunResult], bet: Array[Int]): (StrategyStatistics, SliceSize) =
     {
         var ind = 0
         var (i2, i3, i4, i5, mplus, mminus) = (0, 0, 0, 0, 0, 0)
@@ -322,13 +317,13 @@ trait MetricsTypes extends MoneyHitStatisticsType
             val rr = futureRrs(ind)
             val intersection = intersectionSize(rr.result, bet)
             if(intersection == 5)
-                return ((i2, i3, i4, 1, 1000000 + mplus, mminus), ind + 1)
+                return (StrategyStatistics(i2, i3, i4, 1, 1000000 + mplus, mminus), ind + 1)
             else if(intersection == 2) i2 += 1
             else if(intersection == 3) i3 += 1
             else if(intersection == 4) i4 += 1
             mplus += betWon(betSize)(intersection)
             ind += 1
         }
-        ((i2, i3, i4, i5, mplus, mminus), ind)
+        (StrategyStatistics(i2, i3, i4, i5, mplus, mminus), ind)
     }
 }

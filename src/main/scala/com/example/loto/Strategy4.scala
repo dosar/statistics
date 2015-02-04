@@ -1,6 +1,7 @@
 package com.example.loto
 
 import com.example.loto.array.ArrayPerformanceUtil
+import com.example.loto.metrics.{StrategyStatistics, MetricsTypes}
 import com.example.loto.model.RunResult
 import com.example.loto.sorter.FiguresByHitSorter
 

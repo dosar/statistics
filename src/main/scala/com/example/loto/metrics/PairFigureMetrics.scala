@@ -1,4 +1,4 @@
-package com.example.loto
+package com.example.loto.metrics
 
 import com.example.loto.array.ArrayPerformanceUtil
 import com.example.loto.model.RunResult
@@ -43,13 +43,13 @@ trait PairFigureMetrics extends MoneyHitStatisticsType
             val intersection2 = intersectionSize(rr.result, bet)(betSizeLimit, betSizeLimit)
 
             if(intersection1 == 5)
-                return ((i2, i3, i4, 1, 1000000 + mplus, mminus), ind + 1)
+                return (StrategyStatistics(i2, i3, i4, 1, 1000000 + mplus, mminus), ind + 1)
             else if(intersection1 == 2) i2 += 1
             else if(intersection1 == 3) i3 += 1
             else if(intersection1 == 4) i4 += 1
 
             if(intersection2 == 5)
-                return ((i2, i3, i4, 1, 1000000 + mplus, mminus), ind + 1)
+                return (StrategyStatistics(i2, i3, i4, 1, 1000000 + mplus, mminus), ind + 1)
             else if(intersection2 == 2) i2 += 1
             else if(intersection2 == 3) i3 += 1
             else if(intersection2 == 4) i4 += 1
@@ -57,7 +57,7 @@ trait PairFigureMetrics extends MoneyHitStatisticsType
             mplus += betWon(betSize)(intersection1) + betWon(betSize)(intersection2)
             ind += 1
         }
-        ((i2, i3, i4, i5, mplus, mminus), ind)
+        (StrategyStatistics(i2, i3, i4, i5, mplus, mminus), ind)
     }
 
     def topPairFigures(rrs: Array[RunResult]): Array[Figure] =

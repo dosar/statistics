@@ -1,6 +1,6 @@
 package com.example.loto.optimization
 
-import com.example.loto.MoneyHitStatisticsType
+import com.example.loto.metrics.{MoneyHitStatisticsType, StrategyStatistics}
 
 /**
  * Created by alespuh on 16.01.15.
@@ -17,11 +17,6 @@ object Strategy5GradientDescent extends MoneyHitStatisticsType
     {
         def +(y: Features) = (x._1 + y._1, x._2 + y._2, x._3 + y._3, x._4 + y._4, x._5 + y._5, x._6 + y._6,
             x._7 + y._7, x._8 + y._8, x._9 + y._9, x._10 + y._10)
-    }
-
-    implicit class ToComparable(val x: StrategyStatistics) extends AnyVal
-    {
-        def >(y: StrategyStatistics): Boolean = x._5 >= y._5
     }
 }
 

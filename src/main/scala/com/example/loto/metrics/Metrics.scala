@@ -1,4 +1,4 @@
-package com.example.loto
+package com.example.loto.metrics
 
 import com.example.loto.model.RunResult
 

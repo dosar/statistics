@@ -1,6 +1,6 @@
 package com.example
 
-import com.example.loto.{MetricsTypes, PairFigureMetrics}
+import com.example.loto.metrics.{MetricsTypes, PairFigureMetrics}
 import com.example.loto.model.RunResult
 
 /**

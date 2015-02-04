@@ -1,6 +1,6 @@
 package com.example
 
-import com.example.loto.MetricsTypes
+import com.example.loto.metrics.MetricsTypes
 
 class ProbabilisticIntervalTest extends TestBase
 {

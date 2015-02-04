@@ -2,6 +2,7 @@ package com.example
 
 import com.example.loto._
 import com.example.loto.actors.{LogResults, LoggerActor}
+import com.example.loto.metrics.{ExceptNonPopularFiguresMetrics, ProbabalisticIntervalsMetrics, PairFigureMetrics, CombinedBetFigureMetrics}
 import com.example.loto.model.{RunResult, RunResults}
 import org.scalatest.FunSuite
 
@@ -155,7 +156,7 @@ class Strategy5Optimization extends FunSuite with StrategyOptimizationBase
         {
             println((betSize, startFigure))
             val strategy = new Strategy5(RunResults.runResults, betSize, startFigure, 36)
-            def test = testStrategy[Array[RunResult], Strategy5](strategy, 25)(_.topNonZeroFiguresGeneric1(_)) _
+            def test = testStrategy[Array[RunResult], Strategy5](strategy, 25)(_.topNonZeroFiguresGenericIS(_)) _
             result = accumulateResult((betSize, startFigure), result, test(strategy.getIntersectionStatistics))
         }
         result foreach println
@@ -170,9 +171,12 @@ class Strategy5Optimization extends FunSuite with StrategyOptimizationBase
         for(betSize <- 6 to 6; ignoredSize <- 1 to 17)
         {
             println((betSize, ignoredSize))
-            val nonUseful = nonPopularFigures.take(ignoredSize).sorted :+ 0
-            val strategy = new Strategy5(rrs, betSize, 1, 36)
-            def test = testStrategy[Array[RunResult], Strategy5](strategy, 25)(_.topNonZeroFiguresExceptSome(_, nonUseful)) _
+            val strategy = new Strategy5(rrs, betSize, 1, 36) with ExceptNonPopularFiguresMetrics
+            {
+                override val figureToIgnores: Array[Figure] = nonPopularFigures.take(ignoredSize)
+            }
+            def test = testStrategy[Array[RunResult], Strategy5 with ExceptNonPopularFiguresMetrics](
+                strategy, 25)(_.topExceptIgnored(_)) _
             result = accumulateResult((betSize, ignoredSize), result, test(strategy.getIntersectionStatistics))
         }
         result foreach println

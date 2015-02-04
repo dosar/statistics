@@ -1,6 +1,7 @@
 package com.example
 
-import com.example.loto.{ProbabalisticIntervalsMetrics, Strategy4}
+import com.example.loto.metrics.{StrategyStatistics, ProbabalisticIntervalsMetrics}
+import com.example.loto.Strategy4
 import com.example.loto.model.RunResults
 
 class Strategy4Test extends TestBase
@@ -30,12 +31,12 @@ class Strategy4Test extends TestBase
             (1, 2, 3, 4, 5),
             (11, 15, 8, 9, 10)
         ), Array(1, 2, 3, 4, 5))
-        assert(1 === statistics._1) // посчитали хиты на 2 числа
-        assert(2 === statistics._2) // посчитали хиты на 3 числа
-        assert(1 === statistics._3) // посчитали хиты на 4 числа
-        assert(1 === statistics._4) // посчитали хиты на 5 чисел
-        assert((30 + 600 + 3000 + 1000000) === statistics._5) // посчитали на сколько в плюс ушли
-        assert(150 === statistics._6) // посчитали на сколько в минус ушли
+        assert(1 === statistics.i2) // посчитали хиты на 2 числа
+        assert(2 === statistics.i3) // посчитали хиты на 3 числа
+        assert(1 === statistics.i4) // посчитали хиты на 4 числа
+        assert(1 === statistics.i5) // посчитали хиты на 5 чисел
+        assert((30 + 600 + 3000 + 1000000) === statistics.mPlus) // посчитали на сколько в плюс ушли
+        assert(150 === statistics.mMinus) // посчитали на сколько в минус ушли
     }
 
     test("strategy 4 intersections with statistics with 5 hit and nonzero minus")
@@ -49,12 +50,12 @@ class Strategy4Test extends TestBase
             (11, 15, 8, 9, 10),
             (1, 2, 3, 4, 5)
         ), Array(1, 2, 3, 4, 5))
-        assert(1 === statistics._1) // посчитали хиты на 2 числа
-        assert(2 === statistics._2) // посчитали хиты на 3 числа
-        assert(1 === statistics._3) // посчитали хиты на 4 числа
-        assert(1 === statistics._4) // посчитали хиты на 5 чисел
-        assert((30 + 600 + 3000 + 1000000) === statistics._5) // посчитали на сколько в плюс ушли
-        assert(180 === statistics._6) // посчитали на сколько в минус ушли
+        assert(1 === statistics.i2) // посчитали хиты на 2 числа
+        assert(2 === statistics.i3) // посчитали хиты на 3 числа
+        assert(1 === statistics.i4) // посчитали хиты на 4 числа
+        assert(1 === statistics.i5) // посчитали хиты на 5 чисел
+        assert((30 + 600 + 3000 + 1000000) === statistics.mPlus) // посчитали на сколько в плюс ушли
+        assert(180 === statistics.mMinus) // посчитали на сколько в минус ушли
     }
 
     test("test funny behavior with many hits")
@@ -64,5 +65,12 @@ class Strategy4Test extends TestBase
             override val probabilities: Array[Double] = Array(1.0, 1.0, 1.0, 1.0, 1.0)
         }
         val result = strategy.apply(40, 19, 12)(strategy.probabalisticIntervalFigures)(strategy.getCombinedBetIntersectionStatistics)
+    }
+
+    test("test strategy4 on ((6, 4), (34, 56, 59))")
+    {
+        val strategy = new Strategy4(RunResults.runResults, 6, 4, 36)
+        val strategyResult = strategy.apply(34, 56, 59)(strategy.middleOccurencyFigures)(strategy.getIntersectionStatistics)
+        println(StrategyStatistics.aggregateStatistics(strategyResult))
     }
 }

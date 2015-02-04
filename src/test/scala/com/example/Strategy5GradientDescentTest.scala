@@ -1,8 +1,9 @@
 package com.example
 
-import com.example.loto.{ProbabalisticIntervalsMetrics, Strategy5}
+import com.example.loto.metrics.{StrategyStatistics, ProbabalisticIntervalsMetrics}
+import com.example.loto.Strategy5
 import com.example.loto.model.RunResults
-import com.example.loto.optimization.Strategy5GradientDescent
+import com.example.loto.optimization.{StrategyPartialOptimization, Strategy5GradientDescent}
 import org.scalatest.FunSuite
 
 /**
@@ -19,11 +20,7 @@ class Strategy5GradientDescentTest extends FunSuite
                 override val probabilities: Array[Double] = Array(p1, p2, p3, p4, p5)
             }
             val strategyResult = strategy.apply(pw, sw, fw)(strategy.probabalisticIntervalFigures)(strategy.getCombinedBetIntersectionStatistics)
-            val (hit2, hit3, hit4, hit5, mplus, mminus) = strategyResult.foldLeft(0, 0, 0, 0, 0, 0)
-            { case ((ah2, ah3, ah4, ah5, amp, amm), (_, (h2, h3, h4, h5, mp, mm))) =>
-                (ah2 + h2, ah3 + h3, ah4 + h4, ah5 + h5, amp + mp, amm + mm)
-            }
-            (hit2, hit3, hit4, hit5, mplus, mminus)
+            StrategyStatistics.aggregateStatistics(strategyResult)
         })
         println(descent.optimize((2, 36, 0.4, 0.4, 0.4, 0.4, 0.4, 50, 25, 50))(1000))
     }

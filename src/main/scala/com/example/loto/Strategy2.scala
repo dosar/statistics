@@ -1,5 +1,6 @@
 package com.example.loto
 
+import com.example.loto.metrics.MetricsTypes
 import com.example.loto.model.RunResult
 
 import scala.collection.mutable.ArrayBuffer

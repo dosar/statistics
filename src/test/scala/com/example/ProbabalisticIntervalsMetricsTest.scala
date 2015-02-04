@@ -1,7 +1,7 @@
 package com.example
 
+import com.example.loto.metrics.{Metrics, ProbabalisticIntervalsMetrics}
 import com.example.loto.model.RunResult
-import com.example.loto.{Metrics, ProbabalisticIntervalsMetrics}
 
 /**
  * Created by alespuh on 10.01.15.

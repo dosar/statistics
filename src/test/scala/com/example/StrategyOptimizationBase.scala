@@ -1,7 +1,8 @@
 package com.example
 
 import com.example.loto.actors.{LogIterationResults, LoggerActor}
-import com.example.loto.{SimpleParallelSort, MoneyHitStatisticsType, StrategyWithMoneyStatistics}
+import com.example.loto.metrics.{MoneyHitStatisticsType, StrategyStatistics}
+import com.example.loto.{SimpleParallelSort, StrategyWithMoneyStatistics}
 import com.example.loto.model.RunResult
 
 import scala.collection.immutable.IndexedSeq
@@ -20,18 +21,20 @@ trait StrategyOptimizationBase
     type Statistics = (PastWindow, SkipWindow, FutureWindow, Hit2, Hit3, Hit4, Hit5, MoneyPlus, MoneyMinus)
 
     def testStrategy[TFrom, TStrategy <: StrategyWithMoneyStatistics[TFrom, Array[Int]]](strategy: TStrategy, chunkSize: Int)(
-        betGenerator: (TStrategy, TFrom) => Array[Int])(intersectionStatistics: (Array[RunResult], Array[Int]) => (MoneyHitStatisticsType#StrategyStatistics, MoneyHitStatisticsType#SliceSize)): IndexedSeq[Statistics] =
+        betGenerator: (TStrategy, TFrom) => Array[Int])(intersectionStatistics: (Array[RunResult], Array[Int]) => (StrategyStatistics, MoneyHitStatisticsType#SliceSize)): IndexedSeq[Statistics] =
     {
-        val pRangeSize = chunkSize
-        val pRange1 = 1 to pRangeSize
+        val pRangeStart = 8
+        val pRangeSize = (chunkSize * 4 - pRangeStart) / 4
+        val pRangeRemainder = (chunkSize * 4 - pRangeStart) % 4
+        val pRange1 = pRangeStart to pRangeSize
         val pRange2 = (pRangeSize + 1) to 2 * pRangeSize
         val pRange3 = (2 * pRangeSize + 1) to 3 * pRangeSize
-        val pRange4 = (3 * pRangeSize + 1) to 4 * pRangeSize
+        val pRange4 = (3 * pRangeSize + 1) to (4 * pRangeSize + pRangeRemainder)
         val sRange = 0 to pRangeSize * 4
         val fRangeStart = 1
         val fRange = fRangeStart to pRangeSize * 4
 
-        val sorter = new SimpleParallelSort[Statistics, (Hit5, Hit4, Hit3)](4, 50, (0, 0, 0, 0, 0, 0, 0, 0, 0))(x => (x._7, x._6, x._5))
+        val sorter = new SimpleParallelSort[Statistics, (Hit5, Hit4)](4, 50, (0, 0, 0, 0, 0, 0, 0, 0, 0))(x => (x._7, x._6))
 
         def calcFragment(pRange: Range, fragment: Int) =
         {
@@ -39,10 +42,8 @@ trait StrategyOptimizationBase
             {
                 if(pw % 10 == 0 && sw == 0 && fw == fRangeStart) println("+")
                 val strategyResult = strategy.apply(pw, sw, fw)(rrs => betGenerator(strategy, rrs))(intersectionStatistics)
-                val (hit2, hit3, hit4, hit5, mplus, mminus) = strategyResult.foldLeft(0, 0, 0, 0, 0, 0)
-                { case ((ah2, ah3, ah4, ah5, amp, amm), (_, (h2, h3, h4, h5, mp, mm))) =>
-                    (ah2 + h2, ah3 + h3, ah4 + h4, ah5 + h5, amp + mp, amm + mm)
-                }
+                val StrategyStatistics(hit2, hit3, hit4, hit5, mplus, mminus) =
+                    StrategyStatistics.aggregateStatistics(strategyResult)
                 sorter.update(fragment, (pw, sw, fw, hit2, hit3, hit4, hit5, mplus, mminus))
             }
         }

@@ -1,8 +1,8 @@
 package com.example.loto.sorter
 
 import com.example.loto.CommonImplicits.Incrementer
-import com.example.loto.MoneyHitStatisticsType
 import com.example.loto.array.ArrayPerformanceUtil
+import com.example.loto.metrics.MoneyHitStatisticsType
 
 /**
  * Created by alespuh on 03.01.15.

@@ -1,4 +1,4 @@
-package com.example.loto
+package com.example.loto.metrics
 
 import com.example.loto.array.ArrayPerformanceUtil
 import com.example.loto.model.RunResult
@@ -75,7 +75,7 @@ trait ProbabalisticIntervalsMetrics
 
     def getCombinedBetIntersectionStatistics(rrs: Array[RunResult], bet: CombinedBet): (StrategyStatistics, SliceSize) =
     {
-        def toTuple(stat: Array[Figure]) = (stat(0), stat(1), stat(2), stat(3), stat(4), stat(5))
+        def toTuple(stat: Array[Figure]) = StrategyStatistics(stat(0), stat(1), stat(2), stat(3), stat(4), stat(5))
 
         var ind = 0
         //        var (i2, i3, i4, i5, mplus, mminus) = (0, 0, 0, 0, 0, 0)
@@ -134,12 +134,15 @@ trait ProbabalisticIntervalsMetrics
         leftIndex = forwardLeftIndex(leftIndex, figureOccurencies)
         rightIndex = backwardRightIndex(rightIndex, figureOccurencies)
         if(leftIndex > rightIndex)
-            (rrs(0).result(figureInd), rrs(0).result(figureInd))
+            (-1, -1)
         else (leftIndex, rightIndex)
     }
 
     private def calcBet(topFigures: Array[Figure], intervals: Array[(Int, Int)], exceptFigure: Int) =
     {
+        /*
+        * написать какой-то шляпы, чтобы не было бетов с одинаковыми числами
+        * */
         val result = new Array[Int](intervals.length)
         var intervalInd = 0
 
@@ -167,7 +170,9 @@ trait ProbabalisticIntervalsMetrics
             else if (intervalInd != 0 && topFigures(figureInd) <= result(intervalInd - 1)) figureInd += 1
             else return topFigures(figureInd)
         }
-        (interval._1 + interval._2) / 2
+        // если нет подходящих чисел вообще
+        if(intervalInd < 1) topFigures(0)
+        else result(intervalInd - 1) + 1
     }
 
     private def forwardLeftIndex(leftIndex: Int, arr: Array[Figure]) =

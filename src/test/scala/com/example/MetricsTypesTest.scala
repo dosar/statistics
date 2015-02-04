@@ -1,7 +1,7 @@
 package com.example
 
-import com.example.loto.MetricsTypes
 import com.example.loto.betgenerator.FromMiddleOccurenciesBetGenerator
+import com.example.loto.metrics.{ExceptNonPopularFiguresMetrics, MetricsTypes}
 import com.example.loto.model.RunResult
 
 class MetricsTypesTest extends TestBase
@@ -75,25 +75,27 @@ class MetricsTypesTest extends TestBase
 
     test("topFiguresExceptSome take 5")
     {
-        val metrics = new MetricsTypes
+        val metrics = new MetricsTypes with ExceptNonPopularFiguresMetrics
         {
             override val betSizeLimit: Int = 5
             override val startFigure = 1
             override val endFigure = 36
+            override val figureToIgnores: Array[Figure] = Array(1)
         }
-        val result = metrics.topNonZeroFiguresExceptSome(input, Array(1, 0))
-        assert(List(5, 4, 3, 2, 12) === result.toList)
+        val result = metrics.topExceptIgnored(input)
+        assertResult(List(5, 4, 3, 2, 10))(result.toList)
     }
 
     test("topFiguresExceptSome take 4")
     {
-        val metrics = new MetricsTypes
+        val metrics = new MetricsTypes with ExceptNonPopularFiguresMetrics
         {
             override val betSizeLimit: Int = 4
             override val startFigure = 1
             override val endFigure = 36
+            override val figureToIgnores: Array[Figure] = Array(1)
         }
-        val result = metrics.topNonZeroFiguresExceptSome(input, Array(1, 0))
+        val result = metrics.topExceptIgnored(input)
         assert(List(5, 4, 3, 2) === result.toList)
     }
 
@@ -129,7 +131,7 @@ class MetricsTypesTest extends TestBase
             override val startFigure = 1
             override val endFigure = 36
         }
-        val result = metrics.topNonZeroFiguresGeneric1(input)
+        val result = metrics.topNonZeroFiguresGenericIS(input)
         assert(List(5, 4, 3, 2, 1) === result.toList)
     }
 
@@ -141,7 +143,7 @@ class MetricsTypesTest extends TestBase
             override val startFigure = 2
             override val endFigure = 4
         }
-        val result = metrics.topNonZeroFiguresGeneric1(input)
+        val result = metrics.topNonZeroFiguresGenericIS(input)
         assert(List(4, 3, 2) === result.toList)
     }
 

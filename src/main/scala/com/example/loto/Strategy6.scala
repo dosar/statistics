@@ -1,5 +1,6 @@
 package com.example.loto
 
+import com.example.loto.metrics.{StrategyStatistics, MetricsTypes}
 import com.example.loto.model.RunResult
 
 import scala.collection.mutable.ArrayBuffer
@@ -19,7 +20,7 @@ extends MetricsTypes with StrategyWithMoneyStatistics[(Array[Int], Array[RunResu
     {
         val startIndex = pastWindow + skipWindow
         var index = startIndex
-        val buffer = ArrayBuffer[(Array[Figure], (IntersectionCount2, IntersectionCount3, IntersectionCount4, IntersectionCount5, MoneyPlus, MoneyMinus))]()
+        val buffer = ArrayBuffer[(Array[Figure], StrategyStatistics)]()
         while (index <= runResults.length - betWindow)
         {
             val pastRrs = runResults.drop(index - pastWindow - skipWindow).take(pastWindow)

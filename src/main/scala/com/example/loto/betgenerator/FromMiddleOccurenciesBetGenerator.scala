@@ -1,6 +1,6 @@
 package com.example.loto.betgenerator
 
-import com.example.loto.MoneyHitStatisticsType
+import com.example.loto.metrics.MoneyHitStatisticsType
 
 /**
  * Created by alespuh on 04.01.15.

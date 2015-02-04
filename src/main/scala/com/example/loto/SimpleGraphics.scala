@@ -1,5 +1,6 @@
 package com.example.loto
 
+import com.example.loto.metrics.{MetricsTypes, ProbabalisticIntervalsMetrics}
 import com.example.loto.model.RunResult
 import com.example.loto.sorter.FiguresByHitSorter
 

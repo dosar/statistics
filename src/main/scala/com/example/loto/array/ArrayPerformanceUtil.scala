@@ -163,11 +163,53 @@ object ArrayPerformanceUtil
         }
     }
 
-    def slice[T: Manifest](arr: Array[T], from: Int, until: Int) =
+    def slice[T <: AnyRef : Manifest](arr: Array[T], from: Int, until: Int) =
     {
         val length = Math.min(until, arr.length) - from
         val result = new Array[T](length)
         scala.compat.Platform.arraycopy(arr, from, result, 0, length)
         result
+    }
+
+    def slice(arr: Array[Int], from: Int, until: Int) =
+    {
+        val length = Math.min(until, arr.length) - from
+        val result = new Array[Int](length)
+        scala.compat.Platform.arraycopy(arr, from, result, 0, length)
+        result
+    }
+
+    //проверить есть ли дубли
+    def checkTallies(arr: Array[Int]): Array[Int] =
+    {
+        var i = 0
+        var j = 1
+        while(i < arr.length)
+        {
+            j = i + 1
+            while(j < arr.length)
+            {
+                if(arr(i) == arr(j))
+                {
+//                    println("Дубль ебать! " + arr.toList.toString)
+                    return new Array[Int](arr.length)
+                }
+                j += 1
+            }
+            i += 1
+        }
+        return arr
+    }
+
+    def reverseInPlace(input: Array[Int]) =
+    {
+        var ind = 0
+        while(ind < input.length / 2)
+        {
+            val buf = input(ind)
+            input(ind) = input(input.length - ind - 1)
+            input(input.length - ind - 1) = buf
+            ind += 1
+        }
     }
 }

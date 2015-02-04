@@ -1,5 +1,7 @@
 package com.example.loto.sorter
 
+import com.example.loto.array.ArrayPerformanceUtil
+
 /**
  * Created by alespuh on 13.01.15.
  */
@@ -15,10 +17,5 @@ trait PairArraySorter
         input(anotherIndex) = current
     }
 
-    def subArray(arr: Array[Int], startInd: Int, until: Int) =
-    {
-        val result = new Array[Int](until - startInd)
-        scala.compat.Platform.arraycopy(arr, startInd, result, 0, result.length)
-        result
-    }
+    def subArray(arr: Array[Int], startInd: Int, until: Int) = ArrayPerformanceUtil.slice(arr, startInd, until)
 }

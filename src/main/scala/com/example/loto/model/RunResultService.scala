@@ -12,14 +12,27 @@ object RunResultService extends OrientDb
     def from(doc: ODocument): RunResult =
     {
         val integers = doc.field[util.ArrayList[Integer]]("result")
-        RunResult(doc.field[Int]("run"), doc.field[Date]("date"), integers.map(_.intValue()).toArray)
+        try
+        {
+            RunResult(doc.field[Int]("run"), doc.field[Date]("date"), integers.map(_.intValue()).toArray)
+        }
+        catch
+        {
+            case e: Throwable => throw e;
+            case classCast: ClassCastException =>
+            {
+                println("classcast")
+                throw classCast
+            }
+        }
     }
 
     def list = tx
     { db =>
         val table = db.browseClass("loto_5_36")
         val result = ListBuffer[RunResult]()
-        while(table.hasNext) result += from(table.next())
+        while(table.hasNext)
+            result += from(table.next())
         result.toVector
     }
 }

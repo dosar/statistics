@@ -296,24 +296,29 @@ lotoApp.controller('DetailedResultsCtrl', function ($scope, $http,  usSpinnerSer
 
     $scope.highlightCustomBet = function(index){
         var results = $scope.items[index].runResults;
-        for(var i = 0; i < $scope.items[index].runResults.length; i++)
+        for(var i = 0; i < results.length; i++)
         {
-            for(var j = 0; j< $scope.items[index].runResults[i].result.length; j++)
+            for(var j = 0; j< results[i].result.length; j++)
             {
                 var element = results[i].result[j];
                 var customBet = $scope.customBets[index];
                 if(customBet.indexOf(element.figure) > -1)
-                    $scope.items[index].runResults[i].result[j].customIntersected = true;
-
+                    element.customIntersected = true;
             }
         }
     };
 
     $scope.resetCustomBet = function(index){
         $scope.customBets[index] = [];
-            for(var i in $scope.figureButtons[index]){
-                $scope.figureButtons[index][i] = false;
-            }
+        for(var i in $scope.figureButtons[index]){
+            $scope.figureButtons[index][i] = false;
+        }
+        var results = $scope.items[index].runResults;
+        for(i = 0; i < results.length; i++)
+        {
+            for(var j = 0; j< results[i].result.length; j++)
+                results[i].result[j].customIntersected = false;
+        }
     };
 
     $scope.getData = function(){

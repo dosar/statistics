@@ -2,6 +2,7 @@ package com.example
 
 import akka.actor.Actor
 import com.example.loto._
+import com.example.loto.metrics._
 import com.example.loto.model.RunResults
 import spray.http.MediaTypes._
 import spray.json.{DefaultJsonProtocol, pimpAny}
@@ -92,7 +93,10 @@ trait MyService extends HttpService with DefaultJsonProtocol
       get {
         respondWithMediaType(`application/json`) { // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
-            val strategy = new Strategy4(RunResults.runResults, takeCount, sf, ef)
+            val strategy = new Strategy4(RunResults.runResults, takeCount, sf, ef) with ComplexBetFigureMetrics
+            {
+              override val endSize = 3
+            }
             val data: Array[StrategyIteration] = strategy.debug(pw, sw, fw)(strategy.middleOccurencyFigures)
             val start = page * iPP - iPP
             val end = start + iPP
