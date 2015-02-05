@@ -48,7 +48,7 @@ class Strategy4WithExceptNonPopularFiguresOptimization extends FunSuite with Str
     def  testStrategy4WithExceptNonPopularFiguresMetrics(
         metric: (Strategy4 with ExceptNonPopularFiguresMetrics, Array[RunResult]) => Array[Int]) =
     {
-        var result = List[((Int, Int, Int, Int), Statistics)]()
+        var result = List[((Int, Int), Statistics)]()
         val nonPopularFigures = Array(36, 30, 35, 27, 4, 32, 6, 15, 26, 33, 1, 10, 19, 22, 2, 28, 7, 18, 20, 31, 8, 16,
             25, 23, 13, 24, 5, 21, 3, 34, 17, 29, 14, 12, 9, 11).reverse
         val rrs = RunResults.runResults
