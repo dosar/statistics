@@ -40,6 +40,11 @@ lotoApp.directive('changed',function(){
 });
 
 lotoApp.controller('GeneralGraphicCtrl', function ($scope, $http){
+    $scope.exceptIgnoredGroup = ["TopExceptIgnored", "LeastPopularExceptIgnored", "ZeroExceptIgnored", "MiddleExceptIgnored",
+        "TrueMiddleExceptIgnored"];
+    $scope.complexBetGroup = ["TopAndMiddle", "TopAndTrueMiddle", "TopAndLeastPopular", "TopAndZero", "MiddleAndTrueMiddle",
+        "MiddleAndLeast", "MiddleAndZero", "TrueMiddleAndLeast", "TrueMiddleAndZero", "LeastAndZero", "TopAndMiddlePartiallyFixedBet"];
+
     $scope.showChart = false;
     $scope.strategyType = "";
     $scope.metricType = "";
@@ -55,13 +60,17 @@ lotoApp.controller('GeneralGraphicCtrl', function ($scope, $http){
         {
             $scope.excludeFigures = "0";
         }
+        if(typeof $scope.endSize === 'undefined')
+        {
+            $scope.endSize = "0";
+        }
         console.log("sf:" + $scope.startFigure, "ef:" + $scope.endFigure, "tfc:" + $scope.topFiguresCount, "excludeFigures:" + $scope.excludeFigures,
-            "pw:" + $scope.pastWindow, "sw:" + $scope.skipWindow, "fw:" + $scope.futureWindow, "strType:" + $scope.strategyType, "mType:" + $scope.metricType)
+            "pw:" + $scope.pastWindow, "sw:" + $scope.skipWindow, "fw:" + $scope.futureWindow, "strType:" + $scope.strategyType, "mType:" + $scope.metricType + "endSize: " + $scope.endSize);
 
         $http.get("/graphicdata?pw=" + $scope.pastWindow + "&&sw=" + $scope.skipWindow + "&&fw="+$scope.futureWindow +
             "&&tfc=" + $scope.topFiguresCount + "&&sf=" + $scope.startFigure + "&&ef=" + $scope.endFigure +
             "&&sType=" + $scope.strategyType + "&&mType=" + $scope.metricType + "&&excludeFigures=" +
-            $scope.excludeFigures).success(function(result){
+            $scope.excludeFigures + "&&endSize=" + $scope.endSize).success(function(result){
                 $scope.chartConfig.series = [];
                 $scope.chartConfig.series.push({
                     data: jQuery.map(result, function(elem){
