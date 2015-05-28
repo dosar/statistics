@@ -129,32 +129,33 @@ trait ComplexBetFigureMetrics
         result
     }
 
-    private def copyMiddle(figures: Array[Int], result: Array[Figure], positionInResult: Int, length: Int) =
+    protected def copyMiddle(figures: Array[Int], result: Array[Figure], positionInResult: Int, length: Int) =
     {
         val middleStartInd = (figures.length - endSize) / 2
         scala.compat.Platform.arraycopy(figures, middleStartInd, result, positionInResult, length)
     }
 
-    private def copyTrueMiddle(figures: Array[Int], hits: Array[Int], result: Array[Figure], positionInResult: Int, length: Int) =
+    //dosarTODO: шота я сомневаюсь что это правильно работает тест!
+    protected def copyTrueMiddle(figures: Array[Int], hits: Array[Int], result: Array[Figure], positionInResult: Int, length: Int) =
     {
         val nonZeroHitsLength = lastNonNegativeMinInd(hits)  + 1
         val middleStartInd = (nonZeroHitsLength - endSize) / 2
         scala.compat.Platform.arraycopy(figures, middleStartInd, result, positionInResult, length)
     }
 
-    private def copyLeast(figures: Array[Int], hits: Array[Int], result: Array[Figure], positionInResult: Int, length: Int) =
+    protected def copyLeast(figures: Array[Int], hits: Array[Int], result: Array[Figure], positionInResult: Int, length: Int) =
     {
         val startInd = lastPositiveInd(hits) - endSize + 1
         scala.compat.Platform.arraycopy(figures, startInd, result, positionInResult, length)
     }
 
-    private def copyZero(figures: Array[Int], hits: Array[Int], result: Array[Figure], positionInResult: Int, length: Int) =
+    protected def copyZero(figures: Array[Int], hits: Array[Int], result: Array[Figure], positionInResult: Int, length: Int) =
     {
         val startInd = lastNonNegativeMinInd(hits) - endSize + 1
         scala.compat.Platform.arraycopy(figures, startInd, result, positionInResult, length)
     }
 
-    private def contains(arr: Array[Int], figure: Int, until: Int): Boolean =
+    protected def contains(arr: Array[Int], figure: Int, until: Int): Boolean =
     {
         var ind = 0
         while(ind < until)

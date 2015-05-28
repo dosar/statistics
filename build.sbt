@@ -25,7 +25,8 @@ libraryDependencies ++= {
     "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test",
     "io.spray" %%  "spray-json" % "1.3.1",
     "org.apache.commons" % "commons-lang3" % "3.1",
-    "commons-io" % "commons-io" % "2.4"
+    "commons-io" % "commons-io" % "2.4",
+    "net.ruippeixotog" %% "scala-scraper" % "0.1.1"
   )
 }
 

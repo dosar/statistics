@@ -186,12 +186,17 @@ object ArrayPerformanceUtil
         var j = 1
         while(i < arr.length)
         {
+            if(arr(i) == 0)
+            {
+                println("Недозаполненная ставка. Ебань! " + arr.toList.toString)
+                return new Array[Int](arr.length)
+            }
             j = i + 1
             while(j < arr.length)
             {
                 if(arr(i) == arr(j))
                 {
-//                    println("Дубль ебать! " + arr.toList.toString)
+                    println("Дубль ебать! " + arr.toList.toString)
                     return new Array[Int](arr.length)
                 }
                 j += 1

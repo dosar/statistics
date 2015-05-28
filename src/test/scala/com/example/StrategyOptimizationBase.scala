@@ -35,6 +35,7 @@ trait StrategyOptimizationBase
         val fRange = fRangeStart to pRangeSize * 4
 
         val sorter = new SimpleParallelSort[Statistics, (Hit5, Hit4)](4, 50, (0, 0, 0, 0, 0, 0, 0, 0, 0))(x => (x._7, x._6))
+//        val sorter = new SimpleParallelSort[Statistics, Hit4](4, 50, (0, 0, 0, 0, 0, 0, 0, 0, 0))(x => x._6)
 
         def calcFragment(pRange: Range, fragment: Int) =
         {

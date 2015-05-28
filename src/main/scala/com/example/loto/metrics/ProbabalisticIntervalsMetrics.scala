@@ -4,7 +4,7 @@ import com.example.loto.array.ArrayPerformanceUtil
 import com.example.loto.model.RunResult
 import com.example.loto.sorter.FiguresByHitSorter
 
-/**
+    /**
  * Created by alespuh on 10.01.15.
  */
 trait ProbabalisticIntervalsMetrics

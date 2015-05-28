@@ -33,35 +33,6 @@ class MetricsTest extends TestBase
         RunResult("2170", "22.11.2014 11:59", "9   4   20  11  3")
     )
 
-//    List(36, 30, 35, 27, 4, 15, 6, 26, 33, 10, 32, 1, 22, 19, 28, 2, 20, 18, 3, 8, 7, 16, 31, 24, 23, 5, 25, 13, 17, 21, 34, 29, 14, 12, 11, 9)
-    test("topFigures on all data")
-    {
-        val metrics = new Metrics{ override val betSizeLimit = 6 }
-        println(FiguresByHitSorter.topFigures(metrics.figuresOccurencies(RunResults.runResults, 1, 36)).toList)
-    }
-
-//    List(36, 30, 35, 27, 4, 15, 6, 26, 33, 10, 32, 1, 22, 19, 28, 2, 20, 18, 3, 8, 7, 16, 31, 24, 23, 5, 25, 13, 17, 21, 34, 29, 14, 12, 11, 9)
-//    List(36, 30, 35, 4, 27, 15, 6, 26, 33, 32, 10, 19, 22, 1, 28, 2, 20, 18, 3, 31, 8, 7, 16, 24, 23, 5, 25, 13, 17, 21, 34, 14, 29, 12, 11, 9, 0)
-    test("topFigures on all data test")
-    {
-        val metrics = new Metrics{ override val betSizeLimit = 6 }
-        val figureHits = metrics.figuresOccurencies(RunResults.runResults, 1, 36)
-        val figures = ArrayPerformanceUtil.createArray(figureHits.length)(i => i)
-        PairArrayQuickSorter.quicksort(figureHits, figures)
-        println(figures.toList)
-    }
-
-    test("pair occurencies on all data")
-    {
-        val map = mutable.Map[(Int, Int), Int]() withDefaultValue(0)
-        for (rr <- RunResults.runResults)
-        {
-            for(i <- 0 until rr.result.length - 1; j <- i + 1 until rr.result.length)
-                map((rr.result(i), rr.result(j))) += 1
-        }
-        map.toVector.sortBy(_._2) foreach println
-    }
-
     test("trustedIntervals")
     {
         val metrics = new ProbabalisticIntervalsMetrics with MetricsTypes
