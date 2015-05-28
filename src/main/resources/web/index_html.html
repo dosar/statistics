@@ -2,17 +2,26 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/jquery.jqplot.css">
+    <link rel="stylesheet" href="css/chosen.css">
     <script src="javascript/jquery-2.1.1.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="javascript/bootstrap.min.js"></script>
     <script src="javascript/angular.js"></script>
-    <script src="http://code.highcharts.com/highcharts.src.js"></script>
+    <script src="javascript/angular-route.js"></script>
+    <script src="javascript/ui-bootstrap-tpls-0.12.0.min.js"></script>
+    <script src="javascript/highcharts.js"></script>
     <script src="javascript/highcharts-ng.js"></script>
+    <script src="javascript/spin.min.js"></script>
+    <script src="javascript/angular-spinner.js"></script>
     <script src="javascript/app.js"></script>
-</head>
+    <script src="javascript/jquery.jqplot.min.js"></script>
+    <script src="javascript/jqplot.barRenderer.min.js"></script>
+    <script src="javascript/chart.js"></script>
+    <script src="javascript/chosen.jquery.min.js"></script>
 <body ng-app = "lotoApp">
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -28,21 +37,29 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">График <span class="sr-only">(current)</span></a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Данные <span class="caret"></span></a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Графики <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#/trustedIntervals">Доверительные интервалы</a></li>
+                        <li><a href="#/occurencies">Частотность выпадения</a></li>
+                        <li class="active"><a href="#/">Остальные</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Данные <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="/import">Импорт</a></li>
+                        <li><a href="#/data">Data</a></li>
+                        <li><a href="#/detailedata">Detailed Data</a></li>
                     </ul>
                 </li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
-<div class="container">
-    <div ng-controller="GraphicCtrl" class="row">
-        <highchart id="chart1" config="chartConfig" class="span10"></highchart>
-    </div>
+<div ng-view>
+
 </div>
+
 </body>
 </html>

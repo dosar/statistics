@@ -1,0 +1,152 @@
+<div ng-controller="GeneralGraphicCtrl" class="container" style="margin-top: 60px">
+    <div class="row">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-8">
+            <div class="well well-lg">
+                <form>
+                    <div class="form-group">
+                        <select changed="strategyType" ng-model="strategyType" class="form-control" name="strategy" id="strategy">
+                            <option value="" disabled selected>Select your strategy</option>
+                            <option value="Strategy1">Strategy 1</option>
+                            <option value="Strategy2">Strategy 2</option>
+                            <option value="Strategy3">Strategy 3</option>
+                            <option value="Strategy4">Strategy 4</option>
+                            <option value="Strategy5">Strategy 5</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select changed="metricType" ng-model="metricType" class="form-control" name="metrics" id="metrics">
+                            <option value="" disabled selected>Select your metric</option>
+                            <optgroup label="Main metrics">
+                                <option value="TopNonZeroFiguresExceptSome">TopNonZeroFiguresExceptSome</option>
+                                <option value="MiddleOccurencyFigures">MiddleOccurencyFigures</option>
+                                <option value="ZeroOccurencyFigures">ZeroOccurencyFigures</option>
+                                <option value="TopNonZeroFiguresWithoutPrevious">TopNonZeroFiguresWithoutPrevious</option>
+                                <option value="TopNonZeroFiguresGeneric1">TopNonZeroFiguresGeneric1</option>
+                                <option value="TopNonZeroFiguresGeneric">TopNonZeroFiguresGeneric</option>
+                            </optgroup>
+                            <optgroup label="Complex bet metrics">
+                                <option value="TopAndMiddle">TopAndMiddle</option>
+                                <option value="TopAndTrueMiddle">TopAndTrueMiddle</option>
+                                <option value="TopAndLeastPopular">TopAndLeastPopular</option>
+                                <option value="TopAndZero">TopAndZero</option>
+                                <option value="MiddleAndTrueMiddle">MiddleAndTrueMiddle</option>
+                                <option value="MiddleAndLeast">MiddleAndLeast</option>
+                                <option value="MiddleAndZero">MiddleAndZero</option>
+                                <option value="TrueMiddleAndLeast">TrueMiddleAndLeast</option>
+                                <option value="TrueMiddleAndZero">TrueMiddleAndZero</option>
+                                <option value="LeastAndZero">LeastAndZero</option>
+                                <option value="TopAndMiddlePartiallyFixedBet">TopAndMiddlePartiallyFixedBet</option>
+                            </optgroup>
+                            <optgroup label="Except ignored metrics">
+                                <option value="TopExceptIgnored">TopExceptIgnored</option>
+                                <option value="LeastPopularExceptIgnored">LeastPopularExceptIgnored</option>
+                                <option value="ZeroExceptIgnored">ZeroExceptIgnored</option>
+                                <option value="MiddleExceptIgnored">MiddleExceptIgnored</option>
+                                <option value="TrueMiddleExceptIgnored">TrueMiddleExceptIgnored</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-2"></div>
+    </div>
+    <div class="row">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-8">
+            <div ng-show="strategySelected && metricSelected && metricType != 'TopNonZeroFiguresExceptSome'">
+                <form name="formWindows" class="form-inline">
+                    <div class="form-group" ng-class="{'has-error' : formWindows.pw.$invalid && !formWindows.pw.$pristine}">
+                        <label class="sr-only" for="pastWindow">Past window</label>
+                        <span style="color: red" ng-show="formWindows.pw.$dirty && formWindowsWithExcept.pw.$error.required">Field is required!</span>
+                        <span style="color: red" ng-show="formWindows.pw.$dirty && formWindowsWithExcept.pw.$error.pattern">Value must be a number!</span>
+                        <input type="text" class="form-control" name="pw" id="pastWindow" placeholder="Past window" required ng-model="pastWindow" ng-pattern="/^[0-9]*$/">
+                    </div>
+                    <div class="form-group" ng-class="{'has-error' : formWindows.sw.$invalid && !formWindows.sw.$pristine}">
+                        <label class="sr-only" for="skipWindow">Skip Window</label>
+                        <span style="color: red" ng-show="formWindows.sw.$dirty && formWindows.sw.$error.required">Field is required!</span>
+                        <span style="color: red" ng-show="formWindows.sw.$dirty && formWindows.sw.$error.pattern">Value must be a number!</span>
+                        <input type="text" class="form-control" name="sw" id="skipWindow" placeholder="Skip Window" ng-required="true" ng-model="skipWindow" ng-pattern="/^[0-9]*$/">
+                    </div>
+                    <div class="form-group" ng-class="{'has-error' : formWindows.fw.$invalid && !formWindows.fw.$pristine}">
+                        <label class="sr-only" for="futureWindow">Future Window</label>
+                        <span style="color: red" ng-show=" formWindows.fw.$dirty && formWindows.fw.$error.required">Field is required!</span>
+                        <span style="color: red" ng-show="formWindows.fw.$dirty && formWindows.fw.$error.pattern">Value must be a number!</span>
+                        <input type="text" class="form-control" name="fw" id="futureWindow" placeholder="Future Window" ng-required="true" ng-model="futureWindow" ng-pattern="/^[0-9]*$/">
+                    </div>
+                    <div class="form-group" ng-class="{'has-error' : formWindows.tfc.$invalid && !formWindows.tfc.$pristine}" style="margin-top: 10px">
+                        <label class="sr-only" for="topFiguresCount">Top figures count</label>
+                        <span style="color: red" ng-show="formWindows.tfc.$dirty && formWindows.tfc.$error.required">Field is required!</span>
+                        <span style="color: red" ng-show="formWindows.tfc.$dirty && formWindows.tfc.$error.pattern">Value must be a number!</span>
+                        <input type="text" class="form-control" name="tfc" id="topFiguresCount" placeholder="Top figures count" ng-required="true" ng-model="topFiguresCount" ng-pattern="/^[0-9]*$/">
+                    </div>
+                    <div class="form-group" style="margin-top: 10px">
+                        <label class="sr-only" for="startFigure">Start figure</label>
+                        <span style="color: red" ng-show="formWindows.sf.$dirty && formWindows.sf.$error.required">Field is required!</span>
+                        <span style="color: red" ng-show="formWindows.sf.$dirty && formWindows.sf.$error.pattern">Value must be a number!</span>
+                        <input type="text" name="sf" class="form-control" id="startFigure" placeholder="Start figure" ng-required="true" ng-model="startFigure" ng-pattern="/^[0-9]*$/">
+                    </div>
+                    <div class="form-group" style="margin-top: 10px">
+                        <label class="sr-only" for="endFigure">End figure</label>
+                        <span style="color: red" ng-show="formWindows.ef.$dirty && formWindows.ef.$error.required">Field is required!</span>
+                        <span style="color: red" ng-show="formWindows.ef.$dirty && formWindows.ef.$error.pattern">Value must be a number!</span>
+                        <input type="text" name="ef" class="form-control" id="endFigure" placeholder="End figure" ng-required="true" ng-model="endFigure" ng-pattern="/^[0-9]*$/">
+                    </div>
+                    <div class="form-group" style="margin-top: 10px" ng-show="complexBetGroup.indexOf(metricType) != -1">
+                        <label class="sr-only" for="endSize">End size</label>
+                        <span style="color: red" ng-show="formWindows.es.$dirty && formWindows.es.$error.required">Field is required!</span>
+                        <span style="color: red" ng-show="formWindows.es.$dirty && formWindows.es.$error.pattern">Value must be a number!</span>
+                        <input type="text" name="es" class="form-control" id="endSize" placeholder="End size" ng-model="endSize" ng-pattern="/^[0-9]*$/">
+                    </div>
+                    <div class="form-group" ng-show="exceptIgnoredGroup.indexOf(metricType) != -1" style="margin-top: 10px" ng-class="{'has-error' : formWindows.ignored.$invalid && !formWindows.ignored.$pristine}">
+                        <label class="sr-only"  for="figuresToIgnore">Figures to exclude</label>
+                        <span style="color: red" ng-show="formWindows.ignored.$dirty && formWindows.ignored.$error.pattern">Not valid pattern!</span>
+                        <input type="text" class="form-control" id="figuresToIgnore" name="ignored" placeholder="Figures to ignore 1,2,3..." ng-pattern="/^[0-9]*(,[0-9]*)*$/" ng-model="excludeFigures">
+                    </div>
+                </form>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px" ng-disabled="formWindows.$invalid" ng-click="getData()">Go...</button>
+            </div>
+            <div ng-show="strategySelected && metricSelected && metricType == 'TopNonZeroFiguresExceptSome'">
+                <form name="formWindowsWithExcept" class="form-inline" novalidate>
+                    <div class="form-group" ng-class="{'has-error' : formWindowsWithExcept.pw2.$invalid && !formWindowsWithExcept.pw2.$pristine}">
+                        <label class="sr-only" for="pastWindow2">Past window</label>
+                        <span style="color: red" ng-show="formWindowsWithExcept.pw2.$dirty && formWindowsWithExcept.pw2.$error.required">Field is required!</span>
+                        <span style="color: red" ng-show="formWindowsWithExcept.pw2.$dirty && formWindowsWithExcept.pw2.$error.pattern">Value must be a number!</span>
+                        <input type="text" class="form-control" name="pw2" id="pastWindow2" placeholder="Past window" required ng-model="pastWindow" ng-pattern="/^[0-9]*$/">
+                    </div>
+                    <div class="form-group" ng-class="{'has-error' : formWindowsWithExcept.sw2.$invalid && !formWindowsWithExcept.sw2.$pristine}">
+                        <label class="sr-only" for="skipWindow2">Skip Window</label>
+                        <span style="color: red" ng-show="formWindowsWithExcept.sw2.$dirty && formWindowsWithExcept.sw2.$error.required">Field is required!</span>
+                        <span style="color: red" ng-show="formWindowsWithExcept.sw2.$dirty && formWindowsWithExcept.sw2.$error.pattern">Value must be a number!</span>
+                        <input type="text" class="form-control" name="sw2" id="skipWindow2" placeholder="Skip Window" ng-required="true" ng-model="skipWindow" ng-pattern="/^[0-9]*$/">
+                    </div>
+                    <div class="form-group" ng-class="{'has-error' : formWindowsWithExcept.fw2.$invalid && !formWindowsWithExcept.fw2.$pristine}">
+                        <label class="sr-only" for="futureWindow2">Future Window</label>
+                        <span style="color: red" ng-show=" formWindowsWithExcept.fw2.$dirty && formWindowsWithExcept.fw2.$error.required">Field is required!</span>
+                        <span style="color: red" ng-show="formWindowsWithExcept.fw2.$dirty && formWindowsWithExcept.fw2.$error.pattern">Value must be a number!</span>
+                        <input type="text" class="form-control" name="fw2" id="futureWindow2" placeholder="Future Window" ng-required="true" ng-model="futureWindow" ng-pattern="/^[0-9]*$/">
+                    </div>
+                    <div class="form-group" ng-class="{'has-error' : formWindowsWithExcept.tfc2.$invalid && !formWindowsWithExcept.tfc2.$pristine}" style="margin-top: 10px">
+                        <label class="sr-only" for="topFiguresCount2">Top figures count</label>
+                        <span style="color: red" ng-show="formWindowsWithExcept.tfc2.$dirty && formWindowsWithExcept.tfc2.$error.required">Field is required!</span>
+                        <span style="color: red" ng-show="formWindowsWithExcept.tfc2.$dirty && formWindowsWithExcept.tfc2.$error.pattern">Value must be a number!</span>
+                        <input type="text" class="form-control" name="tfc2" id="topFiguresCount2" placeholder="Top figures count" ng-required="true" ng-model="topFiguresCount" ng-pattern="/^[0-9]*$/">
+                    </div>
+                    <div class="form-group" style="margin-top: 10px" ng-class="{'has-error' : formWindowsWithExcept.exclude.$invalid && !formWindowsWithExcept.exclude.$pristine}">
+                        <label class="sr-only"  for="excludeFigures">Figures to exclude</label>
+                        <span style="color: red" ng-show="formWindowsWithExcept.exclude.$dirty && formWindowsWithExcept.exclude.$error.pattern">Not valid pattern!</span>
+                        <input type="text" class="form-control" id="excludeFigures" name="exclude" placeholder="Figures to exclude 1,2,3..." ng-pattern="/^[0-9]*(,[0-9]*)*$/" ng-model="excludeFigures">
+                    </div>
+                </form>
+                <button class="btn btn-primary" ng-disabled="formWindowsWithExcept.$invalid" style="margin-top: 10px" ng-click="getData()">Go...</button>
+            </div>
+        </div>
+        <div class="col-lg-2"></div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12" ng-show="showChart">
+            <highchart id="chart" config="chartConfig"></highchart>
+        </div>
+    </div>
+</div>
